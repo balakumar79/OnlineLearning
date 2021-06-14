@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout_Student.cshtml";
+}
+
+<script>
+    var currentindex = 0;
+    $(document).ready(doc => {
+        $('.sub-0,.sub-1,.sub-2,.sub-3,.sub-4').hide()
+    })
+    function processQuestion(cnt) {
+        
+        if (cnt.id === "next")
+            currentindex += 1;
+        else
+            currentindex -= 1;
+
+
+        if (currentindex == 0)
+            $('.page-item-prev').addClass('disabled');
+
+        else if (currentindex == 4) {
+            $('.page-item-next').addClass('disabled');
+        }
+        else if (currentindex < 4 && currentindex > 0) {
+            $('.page-item-next').removeClass('disabled')
+            $('.page-item-prev').removeClass('disabled');
+        }
+
+        $('#main').empty().append($('.sub-' + currentindex).html())
+
+
+            var id = cnt.id;
+        var dt = $(cnt).data('i');
+        if (dt > 0) {
+
+        }
+        console.log(currentindex, $('.sub-' + currentindex))
+        
+    }
+</script>

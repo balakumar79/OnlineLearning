@@ -1,0 +1,73 @@
+﻿@model Learning.Tutor.ViewModel.TestViewModel
+
+@{
+    ViewData["Title"] = "CreateTest";
+    Layout = "_Layout_Tutor";
+}
+
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Create Test</h1>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+            <div class="row justify-content-center">
+
+                <form asp-action="CreateTest">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="column">
+
+                        @Html.HiddenFor(p=>p.Id)
+                        <div class="form-group">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" type="text" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="GradeID" class="control-label"></label>
+                            <select asp-for="GradeID" class="form-control" id="selGrade"></select>
+                            <span asp-validation-for="GradeID" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SubjectID" class="control-label"></label>
+                            <select asp-for="SubjectID" id="selSubject" class="form-control"></select>
+                            <span asp-validation-for="SubjectID" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 column col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label asp-for="Duration" class="control-label"></label>
+                            <input asp-for="Duration" class="form-control" />
+                            <span asp-validation-for="Duration" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="StartDate" class="control-label"></label>
+                            <input asp-for="StartDate" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EndDate" class="control-label"></label>
+                            <input asp-for="EndDate" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="col-md-2">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+            
+</main>
+    @section Scripts{
+        <script>
+            $(document).ready(function () {
+                bindGradeLevels('#selGrade', '@Model?.GradeID');
+                bindSubject('#selSubject', '@Model?.SubjectID');
+                $('[name=StartDate],[name=EndDate]')
+                    .attr('min', moment().format('YYYY-MM-DDTkk:mm'));
+                $('[name=StartDate]').val(moment().format('YYYY-MM-DDTkk:mm'))
+            })
+        </script>
+    }
+

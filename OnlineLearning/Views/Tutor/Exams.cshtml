@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Exams";
+    Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
+}
+
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Exams</h1>
+        <div class="bg-white" id="tblExams"></div>
+    </div>
+</main>
+@section Scripts{
+    <script>
+            $(document).ready(function () {
+                getdata('Partial_Exams', null, 'html').done(res => {
+                    $('#tblExams').empty().append(res);
+                initDataTable('#examtable')
+                });
+            })
+    </script>
+}

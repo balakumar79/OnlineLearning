@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+
+
+<table class="table" id="examtable">
+    <thead>
+        <tr>
+            <th>
+               TestId
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Grade
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Dur.
+            </th>
+            <th>
+                
+                EndDate
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Modified
+            </th>
+          
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GradeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Modified.Date)
+            </td>
+           
+            <td>
+                <a href="CreateTest?id=@item.Id">
+                    <i class="fa fa-pencil-square text-info"> </i></a> |
+                    <a href="DeleteTest?id=@item.Id"><i class="fa fa-times-circle text-danger"></i></a>
+</td>
+        </tr>
+}
+    </tbody>
+</table>

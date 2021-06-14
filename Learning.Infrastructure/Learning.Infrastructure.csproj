@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Learning.Infrastructure-03BD6CD5-2CB4-4A69-9552-E411F009D51A</UserSecretsId>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
+    <ProjectReference Include="..\Learning.Admin\Learning.Admin.csproj" />
+    <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
+    <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+  </ItemGroup>
+</Project>

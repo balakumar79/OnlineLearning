@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Tutors";
+}
+
+<div class="container">
+<h1>Tutors</h1>
+    <div id="tblTutor"></div>
+    </div>
+
+@section Scripts{ 
+
+<script>
+    $(document).ready(doc => {
+        insertdata('Partial_Tutor', null, 'html').done(res => {
+            $('#tblTutor').empty().append(res);
+        })
+    })
+    
+</script>
+}
+

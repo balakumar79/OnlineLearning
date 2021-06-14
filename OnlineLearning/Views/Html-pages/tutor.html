@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>:: Education ::</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+	
+
+
+
+
+
+</head>
+
+<body>
+
+  <!-- whole body -->
+  <div class="page-wrapper chiller-theme toggled">
+  <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+    <i class="fa fa-bars"></i>
+  </a>
+  <nav id="sidebar" class="sidebar-wrapper">
+    <div class="sidebar-content">
+      <div class="sidebar-brand">
+        <a href="#"><img src="images/tutor-logo.png" width="218" height="48" alt=""/></a>
+        <div id="close-sidebar">
+          <i class="fa fa-times"></i>
+        </div>
+      </div>
+      <div class="sidebar-header">
+        <div class="user-pic">
+          <img class="img-responsive img-rounded" src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
+            alt="User picture">
+        </div>
+        <div class="user-info">
+          <span class="user-name">Jhon
+            <strong>Smith</strong>
+          </span>
+          <span class="user-role">Tutor</span>
+          <span class="user-status">
+            <!--<i class="fa fa-circle"></i>
+            <span>Online</span>-->
+          </span>
+        </div>
+      </div>
+      <!-- sidebar-header  -->
+      <div class="sidebar-search">
+        <div>
+          <div class="input-group">
+            <input type="text" class="form-control search-menu" placeholder="Search...">
+            <div class="input-group-append">
+              <span class="input-group-text">
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- sidebar-search  -->
+      <div class="sidebar-menu">
+        <ul>
+          <li class="header-menu">
+            <span>General</span>
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-user"></i>
+              <span>Profile</span>
+              
+            </a>
+            
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+              <span>Students Profile</span>
+              
+            </a>
+            
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#">
+             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+              <span>Edit Profile details</span>
+            </a>
+            
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#" data-toggle="modal" data-target="#myModal2" >
+              <i class="fa fa-question-circle" aria-hidden="true"></i>
+              <span>Create Exams</span>
+            </a>
+            
+          </li>
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-user-plus" aria-hidden="true"></i>
+              <span>Inivite Students to do Exam</span>
+            </a>
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+            <i class="fa fa-id-card" aria-hidden="true"></i>
+              <span>View Students Details</span>
+            </a>
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+            <i class="fa fa-check" aria-hidden="true"></i>
+              <span>Booked Exam</span>
+            </a>
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#" data-toggle="modal" data-target="#myModal">
+            <i class="fa fa-history" aria-hidden="true"></i>
+              <span>View Exam History</span>
+            </a>
+            
+            
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+            <i class="fa fa-trophy"></i>
+              <span>View Result History By Students</span>
+            </a>
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-trophy"></i>
+              <span>View Online Marking By Tutor</span>
+            </a>
+            
+          </li>
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+              <i class="fa fa-trophy"></i>
+              <span>View offline Marking By Tutor</span>
+            </a>
+            
+          </li>
+          
+          
+          <li class="sidebar-dropdown">
+            <a href="#">
+            <i class="fa fa-university" aria-hidden="true"></i>
+              <span>Exams Available</span>
+            </a>
+            
+          </li>
+          
+          
+          
+          
+        </ul>
+      </div>
+      
+      
+      <div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Exam History</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="container">
+    <div class="row">
+    
+   
+    
+        <div class="col-md-12">
+
+            <div class="panel panel-default panel-table">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-md-12 col-xs-6">
+                    <div class="row">
+                    	<div class="col-md-3 col-sm-3 col-xs-12"><input type="button" value="Today's Exam" class="btn-primary"></div>
+                    	<div class="col-md-3 col-sm-3 col-xs-12"><input type="button" value="Previous Exam" class="btn-success"></div>
+                    	<div class="col-md-3 col-sm-3 col-xs-12"><input type="button" value="Upcoming Exam" class="btn-info"></div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="panel-body">
+                <table class="table table-striped table-bordered table-list table-responsive">
+                  <thead>
+                    <tr>
+                        
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Email</th>
+                        <th>Email</th>
+                        <th>Email</th>
+                        <th>Email</th>
+                       
+                    </tr> 
+                  </thead>
+                  <tbody>
+                          <tr>
+                            
+                            <td class="hidden-xs">1</td>
+                            <td>John Doe</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                          </tr>
+                        </tbody>
+                        
+                        <tbody>
+                          <tr>
+                            
+                            <td class="hidden-xs">1</td>
+                            <td>John Doe</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                          </tr>
+                        </tbody>
+                        <tbody>
+                          <tr>
+                            
+                            <td class="hidden-xs">1</td>
+                            <td>John Doe</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                            <td>johndoe@example.com</td>
+                          </tr>
+                        </tbody>
+                </table>
+            
+              </div>
+              <div class="panel-footer">
+                <div class="row">
+                  <div class="col col-xs-4">Page 1 of 5
+                  </div>
+                  <div class="col col-xs-8">
+                    <ul class="pagination hidden-xs pull-right">
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                    </ul>
+                    <ul class="pagination visible-xs pull-right">
+                        <li><a href="#">«</a></li>
+                        <li><a href="#">»</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+</div></div></div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+     
+     
+     <div class="modal" id="myModal2">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Exam History</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        
+<div class="container">
+	<form class="well span8">
+        <div class="row">
+            <div class="span3">
+                <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+            </div>
+            
+            <div class="span3">
+                <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+           <select class="form-control">
+  <option>Default select</option>
+</select>
+            </div>
+    
+           <div class="btn-toolbar">
+  <div class="btn-group">
+      <button class="btn" data-original-title="Bold - Ctrl+B"><i class="icon-bold"></i></button>
+      <button class="btn" data-original-title="Italic - Ctrl+I"><i class="icon-italic"></i></button>
+      <button class="btn" data-original-title="List"><i class="icon-list"></i></button>
+      <button class="btn" data-original-title="Img"><i class="icon-picture"></i></button>
+      <button class="btn" data-original-title="URL"><i class="icon-arrow-right"></i></button>
+  </div>
+  <div class="btn-group">
+      <button class="btn" data-original-title="Align Right"><i class="icon-align-right"></i></button>
+      <button class="btn" data-original-title="Align Center"><i class="icon-align-center"></i></button>
+      <button class="btn" data-original-title="Align Left"><i class="icon-align-left"></i></button>
+  </div>
+  <div class="btn-group">
+      <button class="btn" data-original-title="Preview"><i class="icon-eye-open"></i></button>
+      <button class="btn" data-original-title="Save"><i class="icon-ok"></i></button>
+      <button class="btn" data-original-title="Cancel"><i class="icon-trash"></i></button>
+  </div>
+</div>
+            
+        </div>
+        <div class="container">
+          <textarea cols="80" id="editor1" name="editor1" rows="10" data-sample-short>&lt;p&gt;This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href=&quot;https://ckeditor.com/&quot;&gt;CKEditor&lt;/a&gt;.&lt;/p&gt;</textarea>
+        </div>
+       
+       
+        
+    </form>
+</div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+      <!-- sidebar-menu  -->
+    </div>
+    <!-- sidebar-content  -->
+    <div class="sidebar-footer">
+      <a href="#">
+        <i class="fa fa-bell"></i>
+        <span class="badge badge-pill badge-warning notification">3</span>
+      </a>
+      <a href="#">
+        <i class="fa fa-envelope"></i>
+        <span class="badge badge-pill badge-success notification">7</span>
+      </a>
+      <a href="#">
+        <i class="fa fa-cog"></i>
+        <span class="badge-sonar"></span>
+      </a>
+      <a href="#">
+        <i class="fa fa-power-off"></i>
+      </a>
+    </div>
+  </nav>
+  <!-- sidebar-wrapper  -->
+  <main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+      <div class="col-md-12 col-sm-12 col-xs-12 white-bg"> 
+      <h1 class="tutor-name">Hello, Jhon Smith</h1>
+      <div class="row">
+  <div class="col-md-8 col-sm-8 col-xs-12">
+    <p class="tutor-profile-lines">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec eros ac velit porta fringilla quis non tellus. Quisque a porta est. Vestibulum sed libero quis massa malesuada volutpat id sed eros.</p>
+  </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <img src="images/pic.png" width="248" height="119" alt=""/> </div>
+      </div>
+      </div>
+      <!-- three blocks -->
+      
+   
+	<div class="row">
+		<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+		  <div class="our-services-wrapper mb-60">
+							<div class="services-inner">
+								<div class="our-services-img">
+								<img src="https://www.orioninfosolutions.com/assets/img/icon/Agricultural-activities.png" width="68px" alt="">
+								</div>
+								<div class="our-services-text">
+									<h4>83%</h4>
+									<p>Your Profile is 83% complete.</p>
+									<p>Update Profile <a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></p>
+								</div>
+							</div>
+						</div>
+	  </div>
+					<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+					  <div class="our-services-wrapper mb-60">
+							<div class="services-inner">
+								<div class="our-services-img">
+								<img src="https://www.orioninfosolutions.com/assets/img/icon/Agricultural-activities.png" width="68px" alt="">
+								</div>
+								<div class="our-services-text">
+									<h4>Verify</h4>
+									<p>You need to Address Verify</p>
+									<p>Verification <a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+					  <div class="our-services-wrapper mb-60">
+							<div class="services-inner">
+								<div class="our-services-img">
+								<img src="https://www.orioninfosolutions.com/assets/img/icon/Agricultural-activities.png" width="68px" alt="">
+								</div>
+								<div class="our-services-text">
+									<h4>1250</h4>
+									<p>Job Id:1234567           Dec2020</p>
+									<p>Pay Now <a href="#"><i class="fa fa-arrow-right" aria-hidden="true"></i></a></p>
+								</div>
+							</div>
+						</div>
+					</div>
+	</div>
+
+
+<!-- notification and Latest course -->
+
+
+		
+      <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="box services-inner">
+                        <div class="box-content">
+                            <h1 class="tag-title">Notifications</h1>
+                            
+                            <div class="list-group">
+  <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+    <i class="fa fa-envelope" aria-hidden="true"></i> Finished Exam
+  <p>4 hours hours</p></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-envelope" aria-hidden="true"></i> Absent for the exam.<p>4 hours hours</p></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-envelope" aria-hidden="true"></i> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec eros ac velit porta fringilla quis non tellus.<p>4 hours hours</p></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-envelope" aria-hidden="true"></i> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec eros ac velit porta fringilla quis non tellus.<p>4 hours hours</p></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-envelope" aria-hidden="true"></i> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec eros ac velit porta fringilla quis non tellus.<p>4 hours hours</p></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="fa fa-envelope" aria-hidden="true"></i> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec eros ac velit porta fringilla quis non tellus.<p>4 hours hours</p></a>
+  
+  
+</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="box services-inner">
+                        <div class="box-content">
+                            <h1 class="tag-title"> Latest course</h1>
+                            
+                            
+                           <div class="row course-gap">
+            <div class="col-md-6">
+                <div class="card-content">
+                    <div class="card-img">
+                        <img src="images/course-image.png" width="380" height="230" alt=""/> <span><h4>Course name</h4></span>
+                    </div>
+                    <div class="card-desc">
+                        <h3>Course name</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam, voluptatum! Dolor quo, perspiciatis
+                            voluptas totam</p>
+                            <a href="#" class="btn-card">Read</a>   
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-content">
+                    <div class="card-img">
+                        <img src="images/course-image.png" width="380" height="230" alt=""/> 
+                        <span><h4>Course name</h4></span>
+                    </div>
+                    <div class="card-desc">
+                        <h3>Course name</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam, voluptatum! Dolor quo, perspiciatis
+                            voluptas totam</p>
+                            <a href="#" class="btn-card">Read</a>   
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+                       
+                       <div class="row course-gap">
+            <div class="col-md-6">
+                <div class="card-content">
+                    <div class="card-img">
+                        <img src="images/course-image.png" width="380" height="230" alt=""/> 
+                        <span><h4>Course name</h4></span>
+                    </div>
+                    <div class="card-desc">
+                        <h3>Course name</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam, voluptatum! Dolor quo, perspiciatis
+                            voluptas totam</p>
+                            <a href="#" class="btn-card">Read</a>   
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-content">
+                    <div class="card-img">
+                        <img src="images/course-image.png" width="380" height="230" alt=""/> 
+                        <span><h4>Course name</h4></span>
+                    </div>
+                    <div class="card-desc">
+                        <h3>Course name</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam, voluptatum! Dolor quo, perspiciatis
+                            voluptas totam</p>
+                            <a href="#" class="btn-card">Read</a>   
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>  
+            
+   <!-- upcoming schedules --> 
+      <div class="box services-inner">
+        <div class="box-content">
+          <h1 class="tag-title schedule">Upcoming Schedules</h1>  
+          <div class="services-inner">
+            <div class="row detail">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0">
+                <div class="ribbon"></div>
+                <img src="https://s3-ap-southeast-2.amazonaws.com/geg-sia-webapp2/library/assets/images/GUG%2020122.jpg" alt="">
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-8 p-0">
+                <span class="discount-holder"><span>Cheapest</span></span>
+                <div class="detail-box">
+                  <h4>Course Name </h4>
+                  
+                  <ul>
+                    <li><strong>Total Seat: </strong> 5</li>
+                    <li><strong>Duration : </strong> 2 months</li>
+                    <li><strong>Shift : </strong> Day</li>
+                  </ul>
+                  <p><strong><i class="fas fa-book"></i> Eligibilty: </strong>Lorem ipsum dummy Lorem ipsum dummy <a href="#" data-toggle="collapse" data-target="#elig-box">show more</a></p>
+                  <h6><strong><i class="fa fa-clock"></i> Enroll time</strong> 30 Jun 2019 <span>NPR: 300/- <a href="#" class="btn btn-primary" style="font-size: 12px;">Enroll Now</a></span></h6>
+                </div>
+              </div>
+              <div class="eligibal collapse" id="elig-box">
+                <div class="arrow-up"></div>
+                <p><strong><i class="fas fa-book"></i> Eligibilty: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p><strong><i class="fas fa-graduation-cap"></i> Career: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p><strong><i class="fas fa-file-alt"></i> Entrance Provision: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+            </div>   
+            
+            
+            
+            <div class="row detail">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-4 p-0">
+                <div class="ribbon"></div>
+                <img src="https://s3-ap-southeast-2.amazonaws.com/geg-sia-webapp2/library/assets/images/GUG%2020122.jpg" alt="">
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-8 p-0">
+                <span class="discount-holder"><span>Cheapest</span></span>
+                <div class="detail-box">
+                  <h4>Course Name </h4>
+                  
+                  <ul>
+                    <li><strong>Total Seat: </strong> 5</li>
+                    <li><strong>Duration : </strong> 2 months</li>
+                    <li><strong>Shift : </strong> Day</li>
+                  </ul>
+                  <p><strong><i class="fas fa-book"></i> Eligibilty: </strong>Lorem ipsum dummy Lorem ipsum dummy <a href="#" data-toggle="collapse" data-target="#elig-box">show more</a></p>
+                  <h6><strong><i class="fa fa-clock"></i> Enroll time</strong> 30 Jun 2019 <span>NPR: 300/- <a href="#" class="btn btn-primary" style="font-size: 12px;">Enroll Now</a></span></h6>
+                </div>
+              </div>
+              <div class="eligibal collapse" id="elig-box">
+                <div class="arrow-up"></div>
+                <p><strong><i class="fas fa-book"></i> Eligibilty: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p><strong><i class="fas fa-graduation-cap"></i> Career: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p><strong><i class="fas fa-file-alt"></i> Entrance Provision: </strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+              </div>   
+           </div>
+        </div>
+      </div>
+    </div>
+
+
+</div>
+
+       
+    
+  </main>
+  <!-- page-content" -->
+</div>
+    	
+    	
+    	
+    	
+<!--<footer class="footer-gap">
+    		<div class="container">
+    			<div class="row">
+    				<div class="fa fa-cog col-sm-6 col-xs-12"><div class="col-md-7"><p><img src="images/footer.png" width="184" height="43" alt=""/></p></div><p class="footer-text">Studious is the online education platform specialising in mock test preparation for Studious students. 
+
+We are passionate experts in online education. Our services include online exams, the Studious shop and Studious tuition. 
+
+Our products are designed to prepare students for a variety of Grammar School and Independent School examinations.</p>
+    				</div>
+    				<div class="col-md-4 col-sm-6 col-xs-12"><h5 class="news">Newsletter</h5><p class="footer-text">Get all the latest information on events, sales and offers.
+Sign up for newsletter today.</p><p><input type="button" value="Subscribe" class="subscribe"></p></div>
+   				  <div class="col-md-4 col-sm-12 col-xs-12"><h5 class="news">Payment Partners</h5><p><img src="images/payment.png" width="295" height="108" alt="" class="img-fluid"/>
+   				    </p></div>
+    			</div>
+    			
+    		</div>
+    		
+    	</footer>-->
+   
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="js/bootstrap.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+  
+  <script>
+	
+	jQuery(function ($) {
+
+    $(".sidebar-dropdown > a").click(function() {
+  $(".sidebar-submenu").slideUp(200);
+  if (
+    $(this)
+      .parent()
+      .hasClass("active")
+  ) {
+    $(".sidebar-dropdown").removeClass("active");
+    $(this)
+      .parent()
+      .removeClass("active");
+  } else {
+    $(".sidebar-dropdown").removeClass("active");
+    $(this)
+      .next(".sidebar-submenu")
+      .slideDown(200);
+    $(this)
+      .parent()
+      .addClass("active");
+  }
+});
+
+$("#close-sidebar").click(function() {
+  $(".page-wrapper").removeClass("toggled");
+});
+$("#show-sidebar").click(function() {
+  $(".page-wrapper").addClass("toggled");
+});
+
+
+   
+   
+});
+	</script>
+	
+	
+	<script>
+    // We need to turn off the automatic editor creation first.
+    CKEDITOR.disableAutoInline = true;
+
+    CKEDITOR.replace('editor1');
+  </script>
+
+	
+  
+  
+  
+</body>
+
+</html>

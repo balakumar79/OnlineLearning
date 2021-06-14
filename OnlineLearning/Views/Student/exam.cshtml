@@ -1,0 +1,1256 @@
+﻿
+@{
+    ViewData["Title"] = "exam";
+    Layout = "~/Views/Shared/_Layout_Student.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>:: Education ::</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+
+
+
+
+</head>
+
+<body>
+
+    <!-- whole body -->
+    <!-- sidebar-wrapper  -->
+    <main class="page-content">
+        <div class="container-fluid tutor-orange-bg">
+            <div class="row">
+                <div class="col-md-3 col-sm-12 col-xs-12 white-bg">
+                    <div class="formBox">
+                        <form>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h1>Details</h1>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="inputBox ">
+                                        <input type="text" placeholder="Full Name" class="inputText">
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="inputBox ">
+                                        <input type="text" placeholder="Exam Duration" class="inputText">
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="inputBox ">
+                                        <input type="text" placeholder="Total No.Of Questions" class="inputText">
+
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="inputBox ">
+                                        <input type="text" placeholder="Minimum No. Of Questions To Attempt" class="inputText">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!--<div class="row">
+                                          <div class="col-sm-12">
+                                              <input type="submit" name="" class="button" value="Send Message">
+                                          </div>
+                                      </div>-->
+                        </form>
+                    </div>
+
+                </div>
+
+                <div class="col-md-9 col-sm-12 col-xs-12">
+                    <div id="tabs" class="project-tab tab-new-pro">
+                        <div class="">
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div id="tabs">
+                                        <ul>
+                                            <li>
+                                                <a href="#tabs-0">Chemistry</a>
+                                            </li>
+                                            <li>
+                                                <a href="#tabs-1">Physics</a>
+
+                                            </li>
+                                            <li>
+                                                <a href="#tabs-2">Biology</a>
+
+                                            </li>
+                                            <li>
+                                                <a href="#tabs-3">English</a>
+
+                                            </li>
+                                        </ul>
+                                        <div id="tabs-0">
+                                            <!-- /*............ single choice question.....................*/-->
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-12  col-xs-12">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 heading-qus">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="timer">
+                                                                    <div>
+                                                                        <span class="days" id="day"></span>
+                                                                        <div class="smalltext">Days</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="hours" id="hour"></span>
+                                                                        <div class="smalltext">Hours</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="minutes" id="minute"></span>
+                                                                        <div class="smalltext">Minutes</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="seconds" id="second"></span>
+                                                                        <div class="smalltext">Seconds</div>
+                                                                    </div>
+                                                                    <p id="time-up"></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-sm-12 col-xs-12 qus-heading">Q1. Single Choice Question</div>
+                                                            <div class="col-md-5 col-sm-12 col-xs-12 qus-heading"><i class="fa fa-flag" aria-hidden="true"></i> Review the paper</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 qus-white-area">
+                                                        <div class="col-md-6 col-sm-12 col-xs-12 qus-spec">
+                                                            The Current <em>i</em> in the network is:
+                                                            <p><img src="/images/diagram.png" width="169" height="166" alt="" class="img-fluid" /></p>
+
+
+
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                                            <div class="">
+                                                                <div class="funkyradio-default radio-class">
+                                                                    <input type="radio" name="radio" id="radio1" />
+                                                                    <label for="radio1"> <span class="a-number">A.</span>0.2A</label>
+                                                                </div>
+                                                                <div class="funkyradio-primary radio-class">
+                                                                    <input type="radio" name="radio" id="radio2" checked />
+                                                                    <label for="radio2"><span class="a-number">B.</span> 0.7A</label>
+                                                                </div>
+                                                                <div class="funkyradio-success radio-class">
+                                                                    <input type="radio" name="radio" id="radio3" />
+                                                                    <label for="radio3"><span class="a-number">C.</span> 0.13A</label>
+                                                                </div>
+                                                                <div class="funkyradio-danger radio-class">
+                                                                    <input type="radio" name="radio" id="radio4" />
+                                                                    <label for="radio4"><span class="a-number">D.</span> 0.18A</label>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <nav aria-label="Page navigation example">
+                                                                <ul class="pagination justify-content-end">
+                                                                    <li class="page-item disabled">
+                                                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                                                    </li>
+
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 question-number-block">
+                                                    <p class="sub-name">Physics (25)</p>
+
+                                                    <table border="0" align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature green-bg-number">1</li>
+                                                                    <li class="rounded-circle number-feature">2</li>
+                                                                    <li class="rounded-circle number-feature">3</li>
+                                                                    <li class="rounded-circle number-feature">4</li>
+                                                                    <li class="rounded-circle number-feature">5</li>
+                                                                    <li class="rounded-circle number-feature">6</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">7</li>
+                                                                    <li class="rounded-circle number-feature">8</li>
+                                                                    <li class="rounded-circle number-feature">9</li>
+                                                                    <li class="rounded-circle number-feature">10</li>
+                                                                    <li class="rounded-circle number-feature">11</li>
+                                                                    <li class="rounded-circle number-feature">12</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">13</li>
+                                                                    <li class="rounded-circle number-feature">14</li>
+                                                                    <li class="rounded-circle number-feature">15</li>
+                                                                    <li class="rounded-circle number-feature">16</li>
+                                                                    <li class="rounded-circle number-feature">17</li>
+                                                                    <li class="rounded-circle number-feature">18</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">19</li>
+                                                                    <li class="rounded-circle number-feature">20</li>
+                                                                    <li class="rounded-circle number-feature">21</li>
+                                                                    <li class="rounded-circle number-feature">22</li>
+                                                                    <li class="rounded-circle number-feature">23</li>
+                                                                    <li class="rounded-circle number-feature">24</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <p class="leg-sta">LEGENDS AND STATS</p>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature green-bg-number-done">50 <span>Answered</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature red-bg-number-notdone">18 <span>Not Answered</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature not-visited">50 <span>Not Visited</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature for-review">18 <span>Marked Review</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- /*............ end single choice question.....................*/-->
+                                            <!-- /*............ Multiple choice question.....................*/-->
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-12  col-xs-12">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 heading-qus">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="timer">
+                                                                    <div>
+                                                                        <span class="days" id="day2"></span>
+                                                                        <div class="smalltext">Days</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="hours" id="hour2"></span>
+                                                                        <div class="smalltext">Hours</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="minutes" id="minute2"></span>
+                                                                        <div class="smalltext">Minutes</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="seconds" id="second2"></span>
+                                                                        <div class="smalltext">Seconds</div>
+                                                                    </div>
+                                                                    <p id="time-up2"></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-sm-12 col-xs-12 qus-heading">Q1. Multiple Choice Question</div>
+                                                            <div class="col-md-5 col-sm-12 col-xs-12 qus-heading"><i class="fa fa-flag" aria-hidden="true"></i> Review the paper</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 qus-white-area">
+                                                        <div class="col-md-6 col-sm-12 col-xs-12 qus-spec">
+                                                            The Current <em>i</em> in the network is:
+                                                            <p><img src="/images/diagram.png" width="169" height="166" alt="" class="img-fluid" /></p>
+
+
+
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                                            <div class="">
+                                                                <div class="funkyradio-default radio-class">
+                                                                    <input type="checkbox" name="checkbox" id="checkbox1" checked />
+                                                                    <label for="checkbox1"><span class="a-number">A.</span> 0.2A</label>
+                                                                </div>
+                                                                <div class="funkyradio-primary radio-class">
+                                                                    <input type="checkbox" name="checkbox" id="checkbox2" checked />
+                                                                    <label for="checkbox2"><span class="a-number">B.</span> 0.4A</label>
+                                                                </div>
+                                                                <div class="funkyradio-success radio-class">
+                                                                    <input type="checkbox" name="checkbox" id="checkbox3" checked />
+                                                                    <label for="checkbox3"><span class="a-number">C.</span> 0.13A</label>
+                                                                </div>
+                                                                <div class="funkyradio-danger radio-class">
+                                                                    <input type="checkbox" name="checkbox" id="checkbox4" checked />
+                                                                    <label for="checkbox4"><span class="a-number">D.</span> 0.6A</label>
+                                                                </div>
+
+
+                                                            </div>
+
+                                                            <nav aria-label="Page navigation example">
+                                                                <ul class="pagination justify-content-end">
+                                                                    <li class="page-item disabled">
+                                                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                                                    </li>
+
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 question-number-block">
+                                                    <p class="sub-name">Physics (25)</p>
+
+                                                    <table border="0" align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature green-bg-number">1</li>
+                                                                    <li class="rounded-circle number-feature">2</li>
+                                                                    <li class="rounded-circle number-feature">3</li>
+                                                                    <li class="rounded-circle number-feature">4</li>
+                                                                    <li class="rounded-circle number-feature">5</li>
+                                                                    <li class="rounded-circle number-feature">6</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">7</li>
+                                                                    <li class="rounded-circle number-feature">8</li>
+                                                                    <li class="rounded-circle number-feature">9</li>
+                                                                    <li class="rounded-circle number-feature">10</li>
+                                                                    <li class="rounded-circle number-feature">11</li>
+                                                                    <li class="rounded-circle number-feature">12</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">13</li>
+                                                                    <li class="rounded-circle number-feature">14</li>
+                                                                    <li class="rounded-circle number-feature">15</li>
+                                                                    <li class="rounded-circle number-feature">16</li>
+                                                                    <li class="rounded-circle number-feature">17</li>
+                                                                    <li class="rounded-circle number-feature">18</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">19</li>
+                                                                    <li class="rounded-circle number-feature">20</li>
+                                                                    <li class="rounded-circle number-feature">21</li>
+                                                                    <li class="rounded-circle number-feature">22</li>
+                                                                    <li class="rounded-circle number-feature">23</li>
+                                                                    <li class="rounded-circle number-feature">24</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <p class="leg-sta">LEGENDS AND STATS</p>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature green-bg-number-done">50 <span>Answered</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature red-bg-number-notdone">18 <span>Not Answered</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature not-visited">50 <span>Not Visited</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature for-review">18 <span>Marked Review</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- /*............ end Multiple choice question.....................*/-->
+                                            <!-- /*............ descriptive question question.....................*/-->
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-12  col-xs-12">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 heading-qus">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="timer">
+                                                                    <div>
+                                                                        <span class="days" id="day3"></span>
+                                                                        <div class="smalltext">Days</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="hours" id="hour3"></span>
+                                                                        <div class="smalltext">Hours</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="minutes" id="minute3"></span>
+                                                                        <div class="smalltext">Minutes</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="seconds" id="second3"></span>
+                                                                        <div class="smalltext">Seconds</div>
+                                                                    </div>
+                                                                    <p id="time-up3"></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-sm-12 col-xs-12 qus-heading">Q1.  Descriptive question </div>
+                                                            <div class="col-md-5 col-sm-12 col-xs-12 qus-heading"><i class="fa fa-flag" aria-hidden="true"></i> Review the paper</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 qus-white-area">
+                                                        <div class="col-md-6 col-sm-12 col-xs-12 qus-spec">
+                                                            The Current <em>i</em> in the network is:
+                                                            <p><img src="/images/diagram.png" width="169" height="166" alt="" class="img-fluid" /></p>
+
+
+
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                                            <textarea placeholder="Give Your Answer Here!" cols="80" rows="5"></textarea>
+
+                                                            <nav aria-label="Page navigation example">
+                                                                <ul class="pagination justify-content-end">
+                                                                    <li class="page-item disabled">
+                                                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                                                    </li>
+
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 question-number-block">
+                                                    <p class="sub-name">Physics (25)</p>
+
+                                                    <table border="0" align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature green-bg-number">1</li>
+                                                                    <li class="rounded-circle number-feature">2</li>
+                                                                    <li class="rounded-circle number-feature">3</li>
+                                                                    <li class="rounded-circle number-feature">4</li>
+                                                                    <li class="rounded-circle number-feature">5</li>
+                                                                    <li class="rounded-circle number-feature">6</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">7</li>
+                                                                    <li class="rounded-circle number-feature">8</li>
+                                                                    <li class="rounded-circle number-feature">9</li>
+                                                                    <li class="rounded-circle number-feature">10</li>
+                                                                    <li class="rounded-circle number-feature">11</li>
+                                                                    <li class="rounded-circle number-feature">12</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">13</li>
+                                                                    <li class="rounded-circle number-feature">14</li>
+                                                                    <li class="rounded-circle number-feature">15</li>
+                                                                    <li class="rounded-circle number-feature">16</li>
+                                                                    <li class="rounded-circle number-feature">17</li>
+                                                                    <li class="rounded-circle number-feature">18</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">19</li>
+                                                                    <li class="rounded-circle number-feature">20</li>
+                                                                    <li class="rounded-circle number-feature">21</li>
+                                                                    <li class="rounded-circle number-feature">22</li>
+                                                                    <li class="rounded-circle number-feature">23</li>
+                                                                    <li class="rounded-circle number-feature">24</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <p class="leg-sta">LEGENDS AND STATS</p>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature green-bg-number-done">50 <span>Answered</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature red-bg-number-notdone">18 <span>Not Answered</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature not-visited">50 <span>Not Visited</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature for-review">18 <span>Marked Review</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- /*............ end descriptive question.....................*/-->
+                                            <!-- /*............ Fill in the blank question.....................*/-->
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-12  col-xs-12">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 heading-qus">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="timer">
+                                                                    <div>
+                                                                        <span class="days" id="day4"></span>
+                                                                        <div class="smalltext">Days</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="hours" id="hour4"></span>
+                                                                        <div class="smalltext">Hours</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="minutes" id="minute4"></span>
+                                                                        <div class="smalltext">Minutes</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="seconds" id="second4"></span>
+                                                                        <div class="smalltext">Seconds</div>
+                                                                    </div>
+                                                                    <p id="time-up4"></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-sm-12 col-xs-12 qus-heading">Q1.  Fill in the blank question</div>
+                                                            <div class="col-md-5 col-sm-12 col-xs-12 qus-heading"><i class="fa fa-flag" aria-hidden="true"></i> Review the paper</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 qus-white-area">
+                                                        <div class="col-md-6 col-sm-12 col-xs-12 qus-spec">
+                                                            The Current <em>i</em> in the network is:
+                                                            <p><img src="/images/diagram.png" width="169" height="166" alt="" class="img-fluid" /></p>
+
+
+
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                                            <p>Question Goes here</p>
+                                                            <p>Answer Here <input type="text" placeholder="give answer here"> Here</p>
+                                                            <ul>
+                                                                <li>a. First Answer</li>
+                                                                <li>b. Second Answer</li>
+                                                                <li>c. Third Answer</li>
+
+                                                            </ul>
+
+
+                                                            <nav aria-label="Page navigation example">
+                                                                <ul class="pagination justify-content-end">
+                                                                    <li class="page-item disabled">
+                                                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                                                    </li>
+
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 question-number-block">
+                                                    <p class="sub-name">Physics (25)</p>
+
+                                                    <table border="0" align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature green-bg-number">1</li>
+                                                                    <li class="rounded-circle number-feature">2</li>
+                                                                    <li class="rounded-circle number-feature">3</li>
+                                                                    <li class="rounded-circle number-feature">4</li>
+                                                                    <li class="rounded-circle number-feature">5</li>
+                                                                    <li class="rounded-circle number-feature">6</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">7</li>
+                                                                    <li class="rounded-circle number-feature">8</li>
+                                                                    <li class="rounded-circle number-feature">9</li>
+                                                                    <li class="rounded-circle number-feature">10</li>
+                                                                    <li class="rounded-circle number-feature">11</li>
+                                                                    <li class="rounded-circle number-feature">12</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">13</li>
+                                                                    <li class="rounded-circle number-feature">14</li>
+                                                                    <li class="rounded-circle number-feature">15</li>
+                                                                    <li class="rounded-circle number-feature">16</li>
+                                                                    <li class="rounded-circle number-feature">17</li>
+                                                                    <li class="rounded-circle number-feature">18</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">19</li>
+
+                                                                    <li class="rounded-circle number-feature">20</li>
+                                                                    <li class="rounded-circle number-feature">21</li>
+                                                                    <li class="rounded-circle number-feature">22</li>
+                                                                    <li class="rounded-circle number-feature">23</li>
+                                                                    <li class="rounded-circle number-feature">24</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <p class="leg-sta">LEGENDS AND STATS</p>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature green-bg-number-done">50 <span>Answered</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature red-bg-number-notdone">18 <span>Not Answered</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature not-visited">50 <span>Not Visited</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature for-review">18 <span>Marked Review</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- /*............ Fill in the blank question.....................*/-->
+                                            <!-- /*............ Fill in the blank question.....................*/-->
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-12  col-xs-12">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 heading-qus">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="timer">
+                                                                    <div>
+                                                                        <span class="days" id="day5"></span>
+                                                                        <div class="smalltext">Days</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="hours" id="hour5"></span>
+                                                                        <div class="smalltext">Hours</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="minutes" id="minute5"></span>
+                                                                        <div class="smalltext">Minutes</div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="seconds" id="second5"></span>
+                                                                        <div class="smalltext">Seconds</div>
+                                                                    </div>
+                                                                    <p id="time-up5"></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-sm-12 col-xs-12 qus-heading">Q1.  One word question</div>
+                                                            <div class="col-md-5 col-sm-12 col-xs-12 qus-heading"><i class="fa fa-flag" aria-hidden="true"></i> Review the paper</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12 qus-white-area">
+                                                        <div class="col-md-6 col-sm-12 col-xs-12 qus-spec">
+                                                            The Current <em>i</em> in the network is:
+                                                            <p><img src="/images/diagram.png" width="169" height="166" alt="" class="img-fluid" /></p>
+
+
+
+                                                        </div>
+
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+
+
+                                                            <div id="div10">
+                                                                <p id="p1">This is a paragraph.</p>
+
+                                                                <p><input type="text" placeholder="Your Answer"></p>
+                                                            </div>
+
+
+                                                            <nav aria-label="Page navigation example">
+                                                                <ul class="pagination justify-content-end">
+                                                                    <li class="page-item disabled">
+                                                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                                                    </li>
+
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#">Next</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 question-number-block">
+                                                    <p class="sub-name">Physics (25)</p>
+
+                                                    <table border="0" align="center">
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature green-bg-number">1</li>
+                                                                    <li class="rounded-circle number-feature">2</li>
+                                                                    <li class="rounded-circle number-feature">3</li>
+                                                                    <li class="rounded-circle number-feature">4</li>
+                                                                    <li class="rounded-circle number-feature">5</li>
+                                                                    <li class="rounded-circle number-feature">6</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">7</li>
+                                                                    <li class="rounded-circle number-feature">8</li>
+                                                                    <li class="rounded-circle number-feature">9</li>
+                                                                    <li class="rounded-circle number-feature">10</li>
+                                                                    <li class="rounded-circle number-feature">11</li>
+                                                                    <li class="rounded-circle number-feature">12</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">13</li>
+                                                                    <li class="rounded-circle number-feature">14</li>
+                                                                    <li class="rounded-circle number-feature">15</li>
+                                                                    <li class="rounded-circle number-feature">16</li>
+                                                                    <li class="rounded-circle number-feature">17</li>
+                                                                    <li class="rounded-circle number-feature">18</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+
+
+                                                        <tr>
+                                                            <td>
+                                                                <ol class="number-display">
+                                                                    <li class="rounded-circle number-feature">19</li>
+                                                                    <li class="rounded-circle number-feature">20</li>
+                                                                    <li class="rounded-circle number-feature">21</li>
+                                                                    <li class="rounded-circle number-feature">22</li>
+                                                                    <li class="rounded-circle number-feature">23</li>
+                                                                    <li class="rounded-circle number-feature">24</li>
+
+
+                                                                </ol>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <hr>
+                                                    <p class="leg-sta">LEGENDS AND STATS</p>
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature green-bg-number-done">50 <span>Answered</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature red-bg-number-notdone">18 <span>Not Answered</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"><p class="rounded-circle number-feature not-visited">50 <span>Not Visited</span></p></div>
+                                                            <div class="col-md-6 col-sm-6 col-xs-12 green-red-gap"> <p class="rounded-circle number-feature for-review">18 <span>Marked Review</span></p></div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                            <!-- /*............ One Word question.....................*/-->
+
+                                            <input type="submit" value="next" class="submit" />
+                                        </div>
+                                        <div id="tabs-1">
+                                            <b>city</b>
+
+                                            <input type="text" id="name" />
+                                            <br /> <b>state</b>
+
+                                            <input type="text" id="age" />
+                                            <br />
+                                            <input type="submit" value="next" class="submit" />
+                                        </div>
+                                        <div id="tabs-2">
+                                            <p>Tab3</p>
+                                        </div>
+                                        <div id="tabs-3">
+                                            <p>Tab4</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- page-content" -->
+    <!-- Bootstrap core JavaScript -->
+    <script src="js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+
+    <script>
+
+	jQuery(function ($) {
+
+    $(".sidebar-dropdown > a").click(function() {
+  $(".sidebar-submenu").slideUp(200);
+  if (
+    $(this)
+      .parent()
+      .hasClass("active")
+  ) {
+    $(".sidebar-dropdown").removeClass("active");
+    $(this)
+      .parent()
+      .removeClass("active");
+  } else {
+    $(".sidebar-dropdown").removeClass("active");
+    $(this)
+      .next(".sidebar-submenu")
+      .slideDown(200);
+    $(this)
+      .parent()
+      .addClass("active");
+  }
+});
+
+$("#close-sidebar").click(function() {
+  $(".page-wrapper").removeClass("toggled");
+});
+$("#show-sidebar").click(function() {
+  $(".page-wrapper").addClass("toggled");
+});
+
+
+
+
+});
+    </script>
+
+    <script>
+    // We need to turn off the automatic editor creation first.
+    CKEDITOR.disableAutoInline = true;
+
+    CKEDITOR.replace('editor1');
+    </script>
+
+    <!--<script>
+
+        $('#radioBtn a').on('click', function(){
+        var sel = $(this).data('title');
+        var tog = $(this).data('toggle');
+        $('#'+tog).prop('value', sel);
+
+        $('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
+        $('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
+    })
+        </script>-->
+
+    <script>
+
+	$('.btnNext').click(function(){
+  $('.nav-tabs > .active').next('li').find('a').trigger('click');
+});
+
+  $('.btnPrevious').click(function(){
+  $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+});
+    </script>
+
+    <script>
+
+	var deadline = new Date("july 30, 2021 15:37:25").getTime();
+var x = setInterval(function() {
+   var currentTime = new Date().getTime();
+   var t = deadline - currentTime;
+   var days = Math.floor(t / (1000 * 60 * 60 * 24));
+   var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+   var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+   var seconds = Math.floor((t % (1000 * 60)) / 1000);
+   document.getElementById("day").innerHTML =days ;
+   document.getElementById("hour").innerHTML =hours;
+   document.getElementById("minute").innerHTML = minutes;
+   document.getElementById("second").innerHTML =seconds;
+   if (t < 0) {
+      clearInterval(x);
+      document.getElementById("time-up").innerHTML = "TIME UP";
+      document.getElementById("day").innerHTML ='0';
+      document.getElementById("hour").innerHTML ='0';
+      document.getElementById("minute").innerHTML ='0' ;
+      document.getElementById("second").innerHTML = '0';
+   }
+}, 1000);
+
+    </script>
+
+    <script>
+
+	var deadline = new Date("july 30, 2021 15:37:25").getTime();
+var x = setInterval(function() {
+   var currentTime = new Date().getTime();
+   var t = deadline - currentTime;
+   var days = Math.floor(t / (1000 * 60 * 60 * 24));
+   var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+   var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+   var seconds = Math.floor((t % (1000 * 60)) / 1000);
+   document.getElementById("day2").innerHTML =days ;
+   document.getElementById("hour2").innerHTML =hours;
+   document.getElementById("minute2").innerHTML = minutes;
+   document.getElementById("second2").innerHTML =seconds;
+   if (t < 0) {
+      clearInterval(x);
+      document.getElementById("time-up2").innerHTML = "TIME UP";
+      document.getElementById("day2").innerHTML ='0';
+      document.getElementById("hour2").innerHTML ='0';
+      document.getElementById("minute2").innerHTML ='0' ;
+      document.getElementById("second2").innerHTML = '0';
+   }
+}, 1000);
+
+    </script>
+
+
+    <script>
+
+	var deadline = new Date("july 30, 2021 15:37:25").getTime();
+var x = setInterval(function() {
+   var currentTime = new Date().getTime();
+   var t = deadline - currentTime;
+   var days = Math.floor(t / (1000 * 60 * 60 * 24));
+   var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+   var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+   var seconds = Math.floor((t % (1000 * 60)) / 1000);
+   document.getElementById("day3").innerHTML =days ;
+   document.getElementById("hour3").innerHTML =hours;
+   document.getElementById("minute3").innerHTML = minutes;
+   document.getElementById("second3").innerHTML =seconds;
+   if (t < 0) {
+      clearInterval(x);
+      document.getElementById("time-up3").innerHTML = "TIME UP";
+      document.getElementById("day3").innerHTML ='0';
+      document.getElementById("hour3").innerHTML ='0';
+      document.getElementById("minute3").innerHTML ='0' ;
+      document.getElementById("second3").innerHTML = '0';
+   }
+}, 1000);
+
+    </script>
+
+
+    <script>
+
+	var deadline = new Date("july 30, 2021 15:37:25").getTime();
+var x = setInterval(function() {
+   var currentTime = new Date().getTime();
+   var t = deadline - currentTime;
+   var days = Math.floor(t / (1000 * 60 * 60 * 24));
+   var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+   var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+   var seconds = Math.floor((t % (1000 * 60)) / 1000);
+   document.getElementById("day4").innerHTML =days ;
+   document.getElementById("hour4").innerHTML =hours;
+   document.getElementById("minute4").innerHTML = minutes;
+   document.getElementById("second4").innerHTML =seconds;
+   if (t < 0) {
+      clearInterval(x);
+      document.getElementById("time-up4").innerHTML = "TIME UP";
+      document.getElementById("day4").innerHTML ='0';
+      document.getElementById("hour4").innerHTML ='0';
+      document.getElementById("minute4").innerHTML ='0' ;
+      document.getElementById("second4").innerHTML = '0';
+   }
+}, 1000);
+
+    </script>
+
+
+    <script>
+
+	var deadline = new Date("july 30, 2021 15:37:25").getTime();
+var x = setInterval(function() {
+   var currentTime = new Date().getTime();
+   var t = deadline - currentTime;
+   var days = Math.floor(t / (1000 * 60 * 60 * 24));
+   var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60));
+   var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+   var seconds = Math.floor((t % (1000 * 60)) / 1000);
+   document.getElementById("day5").innerHTML =days ;
+   document.getElementById("hour5").innerHTML =hours;
+   document.getElementById("minute5").innerHTML = minutes;
+   document.getElementById("second5").innerHTML =seconds;
+   if (t < 0) {
+      clearInterval(x);
+      document.getElementById("time-up5").innerHTML = "TIME UP";
+      document.getElementById("day5").innerHTML ='0';
+      document.getElementById("hour5").innerHTML ='0';
+      document.getElementById("minute5").innerHTML ='0' ;
+      document.getElementById("second5").innerHTML = '0';
+   }
+}, 1000);
+
+    </script>
+
+
+
+    <script>
+
+	function allowDrop(ev){
+        ev.preventDefault();
+      }
+      function drag(ev){
+        ev.dataTransfer.setData("Text",ev.target.id);
+      }
+      function drop(ev){
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("Text");
+        ev.target.parentNode.replaceChild(document.getElementById(data), ev.target);
+        document.getElementById(data).className = "";
+      }
+    </script>
+
+    <script>
+
+	$(function () {
+    $("#tabs").tabs();
+    $("#tabs").tabs("option", {
+        "selected": 0,
+            "disabled": [1, 2, 3]
+    });
+
+    $('.submit').click(function () {
+        if($('#name').val()=='')
+        {
+            alert("empty");
+        }
+        else
+        {
+        var nexttab = parseInt($(this).parent().next().attr('id').match(/\d+/g), 10);
+        $('#tabs').tabs("enable", nexttab).tabs("select", nexttab);
+        $('input[name="tabs-'+nexttab+'"]').removeAttr('disabled').prop('checked', true);
+        }
+    });
+
+
+    $("input[type=checkbox]").click(function () {
+        if ($(this).is(':checked')) {
+            $('#tabs').tabs("enable", $(this).val());
+        } else {
+            $('#tabs').tabs("disable", $(this).val());
+            var tab = $(this);
+            $(":checked").each(function (index) {
+                $('#tabs').tabs("select", $(this).val());
+            });
+        }
+    });
+});
+    </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
+

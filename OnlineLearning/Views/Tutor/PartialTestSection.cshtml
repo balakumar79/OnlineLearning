@@ -1,0 +1,48 @@
+﻿@model Learning.Tutor.ViewModel.TestSectionViewModel
+
+
+<div class="row">
+    <div class="">
+        <form asp-action="CreateSection">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+          <div class="column">
+              @Html.HiddenFor(p=>p.Id)
+            <div class="form-group">
+                <label asp-for="TestId" class="control-label"></label>
+                <select asp-for="TestId" class="form-control selTest" ></select>
+                <span asp-validation-for="TestId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SectionName" class="control-label"></label>
+                <input asp-for="SectionName" class="form-control" />
+                <span asp-validation-for="SectionName" class="text-danger"></span>
+            </div>
+              </div>
+            <div class="column">
+            <div class="form-group">
+                <label asp-for="SubTopic" class="control-label"></label>
+                <input asp-for="SubTopic" class="form-control" />
+                <span asp-validation-for="SubTopic" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalMarks" class="control-label"></label>
+                <input asp-for="TotalMarks" class="form-control" />
+                <span asp-validation-for="TotalMarks" class="text-danger"></span>
+            </div>
+          
+        
+            <div class="form-group">
+                <input type="checkbox" name="IsOnline" class="custom-checkbox" value="$(this).is(':checked')" />
+                <label asp-for="IsOnline" class="control-label"></label>
+                <span asp-validation-for="IsOnline" class="text-danger"></span>
+            </div>
+                </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

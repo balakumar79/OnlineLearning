@@ -1,0 +1,55 @@
+﻿@model Learning.Tutor.ViewModel.QuestionViewModel
+
+<h4>QuestionViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateQuestion">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           
+            <div class="form-group">
+                <label asp-for="QuestionName" class="control-label"></label>
+                <input asp-for="QuestionName" class="form-control" />
+                <span asp-validation-for="QuestionName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QusType" class="control-label"></label>
+                <select id="selQusType" asp-for="QusType" class="form-control" ></select>
+                <span asp-validation-for="QusType" class="text-danger"></span>
+            </div>
+          
+            <div class="form-group">
+                <label asp-for="TestName" class="control-label"></label>
+                <input asp-for="TestName" class="form-control" />
+                <span asp-validation-for="TestName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SectionId" class="control-label"></label>
+                <select id="selSection" asp-for="SectionId" class="form-control" ></select>
+                <span asp-validation-for="SectionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SectionName" class="control-label"></label>
+                <select asp-for="SectionName" class="form-control" />
+                <span asp-validation-for="SectionName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsActive" class="control-label"></label>
+                <input asp-for="IsActive" class="form-control" />
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script>
+    bindTestSection('#selSection','@Model.TestId')
+</script>
+

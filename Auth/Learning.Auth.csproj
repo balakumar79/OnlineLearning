@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Auth-27991696-B992-4D56-BB0B-A70F04E1CA27</UserSecretsId>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
+    <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+    <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
+    <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />
+  </ItemGroup>
+</Project>

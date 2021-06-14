@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>@ViewData["Title"] - OnlineLearning</title>
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    <link rel="stylesheet" href="~/css/animate.min.css" />
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/style_home.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    @*<script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>*@
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="top-bar-black">
+
+        <div class="container">
+            <div class="col-md-4 col-sm-12 col-xs-12 pull-right2">
+                <div class="row2 pull-right2">
+                    <div class="col-md-8 col-sm-4 col-xs-12">
+
+
+                        <div class="input-group pb-modalreglog-input-group pull-right">
+                            @{if (User.Identity.IsAuthenticated)
+                                {
+                                    <div class="nav-item dropdown dmenu">
+                                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbardrop" data-toggle="dropdown">
+                                            @User.Identity.Name
+                                        </a>
+                                        <div class="dropdown-menu sm-menu">
+                                            <a class="dropdown-item" href="/Account/LogOut">Logoff</a>
+                                            <a class="dropdown-item" href="#">service 2</a>
+                                            <a class="dropdown-item" href="#">service 3</a>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="btn sign-button pb-modalreglog-submit" data-toggle="modal" data-target="#myModal">SignIn / Login</button>
+                                    }
+                                }
+                            </div>
+                        <div class="modal fade white-bg col-md-5" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content2">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title" id="myModalLabel">Login form</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" action="/Account/Login">
+                                            <div class="form-group">
+                                                <label for="email">Email address</label>
+                                                <div class="input-group pb-modalreglog-input-group">
+                                                    <span class="input-group-addon"><span class="fa fa-user"></span></span>
+                                                    <input type="email" name="UserName" class="form-control-sign" id="email" placeholder="Email">
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password">Password</label>
+                                                <div class="input-group pb-modalreglog-input-group">
+                                                    <span class="input-group-addon"><span class="fa fa-lock"></span></span>
+                                                    <input type="password" name="Password" class="form-control-sign" id="pws" placeholder="Password">
+
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="input-group pb-modalreglog-input-group">
+                                                    <input type="checkbox" name="Password" class="custom-checkbox" id="pws" /> RememberMe
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer ">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-success">Log in</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-5 col-sm-6 col-xs-12 lan-box">
+
+                        <select class="selectpicker languauge" data-width="fit">
+                            <option data-content='<span class="flag-icon flag-icon-us"></span> English'>English</option>
+                            <option data-content='<span class="flag-icon flag-icon-mx"></span> Tamil'>Tamil</option>
+                            <option data-content='<span class="flag-icon flag-icon-mx"></span> Sangal'>Sangal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bg">
+        <div class="container">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-dark  col-md-12">
+                    <a class="navbar-brand" href="#" data-abc="true"><img src="images/logo.png" width="212" height="54" alt="" class="img-fluid" /></a>
+                    <button class="navbar-toggler " type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+                    <div class="collapse navbar-collapse  mobile-nav" id="navbarColor02">
+                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">About</a>
+                            </li>
+                            <li class="nav-item dropdown dmenu">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                    Our Service
+                                </a>
+                                <div class="dropdown-menu sm-menu">
+                                    <a class="dropdown-item" href="#">service2</a>
+                                    <a class="dropdown-item" href="#">service 2</a>
+                                    <a class="dropdown-item" href="#">service 3</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Contact Us</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Call</a>
+                            </li>
+                            <!-- <li class="nav-item dropdown dmenu">
+                              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                Dropdown link
+                              </a>
+                              <div class="dropdown-menu sm-menu">
+                                <a class="dropdown-item" href="#">Link 1</a>
+                                <a class="dropdown-item" href="#">Link 2</a>
+                                <a class="dropdown-item" href="#">Link 3</a>
+                                <a class="dropdown-item" href="#">Link 4</a>
+                                <a class="dropdown-item" href="#">Link 5</a>
+                                <a class="dropdown-item" href="#">Link 6</a>
+                              </div>
+                            </li> -->
+                        </ul>
+                        <div class="seach-bg">
+                            <form class="form-inline form-inline-nav my-2 my-lg-0">
+                                <input class="form-control mr-sm-2 search-mar" type="text" placeholder="Search"> <a href="#"><i class="fa fa-search search-icon"></i></a>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+
+ @RenderBody();
+
+   @{ await Html.RenderPartialAsync("_Partial_Layout_Footer");}
+
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+
+
+
+    <script>
+        $(function () {
+            var progress = $("#pb-modalreglog-progressbar").shieldProgressBar({
+                value: 0
+            }).swidget();
+
+            $('#inputEmail').change(function () {
+                if ($('#inputEmail').val().length > 1) {
+                    progress.value(progress.value() + 15);
+                } else {
+                    progress.value(progress.value() - 15);
+                }
+            });
+
+            $('#inputPws').change(function () {
+                if ($('#inputPws').val().length > 1) {
+                    progress.value(progress.value() + 15);
+                } else {
+                    progress.value(progress.value() - 15);
+                }
+            });
+
+            $('#inputConfirmPws').change(function () {
+                if ($('#inputConfirmPws').val().length > 1) {
+                    progress.value(progress.value() + 15);
+                } else {
+                    progress.value(progress.value() - 15);
+                }
+            });
+
+            $('#countries').change(function () {
+                if ($('#countries').val().length > 1) {
+                    progress.value(progress.value() + 15);
+                } else {
+                    progress.value(progress.value() - 15);
+                }
+            });
+
+            $('#age').change(function () {
+                if ($('#age').val().length > 1) {
+                    progress.value(progress.value() + 15);
+                } else {
+                    progress.value(progress.value() - 15);
+                }
+            });
+
+            $('#ch').change(function () {
+                if ($('input[name="chs"]:checked').length > 0) {
+                    progress.value(progress.value() + 25);
+                } else {
+                    progress.value(progress.value() - 25);
+                }
+            });
+
+            $("#age").shieldMaskedTextBox({
+                enabled: true,
+                mask: "00/00/0000",
+                value: "19/03/1032"
+            });
+        })
+    </script>
+
+    <script>
+
+        $(function () {
+            function closeSearch() {
+                var $form = $('.navbar-collapse form[role="search"].active')
+                $form.find('input').val('');
+                $form.removeClass('active');
+            }
+
+            // Show Search if form is not active // event.preventDefault() is important, this prevents the form from submitting
+            $(document).on('click', '.navbar-collapse form[role="search"]:not(.active) button[type="submit"]', function (event) {
+                event.preventDefault();
+                var $form = $(this).closest('form'),
+                    $input = $form.find('input');
+                $form.addClass('active');
+                $input.focus();
+            });
+            // ONLY FOR DEMO // Please use $('form').submit(function(event)) to track from submission
+            // if your form is ajax remember to call `closeSearch()` to close the search container
+            $(document).on('click', '.navbar-collapse form[role="search"].active button[type="submit"]', function (event) {
+                event.preventDefault();
+                var $form = $(this).closest('form'),
+                    $input = $form.find('input');
+                $('#showSearchTerm').text($input.val());
+                closeSearch()
+            });
+        });
+    </script>
+
+    <script>
+        $('.carousel').carousel({
+            interval: 2000
+        })
+    </script>
+
+
+    <script>
+
+        // For Filters
+        document.addEventListener("DOMContentLoaded", function () {
+            var filterBtn = document.getElementById('filter-btn');
+            var btnTxt = document.getElementById('btn-txt');
+            var filterAngle = document.getElementById('filter-angle');
+
+            $('#filterbar').collapse(false);
+            var count = 0, count2 = 0;
+            function changeBtnTxt() {
+                $('#filterbar').collapse(true);
+                count++;
+                if (count % 2 != 0) {
+                    filterAngle.classList.add("fa-angle-right");
+                    btnTxt.innerText = "show filters"
+                    filterBtn.style.backgroundColor = "#36a31b";
+                }
+                else {
+                    filterAngle.classList.remove("fa-angle-right")
+                    btnTxt.innerText = "hide filters"
+                    filterBtn.style.backgroundColor = "#ff935d";
+                }
+
+            }
+
+            // For Applying Filters
+            $('#inner-box').collapse(false);
+            $('#inner-box2').collapse(false);
+
+            // For changing NavBar-Toggler-Icon
+            var icon = document.getElementById('icon');
+
+            function chnageIcon() {
+                count2++;
+                if (count2 % 2 != 0) {
+                    icon.innerText = "";
+                    icon.innerHTML = '<span class="far fa-times-circle" style="width:100%"></span>';
+                    icon.style.paddingTop = "5px";
+                    icon.style.paddingBottom = "5px";
+                    icon.style.fontSize = "1.8rem";
+
+
+                }
+                else {
+                    icon.innerText = "";
+                    icon.innerHTML = '<span class="navbar-toggler-icon"></span>';
+                    icon.style.paddingTop = "5px";
+                    icon.style.paddingBottom = "5px";
+                    icon.style.fontSize = "1.2rem";
+                }
+            }
+
+            // Showing tooltip for AVAILABLE COLORS
+            $(function () {
+                $('[data-tooltip="tooltip"]').tooltip()
+            })
+
+            // For Range Sliders
+            var inputLeft = document.getElementById("input-left");
+            var inputRight = document.getElementById("input-right");
+
+            var thumbLeft = document.querySelector(".slider > .thumb.left");
+            var thumbRight = document.querySelector(".slider > .thumb.right");
+            var range = document.querySelector(".slider > .range");
+
+            var amountLeft = document.getElementById('amount-left')
+            var amountRight = document.getElementById('amount-right')
+
+            function setLeftValue() {
+                var _this = inputLeft,
+                    min = parseInt(_this.min),
+                    max = parseInt(_this.max);
+
+                _this.value = Math.min(parseInt(_this.value), parseInt(inputRight.value) - 1);
+
+                var percent = ((_this.value - min) / (max - min)) * 100;
+
+                thumbLeft.style.left = percent + "%";
+                range.style.left = percent + "%";
+                amountLeft.innerText = parseInt(percent * 100);
+            }
+            setLeftValue();
+
+            function setRightValue() {
+                var _this = inputRight,
+                    min = parseInt(_this.min),
+                    max = parseInt(_this.max);
+
+                _this.value = Math.max(parseInt(_this.value), parseInt(inputLeft.value) + 1);
+
+                var percent = ((_this.value - min) / (max - min)) * 100;
+
+                amountRight.innerText = parseInt(percent * 100);
+                thumbRight.style.right = (100 - percent) + "%";
+                range.style.right = (100 - percent) + "%";
+            }
+            setRightValue();
+
+            inputLeft.addEventListener("input", setLeftValue);
+            inputRight.addEventListener("input", setRightValue);
+
+            inputLeft.addEventListener("mouseover", function () {
+                thumbLeft.classList.add("hover");
+            });
+            inputLeft.addEventListener("mouseout", function () {
+                thumbLeft.classList.remove("hover");
+            });
+            inputLeft.addEventListener("mousedown", function () {
+                thumbLeft.classList.add("active");
+            });
+            inputLeft.addEventListener("mouseup", function () {
+                thumbLeft.classList.remove("active");
+            });
+
+            inputRight.addEventListener("mouseover", function () {
+                thumbRight.classList.add("hover");
+            });
+            inputRight.addEventListener("mouseout", function () {
+                thumbRight.classList.remove("hover");
+            });
+            inputRight.addEventListener("mousedown", function () {
+                thumbRight.classList.add("active");
+            });
+            inputRight.addEventListener("mouseup", function () {
+                thumbRight.classList.remove("active");
+            });
+        });
+
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+
+
+
+
+            $('.owl-carousel').slick({
+                infinite: true,
+                centerMode: false,
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                arrows: false,
+                autoplay: true,
+                autoplaySpeed: 3000,
+
+
+            });
+
+        });
+    </script>
+
+    @RenderSection("Scripts",false)
+
+
+</body>
+
+</html>

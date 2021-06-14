@@ -1,0 +1,18 @@
+  <Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Learning.Admin-493CBA16-6CED-4A7E-A53E-1F829A610153</UserSecretsId>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
+    <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
+    <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+  </ItemGroup>
+</Project>

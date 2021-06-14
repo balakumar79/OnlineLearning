@@ -1,0 +1,21 @@
+﻿
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="">
+            <a class="nav-link dropdown-toggle text-white" href="#" data-toggle="dropdown">Hello @User.Identity.Name!</a>
+        
+        <div class="dropdown-menu">
+            <form class="form-inline" action="/Account/LogOut" method="post" >
+                <button type="submit" class="dropdown-item btn btn-link text-dark">Logout</button>
+            </form>
+        </div>
+            </div>
+    }
+    else
+    {
+        <li class="">
+            <button class="btn sign-button pb-modalreglog-submit" data-toggle="modal" data-target="#myModal">SignIn / Login</button>
+        </li>
+    }
+</ul>
