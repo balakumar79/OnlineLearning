@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewData["Title"] = "Manage Sections";
+    Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
+    
+}
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Manage Sections</h1>
+        <div class="bg-white container">
+        <p>
+            <a asp-action="CreateSection">Create New</a>
+        </p>
+       <table id="tblSection"></table>
+</div>
+        </div>
+    </main>
+@section Scripts{ 
+    <script>
+$(document).ready(doc=>{
+    var tb = $('#tblSection').DataTable({
+        autoWidth: true,
+        ajax: {
+            url: 'PartialTestSectionByTestId',
+            data: {sectionId: 24},
+            type: 'post',
+            contentType: 'application/json',
+            dataType: 'json',
+            dataSrc: function (data) {
+                console.log(data);
+                return data;
+            }, 
+        },
+        columns: [
+            { width: '2%', render: function (d, r) { console.log(d, r) } },
+            { width: "5%", className: 'text-center', data: 'TestName' },
+            { width: "18%", data: 'SectionName' },
+            { width: "15%", data: 'SubTopic' },
+            { width: "9%", data: 'TotalMarks' },
+            { width: "5%", data: 'TotalQuestions' },
+            { width: "5%", data: 'QusAdded' },
+            { width: "5%", data: 'Created' },
+            { width: "10%", className: 'text-center', data: 'IsOnline' },
+            {
+                width: "10%", render: function (d) {
+                    return '<a class="" href="/Tutor/DeleteSection?id='+d.Id+'"><i class="text-danger fa fa-2x fa-times-circle "></i> </a>'
+                }
+            },
+        ]
+   });
+
+})
+
+    </script>
+}

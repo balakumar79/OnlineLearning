@@ -27,14 +27,14 @@ namespace Learning.Admin.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthorization(option =>
+            services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
             {
-                foreach (var item in Enum.GetValues(typeof(Utils.Enums.RoleEnum)))
+                foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
                 {
 
                     option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
                 }
-            });
+            }));
             AuthenticationConfig.LearningAuthentication(services);
             Infrastructure.Infrastructure.AddDataBase(services, Configuration);
             services.AddSession();

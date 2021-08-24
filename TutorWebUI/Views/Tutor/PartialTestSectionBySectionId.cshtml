@@ -1,0 +1,66 @@
+﻿@model Learning.Tutor.ViewModel.TestSectionViewModel
+
+
+<div class="row">
+    <div class="">
+        <form asp-action="CreateSection">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="column">
+                @Html.HiddenFor(p => p.Id)
+                <div class="form-group">
+                    <label asp-for="TestId" class="control-label"></label>
+                    <select asp-for="TestId" class="form-control selTest"></select>
+                    <span asp-validation-for="TestId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SectionName" class="control-label"></label>
+                    <input asp-for="SectionName" class="form-control" />
+                    <span asp-validation-for="SectionName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TotalMarks" class="control-label"></label>
+                    <input asp-for="TotalMarks" class="form-control" />
+                    <span asp-validation-for="TotalMarks" class="text-danger"></span>
+                </div>
+                <div class="form-group ">
+                    <label asp-for="IsOnline" class="control-label"></label>
+                    @Html.CheckBoxFor(m => m.IsOnline)
+                    <span asp-validation-for="IsOnline" class="text-danger"></span>
+                </div>
+                <div class="row col-md-5 float-left">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="form-group">
+                    <label asp-for="Topic" class="control-label"></label>
+                    <input asp-for="Topic" class="form-control" />
+                    <span asp-validation-for="Topic" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SubTopic" class="control-label"></label>
+                    <input asp-for="SubTopic" class="form-control" />
+                    <span asp-validation-for="SubTopic" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TotalQuestions" class="control-label"></label>
+                    <input asp-for="TotalQuestions" class="form-control" />
+                    <span asp-validation-for="TotalQuestions" class="text-danger"></span>
+                </div>
+
+            </div>
+           
+        </form>
+    </div>
+</div>
+<script>
+        bindTest('#TestId');
+    setTimeout(() => {
+        bindQuestionType('.selQuestionType');
+            $('#TestId').val('@Model.TestId');
+        },1000)
+</script>
+
+
+

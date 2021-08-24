@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "CreateTest";
+    Layout = "_Layout_Tutor";
+}
+
+
+<div id="pnlQus"></div>
+<script>
+    document.addEventListener('readystatechange', doc => {
+        if (doc.target.readyState === 'complete') {
+            initLoader()
+            loaddata().done(res => {
+                removeLoader();
+            });
+            $('#myModal2 .modal-footer a').on('click', modal => {
+                loaddata();
+            })
+        }
+    })
+    function loaddata() {
+        return insertdata('/tutor/Partial_QuestionsById', { testId: '@Context.Request.Query["TestId"]' }, 'html').done(res => {
+            $('#pnlQus').empty().html(res);
+        });
+    }
+    function setactivestatus(cnt) {
+        insertdata('/tutor/SetQuestionStatus', { questionid: cnt.id, status: $(cnt).is(':checked') }).done(res => {
+            if (res > 0) {
+                notify("Question status updated successfully.", 'success');
+                loaddata();
+            }
+        })
+    }
+</script>

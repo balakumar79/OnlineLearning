@@ -21,21 +21,25 @@ namespace Learning.Auth
     {
         public static void LearningAuthentication(IServiceCollection services)
         {
-            services.AddAuthentication(opt=> {
-                opt.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(op=> { op.Cookie.Name = "TutorCookie";
+                op.ExpireTimeSpan = TimeSpan.FromDays(4);
+                op.Cookie.HttpOnly = true;
+                op.Cookie.IsEssential = true;
+                op.Cookie.MaxAge = TimeSpan.FromDays(4);
+                op.SlidingExpiration = false;
+            });
         }
        
         public static void LearningAuthorization(IServiceCollection services)
         {
-            services.AddAuthorization(option =>
+            services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
             {
-                foreach (var item in Enum.GetValues(typeof(Utils.Enums.RoleEnum)))
+                foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
                 {
 
                     option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
                 }
-            });
+            }));
         }
        
 
@@ -55,7 +59,7 @@ namespace Learning.Auth
             var authProperties = new AuthenticationProperties
             {
                 AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(300),
                 IsPersistent = true,
                 IssuedUtc = DateTimeOffset.UtcNow,
                 RedirectUri = "/account/login"
@@ -63,7 +67,7 @@ namespace Learning.Auth
             context.Session.SetObjectAsJson("UserObj", sessionObject);
             var claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             claimIdentity.AddClaims(claims);
-             await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity),authProperties);
+            context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity), authProperties).Wait();
             await context.RequestServices.GetRequiredService<UserManager<AppUser>>().AddClaimsAsync(sessionObject.User, claims);
         }
 

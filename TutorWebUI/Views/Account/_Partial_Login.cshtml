@@ -1,0 +1,64 @@
+﻿@model Learning.ViewModel.Account.LoginViewModel
+
+<div class="student-reg">
+    <div class="stu-heading">
+        <h4 class="pb-4 heading-font">User Login</h4>
+    </div>
+    <form>
+
+        <div class="form-content">
+            <div class="row">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 form-group">
+                            <label class="labeltext radioreg">Login As</label><br>
+                            <div class="form-check-inline2">
+
+                                <label class="customradio">
+                                    <span class="radiotextsty">Student</span>
+                                    <input type="radio" checked="checked" value="1" name="radio">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="customradio">
+                                    <span class="radiotextsty">Parent</span>
+                                    <input type="radio" value="2" name="radio">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <input type="text" class="form-control" placeholder="UserName *" value="" asp-for="UserName" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <input type="password" class="form-control" placeholder="Password *" value="" asp-for="Password" />
+                            </div>
+                        </div>
+                    </div>
+                 
+
+                    <div class="captcha">
+                        <div class="spinner">
+                            <label>
+                                <input type="checkbox" onclick="$(this).attr('disabled','disabled');">
+                                <span class="checkmark"><span>&nbsp;</span></span>
+                            </label>
+                        </div>
+                        <div class="text">
+                            I'm not a robot
+                        </div>
+                        <div class="logo">
+                            <img src="https://forum.nox.tv/core/index.php?media/9-recaptcha-png/" />
+                            <p>reCAPTCHA</p>
+                            <small>Privacy - Terms</small>
+                        </div>
+                    </div>
+                </div>
+            <button type="button" class="btnSubmit">Submit</button>
+        </div>
+            </div>
+        </form>
+</div>

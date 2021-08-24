@@ -20,6 +20,7 @@ namespace Learning.Entities
         public DateTime EndDate { get; set; }
         public int PassingMark { get; set; }
         public int StatusID { get; set; }
+        public int Language { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public string TutorId { get; set; }

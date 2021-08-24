@@ -1,4 +1,6 @@
 ﻿using Learning.Entities;
+using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,11 @@ namespace Auth.Account
         {
              dBContext.Students.Add(student);
            return Task.FromResult(dBContext.SaveChangesAsync().Result);
+        }
+        public async Task<int> AddTutor(Tutor entity)
+        {
+            dBContext.Tutors.Add(entity);
+           return await dBContext.SaveChangesAsync();
         }
        
         public async Task<bool> IsEmailExists(string email,int ?id)

@@ -5,56 +5,97 @@ using Learning.Tutor.Abstract;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Mvc;
 
 namespace Learning.API.Controllers
 {
-    public class AccountController : ApiController
+    [EnableCors("LearningCors")]
+   
+    public class AccountController : ControllerBase
     {
         readonly IAuthService authService;
         readonly UserManager<AppUser> _userManager;
         private SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
-        public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager)
+        readonly Utils.Config.SecretKey _secretkey;
+        public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
+            Utils.Config.SecretKey appSet)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
             this.authService = auth;
             this._signInManager = signInManager;
+            _secretkey = appSet;
         }
        
-        [System.Web.Http.HttpPost]
+        [HttpPost]
+        [AllowAnonymous]
         public async Task<object> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
-                var user = await authService.GetUser(model);
-                if (user != null)
+                try
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
-                    var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
-                    //await HttpContext.RefreshLoginAsync();
-                    //await AuthenticationConfig.DoLogin(, screens, sessionObj);
-                    return Json( new {result=true, user=user,roles=roles });
+                    var user = await authService.GetUser(model);
+                    if (user != null)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
+                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
+                        //await HttpContext.RefreshLoginAsync();
+                        await AuthenticationConfig.DoLogin(HttpContext, screens, sessionObj);
+                        //var tokenHandler = new JwtSecurityTokenHandler();
+                        
+                        //var key = Encoding.ASCII.GetBytes(_secretkey.SecretKeyValue);
+                        //var tokenDescription = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
+                        //{
+                        //    Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                        //    {
+                        //    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                        //    }),
+                        //    Expires = DateTime.Now.AddDays(7),
+                        //    SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)
+                        //};
+                        //var token = tokenHandler.CreateJwtSecurityToken(tokenDescription);
+                        //var tokenstring = tokenHandler.WriteToken(token);
+                        return Ok(new
+                        {
+                            Id = user.Id,
+                            Username = user.UserName,
+                            Email = user.Email,
+                            useraccess = user.HasUserAccess,
+                            //Token = tokenstring
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new { result = false }); ;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    return Json(new { result = false }); ;
+
+                    return new JsonResult(new { result = false, error = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
                 }
             }
             else
             {
-                return Json(ModelState.Select(p=>p.Value).Where(o=>o.Errors.Count>0));
+                return new JsonResult(ModelState.Select(p=>p.Value).Where(o=>o.Errors.Count>0));
             }
         }
        
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         public async Task<object> Register(RegisterViewModel registerViewModel)
         {
             if (ModelState.IsValid)
@@ -65,17 +106,17 @@ namespace Learning.API.Controllers
                     LastName = registerViewModel.LastName,
                     Email = registerViewModel.Email,
                     PhoneNumber = registerViewModel.PhoneNumber,
-                    Gender = registerViewModel.Gender,
+                    //Gender = registerViewModel.Gender,
                     UserName = registerViewModel.UserName,
                 };
                 var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = "Parent" });
                 if (!useresult.Succeeded)
                 {
-                    return Json(new { status =useresult});
+                    return new JsonResult(new { status =useresult});
                 }
                 else
                 {
-                    var student = new Student
+                    var student = new Entities.Student
                     {
                         FirstName = registerViewModel.StudentFirstName,
                         LastName = registerViewModel.StudentLastName,
@@ -86,30 +127,30 @@ namespace Learning.API.Controllers
                         UserID = registerViewModel.StudentUserName
                     };
                     var res = await authService.AddStudent(student);
-                    return Json(new { result = res });
+                    return new JsonResult(new { result = res });
                 }
             }
             else
             {
-                return Json(ModelState.Select(p=>p.Value).Where(l=>l.Errors.Count>0));
+                return new JsonResult(ModelState.Select(p=>p.Value).Where(l=>l.Errors.Count>0));
             }
         }
 
       
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public async Task<object> ConfirmEmail(string token, int userid)
         {
-            return Json(new { result = authService.EmailConfirmation(token, userid).Result });
+            return new JsonResult(new { result = authService.EmailConfirmation(token, userid).Result });
         }
 
        
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         public async Task<object> ForgotPassword(string Email)
         {
-           return Json(new { result = await authService.ForgotPassword(Email) });
+           return new JsonResult(new { result = await authService.ForgotPassword(Email) });
             
         }
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public object ResetPassword(string Token, string Email)
         {
             if (!string.IsNullOrWhiteSpace(Token.Trim()) && !string.IsNullOrWhiteSpace(Email.Trim()))
@@ -173,13 +214,15 @@ namespace Learning.API.Controllers
         //    }
         //}
 
-        //public Task<JsonResult> GetLanguageList() => Task.FromResult(Json(authService.GetLanguages()));
+        [HttpGet]
+        public List<Language> GetLanguageList() => (_tutorService.GetLanguages());
         //public Task<JsonResult> GetGradeLevels() => Task.FromResult(Json(authService.GetGradeLevels()));
         //public async Task<JsonResult> GetSubject() => Json(await authService.GetTestSubject());
         //public async Task<JsonResult> GetTestSections(int testid) => Json(await authService.GetTestSections(testid));
         //public async Task<JsonResult> GetTestType() => Json(await _tutorService.GetQuestionTypes());
 
-        
+
     }
+    
 }
 

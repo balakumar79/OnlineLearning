@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Learning.ViewModel.Account
 {
-    public class RegisterViewModel:AccountUser
+    public class RegisterViewModel:AccountUserModel
     {
 
         //[Required]
@@ -44,9 +44,9 @@ namespace Learning.ViewModel.Account
         [Required]
         public string StudentUserName { get; set; }
 
-        [Required]
-        public int MotherTongue { get; set; }
+       
         [Required]
         public int GradeLevels { get; set; }
+       
     }
 }

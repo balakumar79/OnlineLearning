@@ -1,0 +1,364 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+/*bootstrap notify*/
+@import url(http://fonts.googleapis.com/css?family=Old+Standard+TT:400,700);
+
+[data-notify="container"][class*="alert-pastel-"] {
+    background-color: rgb(255, 255, 238);
+    border-width: 0px;
+    border-left: 15px solid rgb(255, 240, 106);
+    border-radius: 0px;
+    box-shadow: 0px 0px 5px rgba(51, 51, 51, 0.3);
+    font-family: 'Old Standard TT', serif;
+    letter-spacing: 1px;
+}
+
+[data-notify="container"].alert-pastel-info {
+    border-left-color: rgb(255, 179, 40);
+}
+[data-notify="container"].alert-pastel-success {
+    border-left-color: rgb(54 156 13);
+}
+
+[data-notify="container"].alert-pastel-danger {
+    border-left-color: rgb(255, 103, 76);
+}
+
+[data-notify="container"][class*="alert-pastel-"] > [data-notify="title"] {
+    color: rgb(80, 80, 57);
+    display: block;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+[data-notify="container"][class*="alert-pastel-"] > [data-notify="message"] {
+    font-weight: 400;
+}
+/*end bootstrap notify*/
+
+
+.column {
+    float: left;
+    width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+@media screen and (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
+}
+/*Modal confirm*/
+.modal-confirm {
+    
+    width: 400px;
+    margin: 30px auto;
+}
+    .modal-confirm .modal-content {
+        padding: 20px;
+        border-radius: 5px;
+        border: none;
+        text-align: center;
+        font-size: 14px;
+        background: #22b9c1;
+        color: aliceblue !important;
+    }
+
+    .modal-confirm .modal-header {
+        border-bottom: none;
+        position: relative;
+    }
+
+    .modal-confirm h4 {
+        text-align: center;
+        font-size: 26px;
+        margin: 30px 0 -10px;
+    }
+
+    .modal-confirm .close {
+        position: absolute;
+        top: -5px;
+        right: -2px;
+    }
+
+    .modal-confirm .modal-body {
+        color: #999;
+    }
+
+    .modal-confirm .modal-footer {
+        border: none;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 13px;
+        padding: 10px 15px 25px;
+    }
+#modalConfirm {
+    background-color: #eceff3bf;
+}
+
+        .modal-confirm .modal-footer a {
+            color: #999;
+        }
+
+    .modal-confirm .icon-box {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        border-radius: 50%;
+        z-index: 9;
+        text-align: center;
+        border: 3px solid #f15e5e;
+    }
+
+        .modal-confirm .icon-box i {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+        }
+
+    .modal-confirm .btn {
+        color: #fff;
+        border-radius: 4px;
+        background: #60c7c1;
+        text-decoration: none;
+        transition: all 0.4s;
+        line-height: normal;
+        min-width: 120px;
+        border: none;
+        min-height: 40px;
+        border-radius: 3px;
+        margin: 0 5px;
+        outline: none !important;
+    }
+
+    .modal-confirm .btn-info {
+        background: #c1c1c1;
+    }
+
+        .modal-confirm .btn-info:hover, .modal-confirm .btn-info:focus {
+            background: #a8a8a8;
+        }
+
+    .modal-confirm .btn-danger {
+        background: #f15e5e;
+    }
+
+        .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
+            background: #ee3535;
+        }
+
+.trigger-btn {
+    display: inline-block;
+    margin: 100px auto;
+}
+/*end modal confirm*/
+
+/*loader*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    font-family: sans-serif
+}
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.loading {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba( 25, 25, 25, .8 ) ;
+}
+
+.text-load {
+    position: absolute;
+    bottom: -5px;
+    left: -70px;
+    color:aliceblue;
+}
+
+.loader {
+    width: 80px;
+    height: 67px;
+    margin: auto;
+    position: relative;
+    top:55%;
+    left:8%;
+}
+
+    .loader .square {
+        background: #00ffe7;
+        width: 50px;
+        height: 50px;
+        margin: 0 auto;
+        border-radius: 4px;
+        animation-fill-mode: both;
+        animation: motion 2.5s infinite cubic-bezier(0.89, 0.03, 0.06, 1.5);
+    }
+
+    .loader .path {
+        height: 10px;
+        width: 110px;
+        overflow: hidden;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+        .loader .path > div {
+            background: rgb(255, 255, 238);
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin: 0 15px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation-fill-mode: both;
+            animation: dynamic 5s infinite cubic-bezier(0.89, 0.03, 0.06, 1.5);
+        }
+
+            .loader .path > div:nth-child(1) {
+                left: 40px;
+            }
+
+            .loader .path > div:nth-child(2) {
+                left: 80px;
+            }
+
+            .loader .path > div:nth-child(3) {
+                left: 120px;
+            }
+
+            .loader .path > div:nth-child(4) {
+                left: 160px;
+            }
+
+            .loader .path > div:nth-child(5) {
+                left: 200px;
+            }
+
+            .loader .path > div:nth-child(6) {
+                left: 240px;
+            }
+
+            .loader .path > div:nth-child(7) {
+                left: 280px;
+            }
+
+@keyframes motion {
+    50% {
+        transform: rotate(90deg);
+    }
+
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes dynamic {
+    0% {
+        transform: translateX(-40px);
+    }
+
+    25% {
+        transform: translateX(-80px);
+    }
+
+    50% {
+        transform: translateX(-120px);
+    }
+
+    75% {
+        transform: translateX(-160px);
+    }
+
+    100% {
+        transform: translateX(-200px);
+    }
+}
+/*end loader*/
+

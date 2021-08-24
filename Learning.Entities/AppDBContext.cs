@@ -12,7 +12,8 @@ namespace Learning.Entities
         public int userID;
         
         public AppDBContext() { }
-        public AppDBContext(DbContextOptions<AppDBContext> dbContextOptions,IHttpContextAccessor httpContext):base(dbContextOptions) {
+        public AppDBContext(DbContextOptions<AppDBContext> dbContextOptions, IHttpContextAccessor httpContext) : base(dbContextOptions)
+        {
             if (httpContext.HttpContext != null)
             {
                 if (httpContext.HttpContext.User.Claims.Any())
@@ -24,6 +25,9 @@ namespace Learning.Entities
 
         public virtual DbSet<GradeLevels> GradeLevels { get; set; }
         public virtual DbSet<Student> Students { get; set; }
+        public virtual DbSet<StudentTest> StudentTests{ get; set; }
+        public virtual DbSet<StudentTestHistory> StudentTestHistories{ get; set; }
+
         public virtual DbSet<Tutor> Tutors { get; set; }
         public virtual DbSet<Language> Languages { get; set; }
 
@@ -36,7 +40,13 @@ namespace Learning.Entities
         public virtual DbSet<TestSection> TestSections { get; set; }
         public virtual DbSet<QuestionType> QuestionTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<Options> Options{ get; set; }
+        public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions{ get; set; }
+        
         public virtual DbSet<MCQAnswer> MCQAnswers{ get; set; }
+        public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
+        public virtual DbSet<TrueOrFalse> TrueOrFalses{ get; set; }
+        public virtual DbSet<Matching> Matchings{ get; set; }
         public virtual DbSet<TestStatus> TestStatuses { get; set; }
 
 
@@ -45,8 +55,8 @@ namespace Learning.Entities
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            //builder.HasDefaultSchema("identity");
             base.OnModelCreating(builder);
-            builder.HasDefaultSchema("Identity");
             builder.Entity<AppUser>(entity =>
             {
                 entity.ToTable(name: "User");

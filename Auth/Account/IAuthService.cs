@@ -14,6 +14,7 @@ namespace Auth.Account
         Task<AppUser> GetUser(LoginViewModel viewModel);
         Task<IdentityResult> AddUser(AppUser appUser, string password,AppRole role);
         Task<int> AddStudent(Student student);
+        Task<int> AddTutor(Tutor entity);
         Task<bool> IsEmailExists(string email, int? id);
         Task<bool> IsUserNameExists(string username, int? id);
       

@@ -15,9 +15,8 @@ namespace Learning.Entities.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Identity")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Learning.Entities.AppRole", b =>
@@ -61,6 +60,9 @@ namespace Learning.Entities.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -141,6 +143,30 @@ namespace Learning.Entities.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("Learning.Entities.GapFillingAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GapFillingAnswers");
+                });
+
             modelBuilder.Entity("Learning.Entities.GradeLevels", b =>
                 {
                     b.Property<int>("Id")
@@ -171,6 +197,24 @@ namespace Learning.Entities.Migrations
                     b.ToTable("Languages");
                 });
 
+            modelBuilder.Entity("Learning.Entities.LanguageVariantQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QusId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LanguageVariantQuestions");
+                });
+
             modelBuilder.Entity("Learning.Entities.MCQAnswer", b =>
                 {
                     b.Property<int>("Id")
@@ -184,6 +228,9 @@ namespace Learning.Entities.Migrations
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -192,6 +239,59 @@ namespace Learning.Entities.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("MCQAnswers");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Matching", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CorrectAnswer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sentence")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Matchings");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Options", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Marks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Options");
                 });
 
             modelBuilder.Entity("Learning.Entities.Question", b =>
@@ -206,6 +306,9 @@ namespace Learning.Entities.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Mark")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Modified")
                         .HasColumnType("datetime2");
@@ -304,6 +407,57 @@ namespace Learning.Entities.Migrations
                     b.ToTable("Student");
                 });
 
+            modelBuilder.Entity("Learning.Entities.StudentTest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AssignedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Assigner")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentTests");
+                });
+
+            modelBuilder.Entity("Learning.Entities.StudentTestHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Marks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentTestId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("TimeTaken")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentTestHistories");
+                });
+
             modelBuilder.Entity("Learning.Entities.Test", b =>
                 {
                     b.Property<int>("Id")
@@ -321,6 +475,9 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GradeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Language")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Modified")
@@ -365,6 +522,9 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AddedQuestions")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -386,7 +546,13 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("TestId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Topic")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TotalMarks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestions")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -424,6 +590,30 @@ namespace Learning.Entities.Migrations
                     b.ToTable("TestSubjects");
                 });
 
+            modelBuilder.Entity("Learning.Entities.TrueOrFalse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrueOrFalses");
+                });
+
             modelBuilder.Entity("Learning.Entities.Tutor", b =>
                 {
                     b.Property<int>("TutorId")
@@ -435,6 +625,9 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Educations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HearAbout")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastLoggedIn")
@@ -660,6 +853,17 @@ namespace Learning.Entities.Migrations
                 });
 
             modelBuilder.Entity("Learning.Entities.MCQAnswer", b =>
+                {
+                    b.HasOne("Learning.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Options", b =>
                 {
                     b.HasOne("Learning.Entities.Question", "Question")
                         .WithMany()

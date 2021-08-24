@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Learning.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -28,6 +27,7 @@ namespace Learning.API.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var user = User;
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

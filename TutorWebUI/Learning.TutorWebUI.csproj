@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-TutorWebUI-4E449F1C-869A-4CCE-B56F-836F236FFF44</UserSecretsId>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\**" />
+    <Compile Remove="Migrations\**" />
+    <Compile Remove="Pages\**" />
+    <Content Remove="Areas\**" />
+    <Content Remove="Migrations\**" />
+    <Content Remove="Pages\**" />
+    <EmbeddedResource Remove="Areas\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <EmbeddedResource Remove="Pages\**" />
+    <None Remove="Areas\**" />
+    <None Remove="Migrations\**" />
+    <None Remove="Pages\**" />
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Views\Html-pages\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
+    <ProjectReference Include="..\Learning.Middleware\Learning.Middleware.csproj" />
+    <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
+    <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\css\site.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\js\site.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

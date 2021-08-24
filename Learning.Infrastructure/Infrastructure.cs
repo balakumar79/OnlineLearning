@@ -14,6 +14,9 @@ using Learning.Admin.Repo;
 using Learning.Admin.Service;
 using System;
 using Microsoft.AspNetCore.Http;
+using Learning.Student.Abstract;
+using Learning.Student.Repos;
+using Learning.Student.Services;
 
 namespace Learning.Infrastructure
 {
@@ -31,12 +34,19 @@ namespace Learning.Infrastructure
             var smtpConfig = new SMTPConfig();
             configuration.Bind("SMTPConfig", smtpConfig);
             services.AddSingleton(smtpConfig);
-            
+            var secretKey = new SecretKey();
+            configuration.Bind("SecretKey", secretKey);
+            services.AddSingleton(secretKey);
+
+            //services.AddTransient(_ => new MySqlConnection(configuration.GetConnectionString("DBContext")));
             //services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IAuthRepo, AuthRepo>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IEmailService, EmailService>();
 
+            services.AddTransient<IStudentTestRepo, StudentTestRepo>();
+            services.AddTransient<IStudentTestService, StudentTestService>();
+            
             services.AddTransient<ITutorRepo, TutorRepo>();
             services.AddTransient<ITutorService, TutorService>();
 

@@ -1,0 +1,102 @@
+﻿@model IEnumerable<Learning.Tutor.ViewModel.QuestionViewModel>
+
+@{
+    ViewData["Title"] = "View Questions";
+    int srno = 1;
+}
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+
+        <h1>Questions - @Model.FirstOrDefault()?.TestName</h1>
+
+        <p>
+            <a class="text-right" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+            <a asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>
+        </p>
+        <table class="table bg-white">
+            <thead>
+                <tr>
+                    <th>Sr.No.</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.QuestionName)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.QusType)
+                    </th>
+
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.SectionName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Mark)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Created)
+                    </th>
+
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="4">No questions created.</td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(srno++)</td>
+                        <td>
+
+                            @{ if (System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Length > 35)
+                                {
+                                    <a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Substring(0, 35)...
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "")
+                                    </a>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.QusType)
+                        </td>
+
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SectionName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Mark)
+                        </td>
+                        <td>
+                           <input type="checkbox" checked="@item.IsActive" onclick="setactivestatus(this)" id="@item.QusID" />
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Created)
+                        </td>
+
+                        <td>
+
+                            <a href="#" onclick="deleteConfirmation('/tutor/DeleteQuestions?QuestionIds=@item.QusID&TestId=@item.TestId')">
+                                <i class="fa fa-times-circle fa-2x text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>

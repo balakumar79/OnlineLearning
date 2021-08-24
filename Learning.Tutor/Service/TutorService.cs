@@ -2,6 +2,7 @@
 using Learning.Tutor.Abstract;
 using Learning.Tutor.Repo;
 using Learning.Tutor.ViewModel;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,10 +23,23 @@ namespace Learning.Tutor.Service
         public Task<bool> CreateTestSection(TestSectionViewModel model) => _tutorRepo.CreateTestSection(model);
         public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.CreateQuestion(model);
         public List<TestViewModel> GetTestByUserID(string tutorid) => _tutorRepo.GetTestByUserID(tutorid);
-
+        public QuestionViewModel GetQuestionDetails(int QuestionId)
+        {
+          return _tutorRepo.GetQuestionDetails(QuestionId);
+        }
+        public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
+        {
+            return _tutorRepo.GetQuestionsByTestId(TestId);
+        }
         public Task<List<QuestionType>> GetQuestionTypes() => _tutorRepo.GetQuestionTypes();
-        public Task<List<TestSection>> GetTestSections() => _tutorRepo.GetTestSections();
-
+        public List<TestSection> GetTestSections(int sectionid)
+        {
+          return  _tutorRepo.GetTestSections(sectionid);
+        }
+        public async Task<List<TestSection>> GetTestSectionByTestId(int testid)
+        {
+            return await _tutorRepo.GetTestSectionByTestId(testid);
+        }
         public Task<bool> IsTestExists(string testname, int? id)
         {
            return _tutorRepo.IsTestNameExists(testname,id);
@@ -40,12 +54,22 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.GetTestById(id);
         }
-
+        public int SetQuestionStatus(int questionid, bool status)
+        {
+            return _tutorRepo.SetQuestionStatus(questionid, status);
+        }
+        public int SetOnlineStatus(int sectionid, bool status)
+        {
+            return _tutorRepo.SetOnlineStatus(sectionid, status);
+        }
         public Task<int> DeleteTest(int id)
         {
             return _tutorRepo.DeleteTest(id);
         }
-
+        public bool DeleteQuestion(List<int> questionIds)
+        {
+            return _tutorRepo.DeleteQuestion(questionIds);
+        }
         public List<GradeLevels> GetGradeLevels()
         {
             return _tutorRepo.GetGradeLevels();
@@ -61,14 +85,16 @@ namespace Learning.Tutor.Service
             return _tutorRepo.GetTestSubject();
         }
 
-        public Task<List<TestSection>> GetTestSections(int testid)
-        {
-            return _tutorRepo.GetTestSections();
-        }
-
         public Task<List<QuestionType>> GetTestType()
         {
            return _tutorRepo.GetTestType();
         }
+
+        public List<TestViewModel> GetAllTest()
+        {
+            return _tutorRepo.GetAllTest();
+        }
+
+
     }
 }

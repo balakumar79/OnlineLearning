@@ -17,6 +17,7 @@ namespace Learning.Entities
         public string Organization { get; set; }
         public int PreferredLanguage { get; set; }
         public string Educations { get; set; }
+        public string HearAbout { get; set; }
         public DateTime LastLoggedIn { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }

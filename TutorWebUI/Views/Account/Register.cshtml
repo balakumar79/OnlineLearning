@@ -1,0 +1,176 @@
+﻿@model Learning.ViewModel.Account.AccountUserModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout_Login";
+}
+
+<section class="testimonial py-5" id="testimonial">
+    <div class="container">
+        <div class="row  registration-block">
+            <div class="col-md-4 py-5 bg-primary text-white text-center  blue-bg ">
+                <div class=" ">
+                    <div class="card-body">
+                        <img src="http://www.ansonika.com/mavia/img/registration_bg.svg" style="width:30%">
+                        <h2 class="py-3">Registration</h2>
+                        <p>
+                            Your registration will be validated shortly. Once your account is activated, you will notified via the email that you furnished
+                            during the registartion.
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 ">
+                <div class="row">
+
+                    <div class="student-reg">
+                        <div class="stu-heading">
+                            <h4 class="pb-4 heading-font">Registration Form</h4>
+                        </div>
+                        <form method="post">
+                            <div class="text-danger" asp-validation-summary="All"></div>
+                            <div class="form-content">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="FirstName" placeholder="First Name *" value="" />
+                                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="LastName" placeholder="Surname *" value="" />
+                                                <span asp-validation-for="LastName" class="text-danger small"></span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group">
+                                        <div class="row">
+                                            <div class=" col-md-12 col-sm-12 col-xs-12">
+                                                <label class="labeltext radioreg">Gender</label>
+                                                <div class="form-check-inline2">
+                                                    @foreach (var item in Enum.GetValues(typeof(Learning.ViewModel.Enums.Genders)))
+                                                    {
+                                                        <label class="customradio">
+                                                            <span class="radiotextsty">@item.ToString()</span>
+                                                            @Html.RadioButtonFor(m=>m,item)
+                                                            <span class="checkmark"></span>
+                                                        </label>
+                                                    }
+
+                                                 
+                                                    <span asp-validation-for="Gender" class="text-danger small"></span>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+
+
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="Email" placeholder="Email *" value="" />
+                                                <span asp-validation-for="Email" class="text-danger small"></span>
+
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="password" asp-for="Password" class="form-control" placeholder="Password *" value="" />
+                                                <span asp-validation-for="Password" class="text-danger small"></span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="UserName" placeholder="Username *" value="" />
+                                                <span asp-validation-for="UserName" class="text-danger small"></span>
+
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="password" class="form-control" asp-for="ConfirmPassword" placeholder="Confirm Password *" value="" />
+                                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="Phone Number(optional)" value="" />
+                                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <input type="text" class="form-control" asp-for="District" placeholder="District (optional)" value="" />
+                                                <span asp-validation-for="District" class="text-danger small"></span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <textarea type="text" asp-for="HearAbout" class="form-control" placeholder="How You Hear Us (optional) " value=""></textarea>
+                                                <span asp-validation-for="HearAbout" class="text-danger small"></span>
+                                            </div>
+                                          
+
+                                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                    <select class="form-control" asp-for="MotherTongue" placeholder="Mother Tongue (Optional)" ></select>
+                                                    <span asp-validation-for="MotherTongue" class="text-danger small"></span>
+                                                </div>
+                                            
+                                        </div>
+                                    </div>
+
+                                    <div class="captcha">
+                                        <div class="spinner">
+                                            <label>
+                                                <input type="checkbox" onclick="$(this).attr('disabled','disabled');">
+                                                <span class="checkmark"><span>&nbsp;</span></span>
+                                            </label>
+                                        </div>
+                                        <div class="text">
+                                            I'm not a robot
+                                        </div>
+                                        <div class="logo">
+                                            <img src="https://forum.nox.tv/core/index.php?media/9-recaptcha-png/" />
+                                            <p>reCAPTCHA</p>
+                                            <small>Privacy - Terms</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btnSubmit">Submit</button>
+                            </div>
+
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    @*@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
+    <script>
+        document.addEventListener('readystatechange', doc => {
+            if (doc.target.readyState === 'complete') {
+                bindLanguage('#MotherTongue');
+                bindGradeLevels('#Gradelevel');
+            }
+        });
+    </script>
+}

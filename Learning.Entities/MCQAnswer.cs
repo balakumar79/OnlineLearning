@@ -12,6 +12,7 @@ namespace Learning.Entities
        
 
         public int QuestionId { get; set; }
+        public int Position { get; set; }
         public virtual Question Question { get; set; }
     }
 }

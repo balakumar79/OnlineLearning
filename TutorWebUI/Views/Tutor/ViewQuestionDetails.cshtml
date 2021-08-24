@@ -1,0 +1,108 @@
+﻿@model Learning.Tutor.ViewModel.QuestionViewModel
+
+@{
+    ViewData["Title"] = "ViewQuestionDetails";
+    Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
+}
+
+<h1>ViewQuestionDetails</h1>
+
+<div>
+    <h4>QuestionViewModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QusID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QusID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QuestionName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QuestionName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QusType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QusType)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QuestionTypeId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QuestionTypeId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TestId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TestId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TestName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TestName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SectionId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SectionId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SectionName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SectionName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Mark)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Mark)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Modified)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Modified)
+        </dd>
+    </dl>
+</div>
+<dl>
+@foreach (var item in Model.Options)
+{
+    <dd class="col-sm-2">
+        @item.Option
+    </dd>
+    <dd>
+        @item.IsCorrect
+    </dd>
+    @*<dd>
+        @item.Marks
+    </dd>*@
+    <dd>
+        @item.Position
+    </dd>
+}
+    </dl>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>

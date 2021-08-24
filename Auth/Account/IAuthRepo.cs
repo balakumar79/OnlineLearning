@@ -12,6 +12,7 @@ namespace Auth.Account
     {
         Task<IdentityResult> AddUser(AppUser appUser, string password,AppRole app);
         Task<int> AddStudent(Student student);
+        Task<int> AddTutor(Tutor entity);
         Task<bool> IsEmailExists(string email, int? id);
         Task<bool> IsUserNameExists(string email, int? id);
        

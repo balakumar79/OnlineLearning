@@ -30,10 +30,10 @@ namespace Learning.Admin.Service
                 PhoneNumber = model.PhoneNumber,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Gender = model.Gender,
+                Gender = model.Gender.ToString(),
                 UserName = model.UserName,
             };
-            var result = await _authService.AddUser(user, model.Password, new AppRole { Name = Utils.Enums.RoleEnum.Tutor.ToString() });
+            var result = await _authService.AddUser(user, model.Password, new AppRole { Name = Utils.Enums.Roles.Tutor.ToString() });
 
             if (result.Succeeded)
             { 

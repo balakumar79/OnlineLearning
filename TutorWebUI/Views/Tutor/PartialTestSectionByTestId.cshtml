@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Learning.Tutor.ViewModel.TestSectionViewModel>
+@{ int srno = 1;}
+<table id="tblSection" class="table table-responsive-sm small">
+    <thead>
+        <tr class="text-center p-0">
+
+            <th>
+                @Html.DisplayName("Sr.No")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SectionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SubTopic)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalMarks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalQuestions)
+            </th>
+            <th>
+                @Html.DisplayName("QusAdded")
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.IsOnline)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="text-center">
+                <td>@(srno++)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TestName)
+                </td>
+                <td>
+                    <a href="/tutor/CreateSection?sectionid=@item.Id">@Html.DisplayFor(modelItem => item.SectionName)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubTopic)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalMarks)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalQuestions)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AddedQuestions)
+                </td>
+
+                <td>
+                    @Html.Label(item.Created.ToShortDateString())
+                </td>
+
+                <td>
+                    @Html.EditorFor(modelItem => item.IsOnline)
+                </td>
+                <td>
+                    @*<a class="" href="/Tutor/EditSection?id=@item.Id" ><i class="text-info fa fa-2x fa-pencil-square-o"></i> </a>*@
+
+                    <a class="" href="/Tutor/DeleteSection?id=@item.Id"><i class="text-danger fa fa-2x fa-times-circle "></i> </a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

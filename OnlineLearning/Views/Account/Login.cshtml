@@ -29,7 +29,7 @@
                                             <h4 class="pb-4 heading-font">Login Form</h4>
                                         </div>
                                         <div class="container">
-                                            <div class="row">
+                                            <div class="row justify-content-center">
 
                                                 <section>
                                                 <!--Social Login Start-->
@@ -82,8 +82,8 @@
                                                             <p style="text-align:center"> OR  </p>-->
                                                             <input asp-for="UserName" id="inputEmail" class="form-control form-control2" placeholder="Email address" required="" autofocus>
                                                             <input asp-for="Password" type="password" id="inputPassword" class="form-control form-control2 " placeholder="Password" required="">
-                                                            <input asp-for="RememberMe" type="checkbox" class="" > Remember Me
-
+                                                            @Html.EditorFor(m=>m.RememberMe) 
+                                                            Remember Me
                                                             <button class="btn btn-success btn-block" type="submit"><i class="fa fa-sign-in-alt"></i> Sign in</button>
                                                             <a href="#" id="forgot_pswd">Forgot password?</a>
                                                             <!--<hr>-->

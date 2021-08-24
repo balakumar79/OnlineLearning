@@ -52,13 +52,13 @@ namespace Learning.WebUI.Controllers
                     await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj);
                     if (returnUrl==null)
                     {
-                        if (roles.Contains(Utils.Enums.RoleEnum.Student.ToString()))
+                        if (roles.Contains(Utils.Enums.Roles.Student.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
-                        else if (roles.Contains(Utils.Enums.RoleEnum.Parent.ToString()))
+                        else if (roles.Contains(Utils.Enums.Roles.Parent.ToString()))
                             return RedirectToAction(controllerName: "Parent", actionName: "Dashboard");
-                        else if (roles.Contains(Utils.Enums.RoleEnum.Tutor.ToString()))
+                        else if (roles.Contains(Utils.Enums.Roles.Tutor.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
-                        else if (roles.Contains(Utils.Enums.RoleEnum.Admin.ToString()))
+                        else if (roles.Contains(Utils.Enums.Roles.Admin.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
                         else
                             return Redirect("~/Home");
@@ -94,7 +94,7 @@ namespace Learning.WebUI.Controllers
                     LastName = registerViewModel.LastName,
                     Email = registerViewModel.Email,
                     PhoneNumber = registerViewModel.PhoneNumber,
-                    Gender = registerViewModel.Gender,
+                    Gender = registerViewModel.Gender.ToString(),
                     UserName = registerViewModel.UserName,
                 };
                 var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = "Parent" });
@@ -106,7 +106,7 @@ namespace Learning.WebUI.Controllers
                 }
                 else
                 {
-                    var student = new Student
+                    var student = new Entities.Student
                     {
                         FirstName = registerViewModel.StudentFirstName,
                         LastName = registerViewModel.StudentLastName,

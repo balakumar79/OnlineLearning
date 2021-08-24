@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
+    <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
+    <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
   </ItemGroup>
 
 </Project>

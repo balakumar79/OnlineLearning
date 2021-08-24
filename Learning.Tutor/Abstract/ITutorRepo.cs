@@ -14,16 +14,23 @@ namespace Learning.Tutor.Abstract
         Task<bool> CreateTestSection(TestSectionViewModel model);
         Task<bool> CreateQuestion(QuestionViewModel model);
         List<TestViewModel> GetTestByUserID(string tutorid);
+        QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();
-        Task<List<TestSection>> GetTestSections();
+        List<TestSection> GetTestSections(int  sectionid);
+        Task<List<TestSection>> GetTestSectionByTestId(int testid);
         Task<bool> IsTestNameExists(string testname, int? id);
         Task<bool> IsSectionExists(string sectionname, int? id);
         TestViewModel GetTestById(int? id);
+        List<QuestionViewModel> GetQuestionsByTestId(int ExamId);
          Task<int> DeleteTest(int id);
+        int SetQuestionStatus(int questionid, bool status);
+        int SetOnlineStatus(int sectionid, bool status);
+        bool DeleteQuestion(List<int> questionIds);
         List<Language> GetLanguages();
         List<GradeLevels> GetGradeLevels();
         Task<List<TestSubject>> GetTestSubject();
-        Task<List<TestSection>> GetTestSections(int testid);
         Task<List<QuestionType>> GetTestType();
+        List<TestViewModel> GetAllTest();
+
     }
 }

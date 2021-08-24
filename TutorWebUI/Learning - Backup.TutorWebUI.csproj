@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-TutorWebUI-4E449F1C-869A-4CCE-B56F-836F236FFF44</UserSecretsId>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
+    <ProjectReference Include="..\Learning.Middleware\Learning.Middleware.csproj" />
+    <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />    
+  </ItemGroup>
+
+</Project>

@@ -7,14 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Admin\Learning.Admin.csproj" />
     <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
+    <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
     <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
   </ItemGroup>
 </Project>

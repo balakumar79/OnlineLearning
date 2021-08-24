@@ -1,0 +1,108 @@
+﻿@model Learning.ViewModel.Account.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout_Login.cshtml";
+}
+
+
+            <section class="testimonial py-5" id="testimonial">
+                <div class="container">
+                    <div class="row  registration-block">
+                        <div class="col-md-4 py-5 bg-primary text-white text-center  blue-bg ">
+                            <div class=" ">
+                                <div class="card-body">
+                                    <img src="http://www.ansonika.com/mavia/img/registration_bg.svg" style="width:30%">
+                                    <h2 class="py-3">Login</h2>
+                                    <p>
+                                        Tation argumentum et usu, dicit viderer evertitur te has. Eu dictas concludaturque usu, facete detracto patrioque an per, lucilius pertinacia eu vel.
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 ">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="student-reg">
+                                        <div class="stu-heading">
+                                            <h4 class="pb-4 heading-font">Login Form</h4>
+                                        </div>
+                                        <div class="container">
+                                            <div class="row justify-content-center">
+
+                                                <section>
+                                                <!--Social Login Start-->
+                                                <!-- <h3>Please Log In, or <a href="#">Sign Up</a></h3>
+                                                 <div class="row">
+                                                   <div class="col-xs-6 col-sm-6 col-md-6">
+                                                     <a href="#" class="btn btn-lg btn-primary btn-block">Facebook</a>
+                                                   </div>
+                                                   <div class="col-xs-6 col-sm-6 col-md-6">
+                                                     <a href="#" class="btn btn-lg btn-info btn-block">Google</a>
+                                                   </div>
+                                                 </div>-->
+                                                <!--<div class="login-or">
+                                                  <hr class="hr-or">
+                                                  <span class="span-or">or</span>
+                                                </div>-->
+                                                <!--Social Login end-->
+
+                                              
+
+                                                    <!--<div class="form-content">
+                                                      <div class="row">
+                                                        <div class="form-group">
+                                                          <div class="row">
+                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                              <input type="text" class="form-control" placeholder="First Name *" value=""/>
+                                                            </div>
+                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                              <input type="text" class="form-control" placeholder="Surname *" value=""/>
+                                                              </div>
+                                                          </div>
+                                                          </div>
+
+
+                                                      </div>
+                                                      <button type="button" class="btnSubmit">Login</button>
+                                                    </div>-->
+                                                    </section>
+
+
+
+                                                    <div id="logreg-forms" >
+                                                        <form class="form-signin" method="post">
+                                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                            <!--<h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
+                                                            <div class="social-login">
+                                                                <button class="btn facebook-btn social-btn" type="button"><span><i class="fa fa-facebook-f"></i> Sign in with Facebook</span> </button>
+                                                                <button class="btn google-btn social-btn" type="button"><span><i class="fa fa-google-plus-g"></i> Sign in with Google+</span> </button>
+                                                            </div>
+                                                            <p style="text-align:center"> OR  </p>-->
+                                                            <input asp-for="UserName" id="inputEmail" class="form-control form-control2" placeholder="Email address" required="" autofocus>
+                                                            <input asp-for="Password" type="password" id="inputPassword" class="form-control form-control2 " placeholder="Password" required="">
+                                                            @Html.EditorFor(m=>m.RememberMe) 
+                                                            Remember Me
+                                                            <button class="btn btn-success btn-block" type="submit"><i class="fa fa-sign-in-alt"></i> Sign in</button>
+                                                            <a href="forgotpassword" id="forgot_pswd">Forgot password?</a>
+                                                            <hr>
+                                                             <p>Don't have an account!</p>  
+                                                            <a class="btn btn-primary btn-block" href="/account/register" id="btn-signup"><i class="fa fa-user-plus"></i> Sign up New Account</a>
+                                                        </form>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+@{ await Html.RenderPartialAsync("_Partial_Layout_Footer");}
+
+

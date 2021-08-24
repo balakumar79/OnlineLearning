@@ -2,7 +2,11 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-
+document.addEventListener('readystatechange', doc => {
+	if (doc.target.readyState === 'complete') {
+		document.getElementsByClassName('loader')[0].style.display='none';
+    }
+})
 function notify(msg, type) {
 	$.notify({
 		icon: '/images/new-notification-icon.jpg',
@@ -51,12 +55,14 @@ function getdata(url, data, datatype = 'json') {
         }
     })
 }
-function bindLanguage(cnt) {
+function bindLanguage(cnt, languageselected = null) {
 	getdata('/account/GetLanguageList').done(res => {
 		$(cnt).append($('<option/>').text('--Select Language--').val(''));
 		res.forEach(el => {
 			$(cnt).append($('<option/>').text(el.name).val(el.id));
 		})
+		if (languageselected !== '' && languageselected !== undefined && languageselected !== null)
+			$(cnt).val(languageselected);
 		return $(cnt);
     })
 }
@@ -94,13 +100,17 @@ function bindTest(cnt,testid) {
 }
 function bindTestSection(cnt, testid) {
 	if (testid !== undefined) {
-		
-		getdata('/tutor/GetTestSections', testid).done(res => {
+		alert('section changed');
+		getdata('/tutor/GetTestSectionByTestId', testid).done(res => {
 			console.log(res)
-			$(cnt).empty().append($('<option/>').text('--Select Section--').val(''));
+			$(cnt).empty().append($('<option/>').text('--Select Section--').val('0'));
 			res.forEach(el => {
-				$(cnt).append($('<option/>').text(el.sectionName).val(el.id));
-			})
+				if (el.addedQuestions >= el.totalQuestions && $('#frmCreateExam').length > 0)
+					$(cnt).append($('<option/>').text(el.sectionName).val(el.id).attr('disabled', true));
+				else
+					$(cnt).append($('<option/>').text(el.sectionName).val(el.id));
+
+			});
 
 		})
 	}
@@ -119,3 +129,13 @@ function initDataTable(tbl) {
 	var tb = $(tbl).DataTable();
 	console.log(tb)
 }
+function initLoader() {
+	$('.loading').css('display','block');
+	document.getElementsByClassName('loader')[0].style.display = 'block';
+}
+function removeLoader() {
+	$('.loading').css('display', 'none');
+	document.getElementsByClassName('loader')[0].style.display = 'none';
+}
+
+

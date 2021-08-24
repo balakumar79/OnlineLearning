@@ -90,6 +90,8 @@ namespace Auth.Account
         public async Task<string> GetForgotPasswordBody(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return string.Empty;
             var tokenByte =Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenByte);
             var link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host.Value}/Account/ResetPassword?Token={tokenEncoded}&&Email={email}";
@@ -134,6 +136,11 @@ namespace Auth.Account
         Task<List<ScreenFormeter>> IAuthService.GetScreenAccessPrivilage(int? userID, IList<string> roleId)
         {
             return _authRepo.GetScreenAccessPrivilage(userID, roleId);
+        }
+
+        public Task<int> AddTutor(Tutor entity)
+        {
+           return _authRepo.AddTutor(entity);
         }
 
         #endregion

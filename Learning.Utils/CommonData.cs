@@ -29,7 +29,7 @@ namespace Learning.Utils
 
         public static void SeedRoles(Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager)
         {
-            foreach (var role in Enum.GetValues(typeof(Learning.Utils.Enums.RoleEnum)))
+            foreach (var role in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
             {
                 if (!roleManager.RoleExistsAsync(role.ToString()).Result)
                 {

@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "CreateSection";
+    Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
+}
+
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Create Section</h1>
+        <a class="text-right" asp-action="managesections"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+        <a href="createsection">Create New</a>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+            <div class="row justify-content-center" id="tblSection">
+
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <script>
+        document.addEventListener('readystatechange', doc => {
+                initLoader();
+            if (doc.target.readyState === 'complete') {
+                insertdata('/tutor/PartialTestSection', { sectionid: '@Context.Request.Query["sectionid"]' }, 'html').done(res => {
+                    $('#tblSection').html(res);
+                    removeLoader();
+                });
+            }
+        })
+        $('#TestId').change(ev => {
+            console.log(ev.currentTarget)
+            $('#Id').val($(ev.currentTarget).val());
+        });
+     
+    </script>
+

@@ -25,16 +25,16 @@ namespace OnlineLearning
         {
             AuthenticationConfig.LearningAuthentication(services);
 
-            services.AddAuthorization(option =>
+            services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
             {
-                foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.RoleEnum)))
+                foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
                 {
 
                     option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
                 }
-            });
+            }));
             
-            services.AddSession();
+            services.AddSession(op=>op.IdleTimeout=TimeSpan.FromMinutes(200));
             Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration);
             services.AddScoped<UserManager<AppUser>>();
             services.AddIdentity<AppUser, AppRole>()
