@@ -31,24 +31,18 @@ namespace Learning.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(op =>
+            //services.AddSingleton(op =>
 
-                op.GetRequiredService<IOptions<SecretKey>>().Value
-            );  
+            //    op.GetRequiredService<IOptions<SecretKey>>().Value
+            //);  
+            services.AddCors();
+            services.AddIdentity<AppUser, AppRole>()
+        .AddEntityFrameworkStores<AppDBContext>()
+        .AddSignInManager<SignInManager<AppUser>>()
+        .AddDefaultTokenProviders();
             AuthenticationConfig.LearningAuthentication(services);
 
             Infrastructure.Infrastructure.AddDataBase(services, Configuration);
-
-            services.AddIdentity<AppUser, AppRole>()
-             .AddEntityFrameworkStores<AppDBContext>()
-             .AddSignInManager<SignInManager<AppUser>>()
-             .AddDefaultTokenProviders();
-
-            services.AddCors(policy =>
-            {
-                policy.AddPolicy("LearningCors", builder => { builder.WithOrigins(" http://localhost:3000, https://localhost:44300, https://domockexam.com").AllowAnyMethod().AllowAnyHeader(); });
-            });
-            services.AddMvc();
             services.AddAuthorization(option =>
             {
                 foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
@@ -57,16 +51,31 @@ namespace Learning.API
                     option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
                 }
             });
-            services.AddSession(op =>
-            {
-                op.IdleTimeout = TimeSpan.FromDays(1);
-            });
+          
+            //services.AddSession(op =>
+            //{
+            //    op.IdleTimeout = TimeSpan.FromDays(1);
+            //});
             services.AddScoped<UserManager<AppUser>>();
 
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            //services.AddMvc();
+            //services.AddControllersWithViews();
+            //services.AddRazorPages();
             Infrastructure.Infrastructure.AddServices(services, Configuration);
+            //services.AddCors(policy =>
+            //{
+            //    policy.AddPolicy("LearningCors", builder =>
+            //    {
+            //        builder.WithOrigins("http://localhost:3000", "https://localhost:44315", "https://domockexam.com", "https://api.domockexam.com")
+            //        .AllowAnyHeader().AllowAnyMethod();
+            //    });
+            //});
+          
+
+
+          
             services.AddControllers();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,24 +85,23 @@ namespace Learning.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(x=>x.WithOrigins("http://localhost:3000", "https://localhost:44315", "https://domockexam.com", "https://api.domockexam.com")
+                    .AllowAnyHeader().AllowAnyMethod()) ;
             app.UseHttpsRedirection();
-            
+
             app.UseRouting();
-            app.UseSession();
-         
+            //app.UseSession();
+
             var cookoption = new CookiePolicyOptions { MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Strict };
-            app.UseCookiePolicy(cookoption);
+            app.UseCookiePolicy();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("LearningCors");
+          
             //app.UseMvc();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(  
-                    name:"default",
-                    pattern:"{controller=Account}/{action=Login}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=weatherforecast}/{action=get}/{id?}");
             });
         }
     }

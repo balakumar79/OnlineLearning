@@ -1,7 +1,9 @@
 ﻿@inject Microsoft.AspNetCore.Identity.UserManager<Learning.Entities.AppUser> _userManager
+@using System.Security.Claims 
+
 @{ 
-    var user =await _userManager.FindByNameAsync(User.Identity.Name);
-    var userimage = user.UserProfileImage==null? "/images/user.jpg":
+    var user =await _userManager.FindByNameAsync(User.Claims.FirstOrDefault(c=>c.Type== ClaimTypes.Name).Value);
+    string userimage = user?.UserProfileImage==null? "/images/user.jpg":
         user?.UserProfileImage;
 }
 
@@ -15,7 +17,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>@ViewData["Title"] - OnlineLearning</title>
+    <title>@ViewData["Title"] - Do Mock Exam</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
@@ -181,7 +183,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn " data-dismiss="modal">Cancel</button>
-                                <button type="button" id="btnDelete" class="btn btn-danger">Delete</button>
+                                <button type="button" id="btnDelete" data-id="" class="btn btn-danger">Delete</button>
                             </div>
                         </div>
                     </div>

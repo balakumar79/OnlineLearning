@@ -34,7 +34,7 @@ namespace Learning.Middleware
         {
             httpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
             httpContext.Response.ContentType = "application/json";
-            var response = new { code = httpContext.Response.StatusCode, statusText = exception.Message };
+            var response = new { code = httpContext.Response.StatusCode, statusText =exception.InnerException==null? exception.Message:exception.InnerException.Message };
             var json = JsonConvert.SerializeObject(response);
             await httpContext.Response.WriteAsync(json);
 

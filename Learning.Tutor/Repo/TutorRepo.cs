@@ -54,6 +54,8 @@ namespace Learning.Tutor.Repo
                 SubjectID = p.SubjectID,
                 SubTopics = p.SubTopics,
                 Duration = p.Duration,
+                Description=p.TestDescription,
+                Language=p.Language,
                 GradeID = p.GradeID,
                 Modified = p.Modified,
                 Title = p.Title,
@@ -147,30 +149,31 @@ namespace Learning.Tutor.Repo
         
         public TutorViewModel GetTutorProfile(int TutorId)
         {
-           
+
             return (from tutor in _dBContext.Tutors
-                  join user in _dBContext.Users on tutor.UserId equals user.Id
-                  join lng in _dBContext.Languages on tutor.PreferredLanguage equals lng.Id
-                    where tutor.UserId==TutorId
+                    join user in _dBContext.Users on tutor.UserId equals user.Id
+                    join lg in _dBContext.Languages on tutor.PreferredLanguage equals lg.Id into lng
+                    from lang in lng.DefaultIfEmpty()
+                    where tutor.UserId == TutorId
                     select new TutorViewModel
                     {
-                        
+
                         CreatedAt = tutor.CreatedAt,
                         Educations = tutor.Educations,
-                        GradesTaken = _dBContext.TutorGradesTakens.Where(l => l.TutorID.ToString().Contains(tutor.TutorId.ToString())).Select(l=>l.GradeID).ToList(),
-                        LanguageOfInstruction = _dBContext.TutorLanguageOfInstructions.Where(p => tutor.TutorId==p.TutorID).Select(k=>k.Language).ToList(),
-                        LanguagePreference =lng.Name,
+                        GradesTaken = _dBContext.TutorGradesTakens.Where(l => l.TutorID.ToString().Contains(tutor.TutorId.ToString())).Select(l => l.GradeID).ToList(),
+                        LanguageOfInstruction = _dBContext.TutorLanguageOfInstructions.Where(p => tutor.TutorId == p.TutorID).Select(k => k.Language).ToList(),
+                        LanguagePreference = lang.Name,
                         LastLoggedIn = tutor.LastLoggedIn,
-                        TutorID=tutor.TutorId,
+                        TutorID = tutor.TutorId,
                         UserName = user.UserName,
-                        FirstName=user.FirstName,
-                        LastName=user.LastName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
                         //Gender =(Learning.ViewModel.Enums.Genders)Enum.Parse(typeof(Learning.ViewModel.Enums.Genders), user.Gender),
-                        Email=user.Email,
-                        PhoneNumber=user.PhoneNumber,
-                        UserID=user.Id,
-                        HasUserAccess=user.HasUserAccess,
-                        TutorType=tutor.TutorType.ToString(),
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        UserID = user.Id,
+                        HasUserAccess = user.HasUserAccess,
+                        TutorType = tutor.TutorType.ToString(),
                         Organization = tutor.Organization,
                     }).FirstOrDefault();
 
@@ -403,6 +406,13 @@ namespace Learning.Tutor.Repo
             return true;
         }
 
+        public int DeleteSection(List<int> sectionid)
+        {
+            var db = _dBContext.TestSections.Where(s => sectionid.Contains(s.Id));
+            _dBContext.TestSections.RemoveRange(db);
+            return _dBContext.SaveChanges();
+        }
+
         public int SetQuestionStatus(int questionid,bool status)
         {
             var question = _dBContext.Questions.FirstOrDefault(k => k.QusID == questionid);
@@ -410,12 +420,24 @@ namespace Learning.Tutor.Repo
             _dBContext.Questions.Update(question);
             return _dBContext.SaveChanges();
         }
-        public int SetOnlineStatus(int sectionid, bool status)
+        public async Task<int> SetOnlineStatus(int sectionid, bool status)
         {
-            var section = _dBContext.TestSections.FirstOrDefault(s => s.Id == sectionid);
-            section.IsOnline = status;
-            _dBContext.TestSections.Update(section);
-           return _dBContext.SaveChanges();
+            try
+            {
+                var section = _dBContext.TestSections.FirstOrDefault(s => s.Id == sectionid);
+                if (section != null)
+                {
+                    section.IsOnline = status;
+                    _dBContext.Entry(section).State = EntityState.Modified;
+                    _dBContext.TestSections.Attach(section);
+                }
+                return await _dBContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
         public List<Language> GetLanguages() => _dBContext.Languages.ToList();
         public List<GradeLevels> GetGradeLevels() => _dBContext.GradeLevels.ToList();

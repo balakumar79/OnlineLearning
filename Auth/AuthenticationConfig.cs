@@ -21,15 +21,9 @@ namespace Learning.Auth
     {
         public static void LearningAuthentication(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(op=> { op.Cookie.Name = "TutorCookie";
-                op.ExpireTimeSpan = TimeSpan.FromDays(4);
-                op.Cookie.HttpOnly = true;
-                op.Cookie.IsEssential = true;
-                op.Cookie.MaxAge = TimeSpan.FromDays(4);
-                op.SlidingExpiration = false;
-            });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         }
-       
+
         public static void LearningAuthorization(IServiceCollection services)
         {
             services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
@@ -37,13 +31,13 @@ namespace Learning.Auth
                 foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
                 {
 
-                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
+                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); authbuilder.AuthenticationSchemes.Add(IdentityConstants.ApplicationScheme); });
                 }
             }));
         }
-       
 
-        public async static Task DoLogin(HttpContext context, List<ScreenFormeter> screenFormeters,SessionObject sessionObject)
+
+        public async static Task DoLogin(HttpContext context, List<ScreenFormeter> screenFormeters, SessionObject sessionObject,bool isPersist)
         {
 
             var claims = new List<Claim>();
@@ -53,24 +47,29 @@ namespace Learning.Auth
                 foreach (var screen in screenFormeters)
                     claims.Add(new Claim(CustomClaimTypes.Permission, screen.ScreenName));
             }
-
+            foreach (var role in sessionObject.RoleID)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject.Tutor.TutorID.ToString()));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, sessionObject.User.Id.ToString()));
+            claims.Add(new Claim(ClaimTypes.GivenName, sessionObject.User.UserName));
+            claims.Add(new Claim(ClaimTypes.Name, sessionObject.User.FirstName + " " + sessionObject.User.LastName));
+            claims.Add(new Claim(ClaimTypes.Email, sessionObject.User.Email));
             claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject.Tutor.TutorID.ToString()));
 
             var authProperties = new AuthenticationProperties
             {
-                AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(300),
-                IsPersistent = true,
-                IssuedUtc = DateTimeOffset.UtcNow,
-                RedirectUri = "/account/login"
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(4),
+                IsPersistent = isPersist,
+                RedirectUri = "/account/login",
+                AllowRefresh = true
             };
             context.Session.SetObjectAsJson("UserObj", sessionObject);
             var claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             claimIdentity.AddClaims(claims);
-            context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity), authProperties).Wait();
-            await context.RequestServices.GetRequiredService<UserManager<AppUser>>().AddClaimsAsync(sessionObject.User, claims);
+            await context.SignInAsync(new ClaimsPrincipal(claimIdentity), authProperties);
+            //await context.RequestServices.GetRequiredService<UserManager<AppUser>>().AddClaimsAsync(sessionObject.User, claims);
         }
-
-      
     }
 }

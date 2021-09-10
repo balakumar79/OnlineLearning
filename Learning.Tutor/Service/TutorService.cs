@@ -58,9 +58,9 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.SetQuestionStatus(questionid, status);
         }
-        public int SetOnlineStatus(int sectionid, bool status)
+        public async Task<int> SetOnlineStatus(int sectionid, bool status)
         {
-            return _tutorRepo.SetOnlineStatus(sectionid, status);
+            return await _tutorRepo.SetOnlineStatus(sectionid, status);
         }
         public Task<int> DeleteTest(int id)
         {
@@ -69,6 +69,10 @@ namespace Learning.Tutor.Service
         public bool DeleteQuestion(List<int> questionIds)
         {
             return _tutorRepo.DeleteQuestion(questionIds);
+        }
+       public int DeleteSection(List<int> sectionid)
+        {
+            return _tutorRepo.DeleteSection(sectionid);
         }
         public List<GradeLevels> GetGradeLevels()
         {

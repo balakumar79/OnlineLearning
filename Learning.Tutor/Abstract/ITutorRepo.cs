@@ -23,8 +23,9 @@ namespace Learning.Tutor.Abstract
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int ExamId);
          Task<int> DeleteTest(int id);
+        int DeleteSection(List<int> sectionid);
         int SetQuestionStatus(int questionid, bool status);
-        int SetOnlineStatus(int sectionid, bool status);
+       Task<int> SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         List<Language> GetLanguages();
         List<GradeLevels> GetGradeLevels();

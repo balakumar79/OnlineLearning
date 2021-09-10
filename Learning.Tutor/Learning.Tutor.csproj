@@ -1,9 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-Learning.Tutor-90751937-89C4-4B79-9B28-5B07EAE25F2E</UserSecretsId>
     <OutputType>Library</OutputType>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

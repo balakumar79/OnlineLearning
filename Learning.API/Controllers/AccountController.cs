@@ -20,8 +20,9 @@ using System.Threading.Tasks;
 
 namespace Learning.API.Controllers
 {
-    [EnableCors("LearningCors")]
-   
+    //[EnableCors("LearningCors")]
+    [ApiController]
+    [Route("[controller]/[action]")]
     public class AccountController : ControllerBase
     {
         readonly IAuthService authService;
@@ -39,9 +40,10 @@ namespace Learning.API.Controllers
             _secretkey = appSet;
         }
        
+       //post: login
         [HttpPost]
         [AllowAnonymous]
-        public async Task<object> Login(LoginViewModel model, string returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel model,string UserName, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -54,7 +56,7 @@ namespace Learning.API.Controllers
                         var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
                         var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
                         //await HttpContext.RefreshLoginAsync();
-                        await AuthenticationConfig.DoLogin(HttpContext, screens, sessionObj);
+                        await AuthenticationConfig.DoLogin(HttpContext, screens, sessionObj,model.RememberMe);
                         //var tokenHandler = new JwtSecurityTokenHandler();
                         
                         //var key = Encoding.ASCII.GetBytes(_secretkey.SecretKeyValue);

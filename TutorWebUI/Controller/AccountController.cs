@@ -46,19 +46,11 @@ namespace TutorWebUI.Controllers
                 var user =await authService.GetUser(model);
                 if (user!=null)
                 {
-                  var result= await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-                    if (!result.Succeeded)
-                    {
-                        foreach (var item in ModelState.Select(s => s.Value).Where(e => e.Errors.Count > 0))
-                        {
-                            ModelState.AddModelError("", item.Errors.FirstOrDefault().ErrorMessage);
-                        }
-                        return View(model);
-                    }
+                 
                     var roles =await _userManager.GetRolesAsync(user);
                     var screens = await authService.GetScreenAccessPrivilage(roleId:roles,userID:user.Id);
                     var sessionObj = new SessionObject {User= user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
-                    await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj);
+                    await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj,model.RememberMe);
                     if (returnUrl==null)
                     {
                         if (roles.Contains(Learning.Utils.Enums.Roles.Student.ToString()))

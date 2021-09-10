@@ -15,7 +15,6 @@ namespace Auth.Account
         Task<int> AddTutor(Tutor entity);
         Task<bool> IsEmailExists(string email, int? id);
         Task<bool> IsUserNameExists(string email, int? id);
-       
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId);
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
         

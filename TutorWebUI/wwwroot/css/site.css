@@ -135,7 +135,7 @@ body {
         border: none;
         text-align: center;
         font-size: 14px;
-        background: #22b9c1;
+        background: #a6dbf5;
         color: aliceblue !important;
     }
 
@@ -168,7 +168,7 @@ body {
         padding: 10px 15px 25px;
     }
 #modalConfirm {
-    background-color: #eceff3bf;
+    background-color: #424952bf;
 }
 
         .modal-confirm .modal-footer a {

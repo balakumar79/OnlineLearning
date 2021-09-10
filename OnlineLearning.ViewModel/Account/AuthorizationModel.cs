@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Learning.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -43,6 +44,9 @@ namespace Learning.ViewModel.Account
         {
             public const string Permission = "permission";
             public const string TutorID = "tutorId";
+            public const string Role = "role";
+            public const string RoleId = "roleid";
+
         }
         public class ScreenFormeter
         {

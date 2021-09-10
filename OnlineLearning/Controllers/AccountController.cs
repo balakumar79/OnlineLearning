@@ -49,7 +49,7 @@ namespace Learning.WebUI.Controllers
                     var screens = await authService.GetScreenAccessPrivilage(roleId:roles,userID:user.Id);
                     var sessionObj = new SessionObject {User= user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
                     await HttpContext.RefreshLoginAsync();
-                    await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj);
+                    await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj,model.RememberMe);
                     if (returnUrl==null)
                     {
                         if (roles.Contains(Utils.Enums.Roles.Student.ToString()))

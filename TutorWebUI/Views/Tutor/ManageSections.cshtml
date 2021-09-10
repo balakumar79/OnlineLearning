@@ -11,45 +11,125 @@
         <p>
             <a asp-action="CreateSection">Create New</a>
         </p>
-       <table id="tblSection"></table>
+       <table id="tblSection"class="display responsive nowrap" style="width:100%">
+         
+           <thead>
+               <tr>
+
+                   <th>
+                       @Html.DisplayName("Sr.No")
+                   </th>
+                   <th>
+                       Test Name
+                   </th>
+                   <th>
+                       Sec.Name
+                   </th>
+                   <th>
+                       Sub Topic
+                   </th>
+                   <th>
+                       Marks
+                   </th>
+                   @*<th>
+                       Language
+                   </th>*@
+                   <th>
+                       Qus
+                   </th>
+                   <th>
+                       @Html.DisplayName("QusAdded")
+                   </th>
+
+                   <th>
+                       Created
+                   </th>
+                
+                   <th>
+                       Online
+                   </th>
+                   <th></th>
+               <!--</tr>
+           </thead>-->
+       </table>
 </div>
         </div>
     </main>
 @section Scripts{ 
     <script>
-$(document).ready(doc=>{
-    var tb = $('#tblSection').DataTable({
-        autoWidth: true,
-        ajax: {
-            url: 'PartialTestSectionByTestId',
-            data: {sectionId: 24},
-            type: 'post',
-            contentType: 'application/json',
-            dataType: 'json',
-            dataSrc: function (data) {
-                console.log(data);
-                return data;
-            }, 
-        },
-        columns: [
-            { width: '2%', render: function (d, r) { console.log(d, r) } },
-            { width: "5%", className: 'text-center', data: 'TestName' },
-            { width: "18%", data: 'SectionName' },
-            { width: "15%", data: 'SubTopic' },
-            { width: "9%", data: 'TotalMarks' },
-            { width: "5%", data: 'TotalQuestions' },
-            { width: "5%", data: 'QusAdded' },
-            { width: "5%", data: 'Created' },
-            { width: "10%", className: 'text-center', data: 'IsOnline' },
-            {
-                width: "10%", render: function (d) {
-                    return '<a class="" href="/Tutor/DeleteSection?id='+d.Id+'"><i class="text-danger fa fa-2x fa-times-circle "></i> </a>'
-                }
-            },
-        ]
-   });
+        $(document).ready(doc => {
+            var tb = $('#tblSection').DataTable({
+                autoWidth: true,
+                ajax: {
+                    url: 'PartialTestSectionByTestId',
+                    data: { testid: parseInt(8) },
+                    type: 'post',
+                    dataSrc: function (data) {
+                        console.log(data)
+                        return data;
+                    }
+                }, 
+                columnDefs: [
+                    { targets: [0], data: function (d, t, y, s) { return s.row + 1 } },
+                    { targets: [1], data: "testName" },
+                    { targets: [2], data: 'sectionName' },
+                    { targets: [3], data: 'subTopic' },
+                    { targets: [4], data: 'totalMarks' },
+                    //{ targets: [5], data:'id', render: function (d) { return 'languageName' } },
+                    { width:"6%", targets: [5], data: 'totalQuestions' },
+                    { targets: [6], data: 'addedQuestions' },
+                    { targets: [7], data: 'created', render: function (t) { return moment(t).format('DD-MM-yyyy H:mm'); } },
+                    {
+                        targets: [8], data: 'isOnline', render: function (d,e,c) {
+                            return '<input type="checkbox" id="' +
+                                c.id + '" checked="' + c.isOnline + '"/>'
+                        }
+                    },
+                    {
+                        targets: [9],
+                        width: "10%", data: 'id', render: function (d) {
+                            return ` <button class="btn btn-link" data-id="${d}" onclick="deleteSection(${d})">
+                                    <i class="text-danger fa fa-2x fa-times-circle "></i>
+                                    </button>`
+                        }
+                    },
+                ]
+            });
+            $('#modalConfirm #btnDelete').click(fun => {
+                id = fun.target.getAttribute('data-id');
+                insertdata('/Tutor/DeleteSection', { id: id }, 'json').done(res => {
+                    if (res > 0) {
+                        notify('A ' + res + ' section/s has been deleted successfully.', 'success');
+                        tb.ajax.reload();
+                        tb.draw();
 
-})
+                    }
+                    $('#modalConfirm').modal('hide');
+                })
+            });
+
+            //update section online status
+            tb.on('draw.dt', e => {
+                $('#tblSection td input[type=checkbox]').on('click', fun => {
+                    marksectionasonline(fun.target);
+                    tb.ajax.reload();
+                    tb.draw();
+                });
+            })
+            
+            //tb.columns.adjust().draw();
+        });
+        function deleteSection(id) {
+            $('#modalConfirm').modal('show');
+            $('#modalConfirm #btnDelete').attr('data-id', id);
+        }
+        function marksectionasonline(cnt) {
+            insertdata('/tutor/SetSectionOnlineStatus', { sectionid: cnt.id, status: $(cnt).is(':checked') }).done(res => {
+                if (res > 0) {
+                    notify('Section online status updated successfully.','success')
+                }
+            })
+        }
 
     </script>
 }

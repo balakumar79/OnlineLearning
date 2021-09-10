@@ -33,7 +33,7 @@ namespace Learning.API.Controllers
         }
         #endregion
         #region methods
-        [HttpGet]
+        [HttpPost]
         public IEnumerable<StudentTestViewModel> GetStudentTest()
         {
             var userid = Convert.ToInt32(HttpContext.User.Identity.GetUserID());

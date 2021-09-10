@@ -40,8 +40,8 @@ namespace Learning.Infrastructure
 
             //services.AddTransient(_ => new MySqlConnection(configuration.GetConnectionString("DBContext")));
             //services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IAuthRepo, AuthRepo>();
-            services.AddTransient<IAuthService, AuthService>();
+            services.AddScoped<IAuthRepo, AuthRepo>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailService, EmailService>();
 
             services.AddTransient<IStudentTestRepo, StudentTestRepo>();

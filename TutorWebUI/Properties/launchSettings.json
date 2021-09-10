@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/Learning.TutorWebUI",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:53844",
       "sslPort": 44381
@@ -15,7 +19,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       },
-      "ancmHostingModel": "OutOfProcess"
+      "ancmHostingModel": "InProcess"
     },
     "TutorWebUI": {
       "commandName": "Project",

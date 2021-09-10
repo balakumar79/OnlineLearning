@@ -458,8 +458,7 @@ function formatSection(res) {
     })
 };
 
-function deleteConfirmation(url, cnt) {
-    console.log(url)
+function deleteConfirmation(url) {
     $('#modalConfirm').modal('show');
     $('#modalConfirm #btnDelete').click(fun => {
         window.location.href = url;

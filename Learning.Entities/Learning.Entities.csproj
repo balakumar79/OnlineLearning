@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\20210822063325_local.cs" />
     <Compile Remove="Migrations\20210822063325_local.Designer.cs" />
+    <Compile Remove="Migrations\AppDBContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>

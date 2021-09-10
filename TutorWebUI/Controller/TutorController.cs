@@ -19,11 +19,11 @@ namespace TutorWebUI.Controllers
     public class TutorController : Controller
     {
         private readonly ITutorService _tutorService;
-        private SessionObject sessionObject;
+        //private SessionObject sessionObject;
         public TutorController(ITutorService tutorService, IHttpContextAccessor contextAccessor)
         {
             this._tutorService = tutorService;
-            sessionObject = contextAccessor.HttpContext.Session.GetObjectFromJson<SessionObject>("UserObj");
+            //sessionObject = contextAccessor.HttpContext.Session.GetObjectFromJson<SessionObject>("UserObj");
             //if (sessionObject == null)
             //    contextAccessor.HttpContext.RefreshLoginAsync().ConfigureAwait(true);
         }
@@ -47,7 +47,8 @@ namespace TutorWebUI.Controllers
         }
         public IActionResult TutorProfile()
         {
-            var model = _tutorService.GetTutorProfile(Convert.ToInt32(User.Identity.GetTutorId()));
+            var tutorid = Convert.ToInt32(User.Identity.GetTutorId());
+            var model = _tutorService.GetTutorProfile(tutorid);
 
             return View(model);
         }
@@ -83,15 +84,16 @@ namespace TutorWebUI.Controllers
         [AllowAnonymous]
         public JsonResult GetQuestionDetails(int QuestionId)
         {
+            
             return Json(_tutorService.GetQuestionDetails(QuestionId));
         }
 
-        public IActionResult PartialTestSectionByTestId(int sectionId)
+        public async Task<IActionResult> PartialTestSectionByTestId(int testid)
         {
-            var section = _tutorService.GetTestSections(0);
+            var section =await _tutorService.GetTestSectionByTestId(testid);
             var model = (from sec in section
                          join test in _tutorService.GetTestByUserID(User.Identity.GetTutorId()) on sec.TestId equals test.Id
-                         where sec.IsActive
+                        
                          select new TestSectionViewModel
                          {
                              SectionName = sec.SectionName,
@@ -111,7 +113,7 @@ namespace TutorWebUI.Controllers
         public IActionResult PartialTestSectionBySectionId(int sectionid)
         {
             var model = new TestSectionViewModel();
-            if (sectionid != null)
+            if (sectionid >0)
                 model = _tutorService.GetTestSections(sectionid).Select(m => new TestSectionViewModel
                 {
                     Id = m.Id,
@@ -129,9 +131,9 @@ namespace TutorWebUI.Controllers
                 }).FirstOrDefault();
             return PartialView(model);
         }
-        public async Task<IActionResult> ManageSections()
+        public IActionResult ManageSections()
         {
-           
+
             return View();
         }
         public IActionResult CreateSection(string returnUrl=null)
@@ -195,9 +197,9 @@ namespace TutorWebUI.Controllers
         {
            return _tutorService.SetQuestionStatus(questionid, status);
         }
-        public int SetOnlineStatus(int sectionid,bool status)
+        public async Task<int> SetSectionOnlineStatus(int sectionid,bool status)
         {
-            return _tutorService.SetOnlineStatus(sectionid, status);
+            return await _tutorService.SetOnlineStatus(sectionid, status);
         }
 
         public IActionResult DeleteQuestions(List<int> QuestionIds,int TestId)
@@ -206,6 +208,15 @@ namespace TutorWebUI.Controllers
             TempData["msg"] = "Select question has been deleted successfully.";
             return RedirectToAction(actionName: "ViewQuestionsById", new { TestId = TestId });
         }
+        public IActionResult DeleteSection(List<int> id,string rurl)
+        {
+           var count= _tutorService.DeleteSection(id);
+            TempData["msg"] = $"A {count} has been deleted successfully.";
+            if (!string.IsNullOrWhiteSpace(rurl))
+                return Redirect(rurl);
+            else return Json(count);
+        }
+
         [AllowAnonymous]
         public async Task<JsonResult> GetTest()
         {
