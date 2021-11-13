@@ -6,13 +6,17 @@ namespace Learning.Utils.Config
 {
    public class AppConfig
     {
+        public AppConfig()
+        {
+
+        }
         public AppConfig(SMTPConfig sMTPConfig,SecretKey secretKey)
         {
             SMTPConfig = sMTPConfig;
             SecretKey = secretKey;
         }
         public SMTPConfig SMTPConfig{ get; }
-        public SecretKey SecretKey { get; set; }
+        public SecretKey SecretKey { get; }
     }
     public class SMTPConfig
     {

@@ -12,84 +12,96 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace TutorWebUI
 {
     public class Startup
     {
+        //test function not for internal use
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+          
         }
 
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentity<AppUser, AppRole>()
-  .AddEntityFrameworkStores<AppDBContext>()
-  .AddDefaultTokenProviders();
+            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
 
-            services.AddDataProtection()
-.PersistKeysToFileSystem(GetKeyRingDirInfo())
-.SetApplicationName("TutorPanel");
-            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration);
-         
-            services.AddScoped<UserManager<AppUser>>();
-          
-                
-            services.AddAuthorization(option =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
-                foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
-                {
-
-                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
-                }
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-    
-
-            AuthenticationConfig.LearningAuthentication(services);
-
-            services.AddSession(op => op.IdleTimeout = TimeSpan.FromDays(20));
-            //services.ConfigureApplicationCookie(op =>
-            //{
-            //    op.Cookie.Name = "TutorCookie";
-            //    op.ExpireTimeSpan = TimeSpan.FromDays(4);
-            //    op.Cookie.HttpOnly = false;
-            //    op.Cookie.IsEssential = true;
-            //    op.Cookie.MaxAge = TimeSpan.FromDays(4);
-            //    op.SlidingExpiration = true;
-            //    op.DataProtectionProvider = DataProtectionProvider.Create(GetKeyRingDirInfo().FullName);
-            //    op.Cookie.Domain = ".domockexam.com";
-            //    op.Cookie.SameSite = SameSiteMode.Lax;
-            //    op.Events.OnValidatePrincipal = (ctx) =>
-            //    {
-            //        if (ctx.Principal.HasClaim(x => x.Type == CookieAuthenticationDefaults.AuthenticationScheme)) return System.Threading.Tasks.Task.CompletedTask;
-            //        return SecurityStampValidator.ValidatePrincipalAsync(ctx);
-            //    };
-            //});
-
             services.ConfigureApplicationCookie(op =>
             {
-                op.Cookie.Name = "LocalTutorCookie";
+                op.Cookie.Name = ".AspNet.SharedCookie";
                 op.ExpireTimeSpan = TimeSpan.FromDays(4);
                 op.Cookie.HttpOnly = false;
                 op.Cookie.IsEssential = true;
                 op.Cookie.MaxAge = TimeSpan.FromDays(4);
                 op.SlidingExpiration = true;
-                op.Cookie.Domain = "localhost";
-                op.Cookie.SameSite = SameSiteMode.Lax;
+                op.Cookie.SameSite = SameSiteMode.None;
+                op.Cookie.Path = "/";
             });
+            //AuthenticationConfig.LearningAuthentication(services);
+            services.AddIdentity<AppUser, AppRole>(op=>
+            {
+               
+            })
+  .AddEntityFrameworkStores<AppDBContext>() .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+  .AddDefaultTokenProviders();
+
+            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration);
+
+            Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
 
 
-            services.AddAntiforgery(op => { op.Cookie.SameSite = SameSiteMode.Lax; });
+            //services.ConfigureApplicationCookie(op =>
+            //{
+            //    op.Cookie.Name = ".AspNet.SharedCookie";
+            //    op.ExpireTimeSpan = TimeSpan.FromDays(4);
+            //    op.Cookie.HttpOnly = false;
+            //    op.Cookie.IsEssential = true;
+            //    op.Cookie.MaxAge = TimeSpan.FromDays(4);
+            //    op.SlidingExpiration = true;
+            //    op.Cookie.Domain = "localhost";
+            //    op.Cookie.SameSite = SameSiteMode.Lax;
+            //});
+            //AuthenticationConfig.LearningAuthentication(services);
+
+
+
+            //services.AddAuthorization(option =>
+            //{
+            //    foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
+            //    {
+
+            //        option.AddPolicy(item.ToString(), authbuilder =>
+            //        {
+            //            authbuilder.RequireRole(item.ToString());
+            //        });
+
+            //    }
+            //});
+            services.AddSession
+            (op => { op.IdleTimeout = TimeSpan.FromDays(20);
+               
+            });
 
             services.AddControllersWithViews();
             //services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddRazorPages();
-            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
+            services.AddScoped<UserManager<AppUser>>();
+
+            
         }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -109,11 +121,11 @@ namespace TutorWebUI
             app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSession();
-            app.UseCookiePolicy();
-            app.UseAuthentication();
             app.UseRouting();
+            app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

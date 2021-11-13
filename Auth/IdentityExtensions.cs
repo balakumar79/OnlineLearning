@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace Learning.Auth
@@ -18,10 +19,11 @@ namespace Learning.Auth
             return (claim != null) ? claim.Value : string.Empty;
         }
         public static string GetTutorId(this IIdentity identity)
-        {
+        {                                             
             var claim = ((ClaimsIdentity)identity).FindFirst(CustomClaimTypes.TutorID);
             return (claim != null) ? claim.Value : string.Empty;
         }
 
     }
+   
 }

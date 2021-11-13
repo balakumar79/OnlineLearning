@@ -2137,3 +2137,14 @@ h1{
 .validator {
     color: #ffc107;
 }
+.custom-input {
+    border: none;
+    border-bottom: solid 1px grey;
+    width: 100%;
+}
+    .custom-input:focus {
+        outline: none;
+        color:gray;
+        border-bottom: solid 1px grey;
+        width: 100%;
+    }

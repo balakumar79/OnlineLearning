@@ -25,11 +25,15 @@ namespace Learning.API.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : ControllerBase
     {
+        #region variables
         readonly IAuthService authService;
         readonly UserManager<AppUser> _userManager;
         private SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
         readonly Utils.Config.SecretKey _secretkey;
+        #endregion
+
+        #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
             Utils.Config.SecretKey appSet)
         {
@@ -39,8 +43,9 @@ namespace Learning.API.Controllers
             this._signInManager = signInManager;
             _secretkey = appSet;
         }
-       
-       //post: login
+        #endregion
+
+        //post: login
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model,string UserName, string returnUrl)
@@ -56,28 +61,15 @@ namespace Learning.API.Controllers
                         var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
                         var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
                         //await HttpContext.RefreshLoginAsync();
-                        await AuthenticationConfig.DoLogin(HttpContext, screens, sessionObj,model.RememberMe);
-                        //var tokenHandler = new JwtSecurityTokenHandler();
-                        
-                        //var key = Encoding.ASCII.GetBytes(_secretkey.SecretKeyValue);
-                        //var tokenDescription = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
-                        //{
-                        //    Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
-                        //    {
-                        //    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                        //    }),
-                        //    Expires = DateTime.Now.AddDays(7),
-                        //    SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)
-                        //};
-                        //var token = tokenHandler.CreateJwtSecurityToken(tokenDescription);
-                        //var tokenstring = tokenHandler.WriteToken(token);
+                     var result=    AuthenticationConfig.DoLogin(screens, sessionObj,_secretkey.SecretKeyValue);
+                     
                         return Ok(new
                         {
                             Id = user.Id,
                             Username = user.UserName,
                             Email = user.Email,
                             useraccess = user.HasUserAccess,
-                            //Token = tokenstring
+                            result.Value
                         });
                     }
                     else
@@ -164,6 +156,13 @@ namespace Learning.API.Controllers
             {
                 return ResultFormatter.JsonResponse(false, null, "Invalid request");
             }
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> LogOut()
+        {
+            await HttpContext.SignOutAsync(AuthorizationModel.IdentityApplicationDefault);
+            return Ok();
         }
         //[HttpPost]
         //public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)

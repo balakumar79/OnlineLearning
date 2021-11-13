@@ -7,89 +7,100 @@
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
         <h1>Manage Sections</h1>
-        <div class="bg-white container">
-        <p>
-            <a asp-action="CreateSection">Create New</a>
-        </p>
-       <table id="tblSection"class="display responsive nowrap" style="width:100%">
-         
-           <thead>
-               <tr>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+            <p>
 
-                   <th>
-                       @Html.DisplayName("Sr.No")
-                   </th>
-                   <th>
-                       Test Name
-                   </th>
-                   <th>
-                       Sec.Name
-                   </th>
-                   <th>
-                       Sub Topic
-                   </th>
-                   <th>
-                       Marks
-                   </th>
-                   @*<th>
-                       Language
-                   </th>*@
-                   <th>
-                       Qus
-                   </th>
-                   <th>
-                       @Html.DisplayName("QusAdded")
-                   </th>
+            </p>
+            <table id="tblSection" class="display responsive nowrap" style="width:100%">
 
-                   <th>
-                       Created
-                   </th>
-                
-                   <th>
-                       Online
-                   </th>
-                   <th></th>
-               <!--</tr>
-           </thead>-->
-       </table>
-</div>
+                <thead>
+                    <tr>
+
+                        <th>
+                            @Html.DisplayName("Sr.No")
+                        </th>
+                        @*<th>
+                            Test Name
+                        </th>*@
+                        <th>
+                            Sec.Name
+                        </th>
+                        <th>
+                            Sub Topic
+                        </th>
+                        <th>
+                            Marks
+                        </th>
+                        @*<th>
+                            Language
+                        </th>*@
+                        <th>
+                            Qus
+                        </th>
+                        <th>
+                            @Html.DisplayName("QusAdded")
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                        <th>
+                            Online
+                        </th>
+                        <th></th>
+                        <!--</tr>
+                    </thead>-->
+            </table>
         </div>
+    </div>
     </main>
 @section Scripts{ 
     <script>
+        let testid = 0;
         $(document).ready(doc => {
+            testid = parseInt(localStorage.getItem('sec_testid'));
+            if (testid > 0)
+                ;
+            
             var tb = $('#tblSection').DataTable({
                 autoWidth: true,
                 ajax: {
                     url: 'PartialTestSectionByTestId',
-                    data: { testid: parseInt(8) },
+                    data: function(d){d.testid= testid },
                     type: 'post',
                     dataSrc: function (data) {
-                        console.log(data)
+                        console.log(data, testid)
                         return data;
                     }
-                }, 
+                },
+                dom:'1<"#divTests"> 1 <"#divTestLink"> ftrip',
                 columnDefs: [
                     { targets: [0], data: function (d, t, y, s) { return s.row + 1 } },
-                    { targets: [1], data: "testName" },
-                    { targets: [2], data: 'sectionName' },
-                    { targets: [3], data: 'subTopic' },
-                    { targets: [4], data: 'totalMarks' },
+                  /*  { targets: [1], data: "testName", render: function (d, t, r) { return `<a href='/tutor/createtest?Id=${r.testId}'>${d !== null?(d.length > 10 ? d.substring(0, 10) + '...' : d):'N/A' }</a>` } },*/
+                    { targets: [1], data: 'sectionName', render: function (d, t, r) { return `<a href='/tutor/createsection?sectionId=${r.id}'>${d}</a>` } },
+                    { targets: [2], data: 'subTopic', render: function (d) { return d !== null?( d.length > 10 ? d.substring(0, 10) + '...' : d):'N/A' } },
+                    { targets: [3], data: 'totalMarks' },
                     //{ targets: [5], data:'id', render: function (d) { return 'languageName' } },
-                    { width:"6%", targets: [5], data: 'totalQuestions' },
-                    { targets: [6], data: 'addedQuestions' },
-                    { targets: [7], data: 'created', render: function (t) { return moment(t).format('DD-MM-yyyy H:mm'); } },
+                    { width:"6%", targets: [4], data: 'totalQuestions' },
+                    { targets: [5], data: 'addedQuestions' },
+                    { targets: [6], data: 'created', render: function (t) { return moment(t).format('DD-MM-yyyy H:mm'); } },
                     {
-                        targets: [8], data: 'isOnline', render: function (d,e,c) {
-                            return '<input type="checkbox" id="' +
-                                c.id + '" checked="' + c.isOnline + '"/>'
+                        targets: [7], data: 'isOnline', render: function (d, e, c) {
+                            console.log(d)
+                            if (d) {
+                                return '<input type="checkbox" checked id="' + c.id + '" />';
+                            }
+                            else
+                                return '<input type="checkbox" id="' + c.id + '" />';
+
                         }
                     },
                     {
-                        targets: [9],
+                        targets: [8],
                         width: "10%", data: 'id', render: function (d) {
                             return ` <button class="btn btn-link" data-id="${d}" onclick="deleteSection(${d})">
-                                    <i class="text-danger fa fa-2x fa-times-circle "></i>
+                                    <i class="text-danger fa fa-lg fa-times-circle "></i>
                                     </button>`
                         }
                     },
@@ -110,13 +121,29 @@
 
             //update section online status
             tb.on('draw.dt', e => {
-                $('#tblSection td input[type=checkbox]').on('click', fun => {
-                    marksectionasonline(fun.target);
-                    tb.ajax.reload();
-                    tb.draw();
+                $('#ddlTests').val(localStorage.getItem('sec_testid'))
+
+                //update table upon checkbox clicked
+                $('#tblSection td input[type=checkbox]').click(fun => {
+                    marksectionasonline(fun.target).done(fun => {
+                        tb.ajax.reload();
+                        tb.draw();
+                    });
                 });
+            });
+            //append extra filter select option to datatable
+            $('#divTests').append($('<select id="ddlTests" class="form-control-sm w-75"></select>'))
+            $('#divTestLink').append($('<a href="/tutor/createtest?Id=' + localStorage.getItem("sec_testid") + '">Go to test</a> | ' +
+                '<a href="/Tutor/CreateSection">Create New</a>'))
+
+            bindTest('#ddlTests');
+            $('#ddlTests').change(el => {
+                localStorage.setItem('sec_testid', el.target.value);
+                testid = el.target.value;
+                tb.ajax.reload();
+                tb.draw();
             })
-            
+
             //tb.columns.adjust().draw();
         });
         function deleteSection(id) {
@@ -124,12 +151,35 @@
             $('#modalConfirm #btnDelete').attr('data-id', id);
         }
         function marksectionasonline(cnt) {
-            insertdata('/tutor/SetSectionOnlineStatus', { sectionid: cnt.id, status: $(cnt).is(':checked') }).done(res => {
+            return insertdata('/tutor/SetSectionOnlineStatus', { sectionid: cnt.id, status: $(cnt).is(':checked') }).done(res => {
                 if (res > 0) {
-                    notify('Section online status updated successfully.','success')
-                }
+                    notify('Section online status updated successfully.', 'success')
+                } 
             })
         }
 
     </script>
 }
+<style>
+    #divTests {
+        display: table-column;
+        width:40%;
+        padding-left: 0px;
+        float: left;
+    }
+     #divTestLink{
+         display:contents;
+         float:right;
+     }
+    #ddlTests th {
+        margin: 0;
+        text-align: left;
+    }
+    #ddlTests{
+        border:none;
+        border-bottom:solid 1px;
+    }
+    table tr th{
+        padding-left:5px;
+    }
+</style>

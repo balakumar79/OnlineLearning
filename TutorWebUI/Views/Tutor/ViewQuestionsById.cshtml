@@ -3,11 +3,76 @@
     Layout = "_Layout_Tutor";
 }
 
+<!--<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
 
-<div id="pnlQus"></div>
+        <h1>Questions ---> @*@Model.FirstOrDefault()?.TestName*@<!--</h1>
+
+
+        <a class="text-right h6 text-white" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+        <a class="text-white h6" asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>-->
+        <div id="pnlQus" class="bg-white">
+            @*<table id="tblQus" class="display responsive nowrap" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Sr.No.</th>
+                        <th>
+                            QuestionName
+                        </th>
+
+                        <th>
+                            QusType
+                        </th>
+
+
+                        <th>
+                            SectionName
+                        </th>
+                        <th>
+                            Mark
+                        </th>
+                        <th>
+                            IsActive
+                        </th>
+                        <th>
+                            Created
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>*@
+        </div>
+        @*</div>
+    </main>*@
+
 <script>
     document.addEventListener('readystatechange', doc => {
         if (doc.target.readyState === 'complete') {
+
+            @*var tb = $('#tblQus').DataTable({
+                ajax: {
+                    url: '/tutor/GetQuestionsByTestID',
+                    data: { testid: '@Context.Request.Query["TestId"]' },
+                    dataSrc: function (data) {
+                        console.log(data);
+                        return data;
+                    },
+                },
+                columnDefs: [
+                    { targets: [0], data: function (d, t, y, s) { return s.row + 1 } },
+                    { targets: [1], data:'questionName' },
+                    { targets: [2], data:'qusType' },
+                    { targets: [3], data:'sectionName' },
+                    { targets: [4], data:'mark' },
+                    { targets: [5], data:'isActive' },
+                    { targets: [6], data: 'created' },
+                    {
+                        targets: [7], data: 'qusID', render: function (d) { `<a href="#" onclick="deleteConfirmation('/tutor/DeleteQuestions?QuestionIds="${d}")">
+                                <i class="fa fa-times-circle fa-2x text-danger"></i>
+                            </a>'`} },
+                ]
+            });*@
             initLoader()
             loaddata().done(res => {
                 removeLoader();

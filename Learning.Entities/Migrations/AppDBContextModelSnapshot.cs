@@ -143,30 +143,6 @@ namespace Learning.Entities.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("Learning.Entities.GapFillingAnswer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Answer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GapFillingAnswers");
-                });
-
             modelBuilder.Entity("Learning.Entities.GradeLevels", b =>
                 {
                     b.Property<int>("Id")
@@ -239,30 +215,6 @@ namespace Learning.Entities.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("MCQAnswers");
-                });
-
-            modelBuilder.Entity("Learning.Entities.Matching", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CorrectAnswer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Sentence")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Matchings");
                 });
 
             modelBuilder.Entity("Learning.Entities.Options", b =>
@@ -407,6 +359,42 @@ namespace Learning.Entities.Migrations
                     b.ToTable("Student");
                 });
 
+            modelBuilder.Entity("Learning.Entities.StudentAnswerLog", b =>
+                {
+                    b.Property<int>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EndTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OptionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StartTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LogId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("StudentAnswerLogs");
+                });
+
             modelBuilder.Entity("Learning.Entities.StudentTest", b =>
                 {
                     b.Property<int>("Id")
@@ -450,8 +438,8 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("StudentTestId")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("TimeTaken")
-                        .HasColumnType("time");
+                    b.Property<string>("TimeTaken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -525,13 +513,16 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("AddedQuestions")
                         .HasColumnType("int");
 
+                    b.Property<string>("AdditionalInstruction")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsOnline")
+                    b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Modified")
@@ -881,6 +872,33 @@ namespace Learning.Entities.Migrations
                         .HasForeignKey("LanguageNavigationId");
 
                     b.Navigation("LanguageNavigation");
+                });
+
+            modelBuilder.Entity("Learning.Entities.StudentAnswerLog", b =>
+                {
+                    b.HasOne("Learning.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.Test", "Test")
+                        .WithMany()
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("Learning.Entities.UserScreenAccess", b =>

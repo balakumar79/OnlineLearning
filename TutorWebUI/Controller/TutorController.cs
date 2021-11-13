@@ -15,7 +15,6 @@ using Learning.Entities;
 
 namespace TutorWebUI.Controllers
 {
-    [Authorize(Roles ="Tutor")]
     public class TutorController : Controller
     {
         private readonly ITutorService _tutorService;
@@ -47,8 +46,8 @@ namespace TutorWebUI.Controllers
         }
         public IActionResult TutorProfile()
         {
-            var tutorid = Convert.ToInt32(User.Identity.GetTutorId());
-            var model = _tutorService.GetTutorProfile(tutorid);
+            var userid = Convert.ToInt32(User.Identity.GetUserID());
+            var model = _tutorService.GetTutorProfile(userid);
 
             return View(model);
         }
@@ -197,9 +196,9 @@ namespace TutorWebUI.Controllers
         {
            return _tutorService.SetQuestionStatus(questionid, status);
         }
-        public async Task<int> SetSectionOnlineStatus(int sectionid,bool status)
+        public int SetSectionOnlineStatus(int sectionid,bool status)
         {
-            return await _tutorService.SetOnlineStatus(sectionid, status);
+            return _tutorService.SetOnlineStatus(sectionid, status);
         }
 
         public IActionResult DeleteQuestions(List<int> QuestionIds,int TestId)
@@ -256,6 +255,11 @@ namespace TutorWebUI.Controllers
         public async Task<JsonResult> GetQuestionType()
         {
             return Json(await _tutorService.GetQuestionTypes());
+        }
+
+        public JsonResult GetQuestionsByTestID(int testid)
+        {
+           return Json( _tutorService.GetQuestionsByTestId(testid));
         }
 
         

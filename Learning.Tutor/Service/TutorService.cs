@@ -58,9 +58,9 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.SetQuestionStatus(questionid, status);
         }
-        public async Task<int> SetOnlineStatus(int sectionid, bool status)
+        public int SetOnlineStatus(int sectionid, bool status)
         {
-            return await _tutorRepo.SetOnlineStatus(sectionid, status);
+            return _tutorRepo.SetOnlineStatus(sectionid, status);
         }
         public Task<int> DeleteTest(int id)
         {
@@ -98,7 +98,10 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.GetAllTest();
         }
-
+        public int savetrueorfalse()
+        {
+            return _tutorRepo.savetrueorfalse();
+        }
 
     }
 }

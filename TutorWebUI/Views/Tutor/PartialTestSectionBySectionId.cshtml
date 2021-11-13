@@ -1,63 +1,80 @@
 ﻿@model Learning.Tutor.ViewModel.TestSectionViewModel
 
 
-<div class="row">
-    <div class="">
+
+ 
         <form asp-action="CreateSection">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="column">
-                @Html.HiddenFor(p => p.Id)
-                <div class="form-group">
-                    <label asp-for="TestId" class="control-label"></label>
-                    <select asp-for="TestId" class="form-control selTest"></select>
-                    <span asp-validation-for="TestId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="SectionName" class="control-label"></label>
-                    <input asp-for="SectionName" class="form-control" />
-                    <span asp-validation-for="SectionName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="TotalMarks" class="control-label"></label>
-                    <input asp-for="TotalMarks" class="form-control" />
-                    <span asp-validation-for="TotalMarks" class="text-danger"></span>
-                </div>
-                <div class="form-group ">
-                    <label asp-for="IsOnline" class="control-label"></label>
-                    @Html.CheckBoxFor(m => m.IsOnline)
-                    <span asp-validation-for="IsOnline" class="text-danger"></span>
-                </div>
-                <div class="row col-md-5 float-left">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                </div>
-            </div>
+            <div class="row">
+                <div class="card card-columns">
+                    @Html.HiddenFor(p => p.Id)
+                    <div class="form-group">
+                        <label asp-for="TestId" class="control-label"></label>
+                        <select asp-for="TestId" class="custom-input selTest"></select>
+                        <span asp-validation-for="TestId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SectionName" class="control-label"></label>
+                        <input asp-for="SectionName" class="custom-input" />
+                        <span asp-validation-for="SectionName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TotalMarks" class="control-label"></label>
+                        <input asp-for="TotalMarks" class="custom-input" />
+                        <span asp-validation-for="TotalMarks" class="text-danger"></span>
+                    </div>
+                    <div class="form-group ">
+                        <label asp-for="IsOnline" class="control-label"></label>
+                        @Html.CheckBoxFor(m => m.IsOnline)
+                        <span asp-validation-for="IsOnline" class="text-danger"></span>
+                    </div>
 
-            <div class="column">
-                <div class="form-group">
-                    <label asp-for="Topic" class="control-label"></label>
-                    <input asp-for="Topic" class="form-control" />
-                    <span asp-validation-for="Topic" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="SubTopic" class="control-label"></label>
-                    <input asp-for="SubTopic" class="form-control" />
-                    <span asp-validation-for="SubTopic" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="TotalQuestions" class="control-label"></label>
-                    <input asp-for="TotalQuestions" class="form-control" />
-                    <span asp-validation-for="TotalQuestions" class="text-danger"></span>
                 </div>
 
+
+
+                <div class="card card-columns flex-column">
+                    <div class="form-group">
+                        <label asp-for="Topic" class="control-label"></label>
+                        <input asp-for="Topic" class="custom-input" />
+                        <span asp-validation-for="Topic" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SubTopic" class="control-label"></label>
+                        <input asp-for="SubTopic" class="custom-input" />
+                        <span asp-validation-for="SubTopic" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TotalQuestions" class="control-label"></label>
+                        <input asp-for="TotalQuestions" class="custom-input" />
+                        <span asp-validation-for="TotalQuestions" class="text-danger"></span>
+                    </div>
+
+                </div>
+
             </div>
-           
+
+
+            <div class="row">
+                <div class="col-md-11">
+                    <label asp-for="AdditionalInstruction" class="control-label"></label>
+                    <textarea rows="4" asp-for="AdditionalInstruction" class="custom-input w-100"></textarea>
+                    <span asp-validation-for="AdditionalInstruction" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="row col-md-11">
+                <div class="row col-md-3 float-left">
+                    <input type="submit" value="Submit" class="btn-submit" />
+                </div>
+            </div>
         </form>
-    </div>
-</div>
+  
 <script>
         bindTest('#TestId');
     setTimeout(() => {
         bindQuestionType('.selQuestionType');
+        if ('@Model.TestId'!=='0')
             $('#TestId').val('@Model.TestId');
         },1000)
 </script>

@@ -23,6 +23,8 @@ namespace Learning.Tutor.ViewModel
         public int TotalMarks { get; set; }
         [Required]
         public int TotalQuestions { get; set; }
+        [Display(Name ="Additional Instruction")]
+        public string AdditionalInstruction { get; set; }
         public int AddedQuestions { get; set; }
         public bool IsActive { get; set; }
         public DateTime Created { get; set; }

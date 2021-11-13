@@ -12,6 +12,7 @@ namespace Auth.Account
    public interface IAuthService
     {
         Task<AppUser> GetUser(LoginViewModel viewModel);
+        Task<AppUser> GetUserByUserId(string userid);
         Task<IdentityResult> AddUser(AppUser appUser, string password,AppRole role);
         Task<int> AddStudent(Student student);
         Task<int> AddTutor(Tutor entity);

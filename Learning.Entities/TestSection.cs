@@ -7,7 +7,7 @@ namespace Learning.Entities
 {
    public class TestSection
     {
-        [Key]
+        
         public int Id { get; set; }
         public int TestId { get; set; }
         public string SectionName { get; set; }
@@ -16,10 +16,11 @@ namespace Learning.Entities
         public int TotalMarks { get; set; }
         public int TotalQuestions { get; set; }
         public int AddedQuestions { get; set; }
+        public string AdditionalInstruction { get; set; }
         public bool IsActive { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
-        public bool? IsOnline { get; set; }
+        public bool IsOnline { get; set; }
 
     }
 }

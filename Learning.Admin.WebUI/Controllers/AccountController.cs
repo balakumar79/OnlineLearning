@@ -43,7 +43,7 @@ namespace Learning.Admin.WebUI.Controllers
 
                     var roles = await _userManager.GetRolesAsync(user);
                     var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = null };
-                    await AuthenticationConfig.DoLogin(HttpContext, null, sessionObj);
+                    await AuthenticationConfig.DoLogin(HttpContext, null, sessionObj,model.RememberMe);
                     if (roles.Contains(Utils.Enums.Roles.Student.ToString()))
                         return Redirect("~/Dashboard");
                 }

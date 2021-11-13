@@ -41,8 +41,8 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-               <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@item.Title</a>
-            </td>
+                <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@item.Title</a>
+</td>
             <td>
                 @Html.DisplayFor(modelItem => item.GradeName)
             </td>
@@ -65,9 +65,10 @@
            
             <td>
                 <a href="CreateTest?id=@item.Id">
-                    <i class="fa fa-pencil-square text-info"> </i></a> |
-                    <a href="DeleteTest?id=@item.Id"><i class="fa fa-times-circle text-danger"></i></a>
-</td>
+                    <i class="fa fa-eye text-info"> </i>
+                </a> |
+                <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+            </td>
         </tr>
 }
     </tbody>

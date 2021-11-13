@@ -47,19 +47,18 @@ namespace TutorWebUI.Controllers
                 if (user!=null)
                 {
                  
-                    var roles =await _userManager.GetRolesAsync(user);
-                    var screens = await authService.GetScreenAccessPrivilage(roleId:roles,userID:user.Id);
-                    var sessionObj = new SessionObject {User= user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
-                    await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj,model.RememberMe);
+                   var sessionObj= HttpContext.Session.GetObjectFromJson<SessionObject>("sessionObj");
+                    //await AuthenticationConfig.DoLogin(HttpContext, sessionObj.ScreenAccess, sessionObj, model.RememberMe);
+                    //await HttpContext.RefreshLoginAsync();
                     if (returnUrl==null)
                     {
-                        if (roles.Contains(Learning.Utils.Enums.Roles.Student.ToString()))
+                        if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Student.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
-                        else if (roles.Contains(Learning.Utils.Enums.Roles.Parent.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Parent.ToString()))
                             return RedirectToAction(controllerName: "Parent", actionName: "Dashboard");
-                        else if (roles.Contains(Learning.Utils.Enums.Roles.Tutor.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Tutor.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
-                        else if (roles.Contains(Learning.Utils.Enums.Roles.Admin.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Admin.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
                         else
                             return Redirect("~/Home");
@@ -193,8 +192,10 @@ namespace TutorWebUI.Controllers
        [AcceptVerbs("Get","Post")]
         public async Task<IActionResult> LogOut()
         {
-            await _signInManager.SignOutAsync();
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+             _signInManager.SignOutAsync().Wait();
+             HttpContext.SignOutAsync().Wait();
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var us = User;
             return RedirectToAction("Login");
         }
         public IActionResult ParentProfile(RegisterViewModel model)

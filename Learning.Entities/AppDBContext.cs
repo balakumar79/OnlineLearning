@@ -26,6 +26,7 @@ namespace Learning.Entities
         public virtual DbSet<GradeLevels> GradeLevels { get; set; }
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<StudentTest> StudentTests{ get; set; }
+        public virtual DbSet<StudentAnswerLog> StudentAnswerLogs { get; set; }
         public virtual DbSet<StudentTestHistory> StudentTestHistories{ get; set; }
 
         public virtual DbSet<Tutor> Tutors { get; set; }
@@ -44,9 +45,9 @@ namespace Learning.Entities
         public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions{ get; set; }
         
         public virtual DbSet<MCQAnswer> MCQAnswers{ get; set; }
-        public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
-        public virtual DbSet<TrueOrFalse> TrueOrFalses{ get; set; }
-        public virtual DbSet<Matching> Matchings{ get; set; }
+        //public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
+        public virtual DbSet<TrueOrFalse> TrueOrFalses { get; set; }
+        //public virtual DbSet<Matching> Matchings{ get; set; }
         public virtual DbSet<TestStatus> TestStatuses { get; set; }
 
 

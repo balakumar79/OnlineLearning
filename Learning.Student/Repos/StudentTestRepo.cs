@@ -91,9 +91,47 @@ namespace Learning.Student.Repos
 
         }
 
-       
+        public int InsertStudentAnswerLog(StudentAnswerLog log)
+        {
+            try
+            {
+                _dBContext.StudentAnswerLogs.Add(log);
+                return _dBContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
 
+                throw;
+            }
+        }
 
+        public int InsertStudentTestResult(StudentTestHistory studentTestHistory)
+        {
+            try
+            {
+                if (studentTestHistory != null)
+                {
+                    var db = _dBContext.StudentTestHistories.Add(studentTestHistory);
+                    return _dBContext.SaveChanges();
+                }
+                else
+                    return 0;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+        public List<StudentTest> GetStudentTests(int studenttestid = 0)
+        {
+            if (studenttestid > 0)
+            {
+                return _dBContext.StudentTests.Where(s => s.Id == studenttestid).ToList();
+            }
+            else
+                return _dBContext.StudentTests.ToList();
+        }
 
     }
 }

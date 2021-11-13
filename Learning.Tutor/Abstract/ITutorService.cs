@@ -28,9 +28,11 @@ namespace Learning.Tutor.Abstract
         Task<int> DeleteTest(int id);
         int DeleteSection(List<int> sectionid);
         int SetQuestionStatus(int questionid, bool status);
-       Task<int> SetOnlineStatus(int sectionid, bool status);
+       int SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         Task<List<QuestionType>> GetTestType();
         public List<TestViewModel> GetAllTest();
+
+        int savetrueorfalse();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Learning.Auth;
+using Learning.Entities;
 using Learning.Student;
 using Learning.Student.Abstract;
 using Learning.Tutor.Abstract;
@@ -14,10 +15,12 @@ using System.Threading.Tasks;
 
 namespace Learning.API.Controllers
 {
-    [EnableCors("LearningCors")]
+    
+    
     [Authorize]
-    [Route("[controller]/[action]/{id?}")]
     [ApiController]
+    [Route("[controller]/[action]/{id?}")]
+
     public class StudentTestController : ControllerBase
     {
         #region variables
@@ -33,7 +36,7 @@ namespace Learning.API.Controllers
         }
         #endregion
         #region methods
-        [HttpPost]
+        [HttpGet]
         public IEnumerable<StudentTestViewModel> GetStudentTest()
         {
             var userid = Convert.ToInt32(HttpContext.User.Identity.GetUserID());
@@ -41,6 +44,17 @@ namespace Learning.API.Controllers
         }
 
         [HttpPost]
+        public JsonResult SaveStudentAnswerLog(StudentAnswerLog log) => new JsonResult(new { rows = _studentService.InsertStudentAnswerLog(log) });
+
+        [HttpPost]
+        public JsonResult SaveStudentTest(StudentTestHistory model)
+        {
+            var studentTestHistory = _studentService.InsertStudentTestResult(model);
+            return new JsonResult(new { rows = studentTestHistory });
+        }
+
+
+        [HttpGet]
         public JsonResult GetTest(int? testid)
         {
             if (testid == null)
@@ -50,13 +64,13 @@ namespace Learning.API.Controllers
 
         }
 
-        [HttpPost]
-        public JsonResult GetQuestions(int questionid)
+        [HttpGet]
+        public JsonResult GetQuestionsByQuestionId(int questionid)
         {
             return new JsonResult(new { Question = _tutorService.GetQuestionDetails(questionid) });
         }
-        [HttpPost]
-        public JsonResult GetQuestionByTestId(int testid)
+        [HttpGet]
+        public JsonResult GetQuestionsByTestId(int testid)
         {
             return new JsonResult(new { Questions = _tutorService.GetQuestionsByTestId(testid) });
         }
@@ -70,6 +84,13 @@ namespace Learning.API.Controllers
         public JsonResult GetGradeLevels(int? gradeid)
         {
             return new JsonResult(Ok(new { grades = gradeid == null ? _tutorService.GetGradeLevels() : _tutorService.GetGradeLevels().Where(s => s.Id == gradeid) }));
+        }
+
+
+        [AllowAnonymous]
+        public JsonResult GetLoggedInUser()
+        {
+            return new JsonResult(new {user= User.Identity,TokenBasedUser= HttpContext.Items["User"] });
         }
         //// POST api/<Test>
         //[HttpPost]

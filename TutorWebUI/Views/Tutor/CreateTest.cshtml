@@ -8,79 +8,85 @@
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
         <h1>Create Test</h1>
-          <a class="text-white h6" href="/tutor/exams"> <i class="fa fa-arrow-circle-left"></i> Back</a>
+          <a class="text-white h6" href="/tutor/exams"> <i class="fa fa-arrow-circle-left"></i> Back</a> |
+        <a class="text-white h6" href="/tutor/createtest">Create a Test</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
 
-                <form asp-action="CreateTest">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                 
+            <form asp-action="CreateTest">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        @Html.HiddenFor(p => p.Id)
-                        <div class="row justify-content-center">
-                            <div class="form-group col-md-4">
-                                <label asp-for="Title" class="control-label"></label>
-                                <input asp-for="Title" type="text" class="form-control" />
-                                <span asp-validation-for="Title" class="text-danger"></span>
-                            </div>
-                      
-                            <div class="form-group col-md-4">
-                                <label asp-for="GradeID" class="control-label"></label>
-                                <select asp-for="GradeID" class="form-control" id="selGrade"></select>
-                                <span asp-validation-for="GradeID" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="row justify-content-center">
-                            <div class="form-group col-md-4">
-                                <label asp-for="SubjectID" class="control-label"></label>
-                                <select asp-for="SubjectID" id="selSubject" class="form-control"></select>
-                                <span asp-validation-for="SubjectID" class="text-danger"></span>
-                            </div>
 
-                            <div class="form-group col-md-4">
-                                <label asp-for="Description" class="control-label"></label>
-                                <textarea asp-for="Description" class="form-control"></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group col-md-4">
-                                    <label asp-for="Language" class="control-label"></label>
-                                    <select asp-for="Language" class="form-control"></select>
-                                    <span asp-validation-for="Language" class="text-danger"></span>
-                                </div>
+                @Html.HiddenFor(p => p.Id)
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="Title" class="control-label"></label>
+                        <input asp-for="Title" type="text" class="custom-input" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
 
-                                <div class="form-group col-md-4">
-                                    <label asp-for="Duration" class="control-label"></label> (Mins)
-                                    <input asp-for="Duration" class="form-control" />
-                                    <span asp-validation-for="Duration" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group col-md-4">
-                                    <label asp-for="StartDate" class="control-label"></label>
-                                    <input asp-for="StartDate" class="form-control" />
-                                    <span asp-validation-for="StartDate" class="text-danger"></span>
-                                </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="GradeID" class="control-label"></label>
+                        <select asp-for="GradeID" class="custom-input" id="selGrade"></select>
+                        <span asp-validation-for="GradeID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="SubjectID" class="control-label"></label>
+                        <select asp-for="SubjectID" id="selSubject" class="custom-input"></select>
+                        <span asp-validation-for="SubjectID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input asp-for="SubjectName" style="display:none" id="txtSubject" class="custom-input" />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="Language" class="control-label"></label>
+                        <select asp-for="Language" class="custom-input"></select>
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                  
 
-                                <div class="form-group col-md-4">
-                                    <label asp-for="EndDate" class="control-label"></label>
-                                    <input asp-for="EndDate" class="form-control" />
-                                    <span asp-validation-for="EndDate" class="text-danger"></span>
-                                </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="StartDate" class="control-label"></label>
+                        <input asp-for="StartDate" class="custom-input" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
 
-                            </div>
-                            <div class="row justify-content-center">
-                                <div class="form-group col-md-4">
+                    <div class="form-group col-md-4">
+                        <label asp-for="EndDate" class="control-label"></label>
+                        <input asp-for="EndDate" class="custom-input" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
 
-                                    
-                                    <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-save"></i>
-                                    @(Model==null? "Create" :"Update")</button>
-                                    
-                                </div>
-                                </div>
-                           
-</form>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="Duration" class="control-label"></label> (Mins)
+                        <input asp-for="Duration" class="custom-input" />
+                        <span asp-validation-for="Duration" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="custom-input"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-8">
+
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fa fa-save"></i>
+                            @(Model==null? "Save" :"Update")
+                        </button>
+
+                    </div>
+                </div>
+
+            </form>
             </div>
         </div>
    
@@ -95,6 +101,13 @@
                 $('[name=StartDate],[name=EndDate]')
                     .attr('min', moment().format('YYYY-MM-DDTkk:mm'));
                 $('[name=StartDate]').val(moment().format('YYYY-MM-DDTkk:mm'))
+                document.getElementById('@Html.IdFor(s=>s.SubjectID)').addEventListener('change', function (e) {
+
+                    if ($('#selSubject option:selected').text().toLowerCase() == 'others')
+                        document.getElementById('@Html.IdFor(s=>s.SubjectName)').style.display = 'block';
+                    else
+                        document.getElementById('@Html.IdFor(m=>m.SubjectName)').style.display = 'none';
+                })
             })
         </script>
     }

@@ -1,4 +1,6 @@
-﻿using Learning.Entities;
+﻿using Learning.Auth;
+using Learning.Entities;
+using Learning.Tutor.Abstract;
 using Learning.Utils;
 using Learning.Utils.Config;
 using Learning.ViewModel.Account;
@@ -25,17 +27,19 @@ namespace Auth.Account
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly ITutorService _tutorService;
         #endregion
 
         #region constructor
         public AuthService(IAuthRepo authRepo,IHttpContextAccessor httpContextAccessor,UserManager<AppUser> userManager,RoleManager<AppRole> roleManager,
-            IEmailService _email,SignInManager<AppUser> signInManager)
+            IEmailService _email,SignInManager<AppUser> signInManager,ITutorService tutorService)
         {
             _signInManager = signInManager;
             httpContext = httpContextAccessor;
             this.emailService = _email;
             this._userManager = userManager;
             this._roleManager = roleManager;
+            _tutorService = tutorService;
             this._authRepo = authRepo;
         }
         #endregion
@@ -43,16 +47,22 @@ namespace Auth.Account
         #region methods
         public async Task<AppUser> GetUser(LoginViewModel viewModel)
         {
-            var user = await _userManager.FindByNameAsync(viewModel.UserName);
+            var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true);
             if (user != null)
             {
                 var result = await _signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
                 if (result.Succeeded)
                 {
+                   
                     return user;
                 }
             }
             return null;
+        }
+
+        public async Task<AppUser> GetUserByUserId(string userid)
+        {
+            return await _userManager.FindByIdAsync(userid);
         }
         public async Task<IdentityResult> AddUser(AppUser appUser, string password,AppRole role)
         {

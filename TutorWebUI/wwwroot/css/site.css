@@ -17,6 +17,14 @@ a {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+.btn-submit {
+    background: #9ABF42;
+    color: white;
+    margin: 6px;
+    padding: 8px;
+    border: none;
+    box-shadow: #d2d9d3 0px 0px 0px 5px;
+}
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;

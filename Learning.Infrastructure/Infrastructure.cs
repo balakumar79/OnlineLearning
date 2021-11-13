@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Learning.Student.Abstract;
 using Learning.Student.Repos;
 using Learning.Student.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Learning.Infrastructure
 {
@@ -28,9 +29,19 @@ namespace Learning.Infrastructure
         {
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(configuration.GetConnectionString("DBContext")));
         }
+
+        public static void AddKeyContext(IServiceCollection services,IConfiguration configuration)
+        {
+            // Add a DbContext to store your Database Keys
+            services.AddDbContext<LearningKeyContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DBContext")));
+            services.AddDataProtection()
+.PersistKeysToDbContext<LearningKeyContext>().SetApplicationName("LearningCommon");
+        }
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<AppConfig, AppConfig>();
+            services.AddSingleton<AppConfig, AppConfig>();
             var smtpConfig = new SMTPConfig();
             configuration.Bind("SMTPConfig", smtpConfig);
             services.AddSingleton(smtpConfig);

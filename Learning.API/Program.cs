@@ -20,7 +20,7 @@ namespace Learning.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>().UseUrls("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com");
                 });
     }
 }

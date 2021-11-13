@@ -48,7 +48,7 @@ namespace Learning.WebUI.Controllers
                     var roles =await _userManager.GetRolesAsync(user);
                     var screens = await authService.GetScreenAccessPrivilage(roleId:roles,userID:user.Id);
                     var sessionObj = new SessionObject {User= user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
-                    await HttpContext.RefreshLoginAsync();
+                    //await HttpContext.RefreshLoginAsync();
                     await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj,model.RememberMe);
                     if (returnUrl==null)
                     {

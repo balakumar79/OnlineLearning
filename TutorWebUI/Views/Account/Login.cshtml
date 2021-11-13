@@ -4,7 +4,7 @@
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout_Login.cshtml";
 }
-
+@using System.Security.Claims; 
 
             <section class="testimonial py-5" id="testimonial">
                 <div class="container">
@@ -321,5 +321,12 @@
             </section>
 
 @{ await Html.RenderPartialAsync("_Partial_Layout_Footer");}
+<script>
+    document.addEventListener('readystatechange', doc => {
+        if (doc.target.readyState === 'complete') {
+            console.log('@User.Identity.IsAuthenticated', '@User.Identity.Name', '@User.Identities.Count()')
+        }
+    })
+</script>
 
 

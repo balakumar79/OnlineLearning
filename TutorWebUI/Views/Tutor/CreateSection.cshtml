@@ -1,14 +1,14 @@
 ﻿
 @{
-    ViewData["Title"] = "CreateSection";
+    ViewData["Title"] = "Create Section";
     Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
 }
 
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
         <h1>Create Section</h1>
-        <a class="text-right" asp-action="managesections"><i class="fa fa-arrow-circle-left"></i> Back | </a>
-        <a href="createsection">Create New</a>
+        <a class="text-right text-white" asp-action="managesections"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+        <a href="createsection" class="text-white">Create New</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
             <div class="row justify-content-center" id="tblSection">
 
@@ -21,7 +21,7 @@
         document.addEventListener('readystatechange', doc => {
                 initLoader();
             if (doc.target.readyState === 'complete') {
-                insertdata('/tutor/PartialTestSection', { sectionid: '@Context.Request.Query["sectionid"]' }, 'html').done(res => {
+                insertdata('/tutor/PartialTestSectionBySectionId', { sectionid: '@Context.Request.Query["sectionid"]' }, 'html').done(res => {
                     $('#tblSection').html(res);
                     removeLoader();
                 });

@@ -2,11 +2,11 @@
 
     if (doc.target.readyState === 'complete') {
         var questiontypeid = parseInt($('.selQuestionType').val());
-       
+
         $('#mcqoptions').hide();
         $('#trueorfalse').hide();
-    
-       
+
+
 
         //bind to section dropdown upon test select change
         $('.selTest').on('change', testF => {
@@ -38,7 +38,7 @@
             //        templateResult: function (el) {
             //            return $(el.html);
             //    },
-               
+
             //    dropdownAutoWidth: true
             //});
             //});
@@ -74,8 +74,8 @@
                     questiontypeid = parseInt($('.selQuestionType').val());
                     //bind options to gap filling select2
                     if (questiontypeid === QuestionType["Gap Filling"] || questiontypeid === 5) {
-                       
-                        var textStr = tinyMCE.activeEditor.getContent({format:'text'}).split('{');
+
+                        var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
                         let ans = [];
                         if (textStr.length > 0) {
                             textStr.forEach(el => {
@@ -102,12 +102,20 @@
             }
         });
 
-        
+
         var options = $('#mcqoptions .options select');
-       
+
         var correctoption = $('#mcqoptions .ans select');
-      
-        
+
+        //select2 order item issue fix
+        correctoption.on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
+        })
 
         //option select change function
         $('.selQuestionType').change(fun => {
@@ -122,128 +130,135 @@
             });
             var questiontypeID = parseInt(fun.target.value);
             //CKEDITOR.instances.editor1.on('change');
-           
+
             //bind correct answers to select2
             /*if (questiontypeID === QuestionType.MCQ || questiontypeID === QuestionType["Gap Filling"] || questiontypeID === QuestionType. || fun.target.value === '3') {*/
-                $('#mcqoptions').show('slow');
-                $('#mcqoptions .ans').show();
-            
-                //check if the question is new or edit
-                if (opts.length > 0) {
+            $('#mcqoptions').show('slow');
+            $('#mcqoptions .ans').show();
 
-                } else {
-                    opts = options.val(); 
-                    //clear the options on select change event
-                    options.empty().select2().val(null).change();
-                    correctoption.empty();
-                    s2correct.select2('destroy').select2();
-                }
-                i = 0;
+            //check if the question is new or edit
+            if (opts.length > 0) {
 
-                console.log('selectedQuestionTypeID', questiontypeID);
+            } else {
+                opts = options.val();
+                //clear the options on select change event
+                options.empty().select2().val(null).change();
+                correctoption.empty();
+                s2correct.select2('destroy').select2();
+            }
+            i = 0;
 
-                switch (questiontypeID) {
-                    case 1:case 5:
-                        {
-                            if (questiontypeID == 5)
-                                $('#mcqoptions .ans').hide('slow');
-                            options.select2({
-                                tags: true,
-                                placeholder: "Enter your options here...",
-                                allowClear: true,
-                                disabled: false
-                            }).on('select2:select change', fun => {
-                                correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
-                            }).on('select2:clear', sclear => {
-                                s2correct.empty().change();
-                            }).on('select2:unselect', ucf => {
-                                correctoption.empty();
-                                correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
-                            });
-                            break;
-                        }
-                    case 2:
-                        {
+            console.log('selectedQuestionTypeID', questiontypeID);
+
+            //switch different type of questions
+            switch (questiontypeID) {
+                case 1: case 5: case 6:
+                    {
+                        if (questiontypeID == 5)
                             $('#mcqoptions .ans').hide('slow');
-                            options.select2({
-                                tags: false,
-                                placeholder: null,
-                                allowClear: false,
-                                disabled: true
-                            }).on('select2:select change', fun => {
-
-                                correctoption.select2({ data: opts });
+                        if (questiontypeID == 6) {
+                            tinymce.activeEditor.getBody().setAttribute('contenteditable', false);
+                            correctoption.on("select2:select", function (evt) {
+                                tinyMCE.activeEditor.setContent($('#mcqoptions .ans select').val().join(' '));
                             });
-                            break;
+                        } else {
+                            tinymce.activeEditor.getBody().setAttribute('contenteditable', true);
                         }
-                    case 3:
-                        {
-                            $('#mcqoptions').show('slow');
-                            $('#mcqoptions .ans').hide('slow');
-                            $('#matching').show('slow');
+                        options.select2({
+                            tags: true,
+                            placeholder: "Enter your options here...",
+                            allowClear: true,
+                            disabled: false
+                        }).on('select2:select change', fun => {
+                            correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
+                        }).on('select2:clear', sclear => {
+                            s2correct.empty().change();
+                        }).on('select2:unselect', ucf => {
+                            correctoption.empty();
+                            correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
+                        });
+                        break;
+                    }
+                case 2:
+                    {
+                        $('#mcqoptions .ans').hide('slow');
+                        options.select2({
+                            tags: false,
+                            placeholder: null,
+                            allowClear: false,
+                            disabled: true
+                        }).on('select2:select change', fun => {
 
-                            setTimeout(() => { options.change() }, 1000);
-                            options.select2({
-                                tags: true,
-                                placeholder: 'Type the sentence here...',
-                                allowClear: true,
-                                disabled: false
-                            }).on('select2:select change', opt => {
-                                    let tr = '';
-                                if (questiontypeID == QuestionType["Match the following"]) {
-                                    $('#matching .table tbody').empty();
-                                    //format unformated options
-                                    if (correctopts.length === 0) {
-                                        $('#mcqoptions .options select').val().forEach(el => {
-                                            el = el;
-                                            tr = $(
-                                                `<tr>
+                            correctoption.select2({ data: opts });
+                        });
+                        break;
+                    }
+                case 3:
+                    {
+                        $('#mcqoptions').show('slow');
+                        $('#mcqoptions .ans').hide('slow');
+                        $('#matching').show('slow');
+
+                        setTimeout(() => { options.change() }, 1000);
+                        options.select2({
+                            tags: true,
+                            placeholder: 'Type the sentence here...',
+                            allowClear: true,
+                            disabled: false
+                        }).on('select2:select change', opt => {
+                            let tr = '';
+                            if (questiontypeID == QuestionType["Match the following"]) {
+                                $('#matching .table tbody').empty();
+                                //format unformated options
+                                if (correctopts.length === 0) {
+                                    $('#mcqoptions .options select').val().forEach(el => {
+                                        el = el;
+                                        tr = $(
+                                            `<tr>
                                             <td>${el}</td>
                                             <td><input class="ans" value=''/></td>
                                         </tr>`
-                                            );
-                                            $('#matching .table tbody').append(tr);
+                                        );
+                                        $('#matching .table tbody').append(tr);
 
-                                        });
-                                    } else {
-                                        console.log(correctopts)
-                                        correctopts.forEach(el => {
-                                            el = el.option;
-                                            tr = $(
-                                                `<tr>
+                                    });
+                                } else {
+                                    console.log(correctopts)
+                                    correctopts.forEach(el => {
+                                        el = el.option;
+                                        tr = $(
+                                            `<tr>
                                             <td>${el.substring(0, el.lastIndexOf('{'))}</td>
                                             <td><input class="ans" value='${el.substring(el.lastIndexOf('{') + 1, el.lastIndexOf('}'))}'/></td>
                                         </tr>`
-                                            );
-                                            $('#matching .table tbody').append(tr);
+                                        );
+                                        $('#matching .table tbody').append(tr);
 
-                                        });
-                                    }
+                                    });
                                 }
+                            }
                         });
-                            break;
-                        }
-
-                    case 4:
-                        {
-                            options.select2({
-                                tags: true,
-                                placeholder: "Type your options here...",
-                                allowClear: true,
-                                maximumSelectionLength: 3,
-                                disabled: false
-                            }).on('select2:select change', fun => {
-
-                                $('#mcqoptions .ans select').select2({ data: options.val() });
-                            });
-                            break;
-                        }
-                   
-
-
-                    default: {
-                        $('#mcqoptions').hide('slow'); 
+                        break;
                     }
+
+                case 4:
+                    {
+                        options.select2({
+                            tags: true,
+                            placeholder: "Type your options here...",
+                            allowClear: true,
+                            maximumSelectionLength: 3,
+                            disabled: false
+                        }).on('select2:select change', fun => {
+
+                            $('#mcqoptions .ans select').select2({ data: options.val() });
+                        });
+                        break;
+                    }
+
+                default: {
+                    $('#mcqoptions').hide('slow');
+                }
 
             }
             correctoption.on('select2:select', el => {
@@ -253,12 +268,14 @@
 
             //}
         });
+
         //form validator
         $('select').change(fun => {
             formvalidator();
+
         })
     }
-})
+});
 
 var opts = [];
 var correctopts = [];
@@ -267,7 +284,7 @@ function savequestion(cnt) {
 
     var isvalid = formvalidator();
     if (!isvalid)
-        return isvalid;
+        return undefined;
 
     var answers = [];
     var model = {};
@@ -314,9 +331,11 @@ function savequestion(cnt) {
         }
     }
     console.log(model, answers)
-        insertdata('SaveQuestion', { model: model }).done(res => {
-            if (res == 'ok') {
-                clearformvalues('#frmCreateExam');
+    initLoader();
+    insertdata('/Tutor/SaveQuestion', { model: model }).done(res => {
+        removeLoader();
+        if (res == 'ok') {
+                clearformvalues('#frmCreateExam',false);
                 var isupdate = (model.QusID !== 0 && model.QusID !== undefined && model.QusID !== null);
                 notify(`Question ${isupdate ? 'updated' : 'added'} successfully.`, 'success');
                 if (isupdate)
@@ -330,7 +349,7 @@ function savequestion(cnt) {
 }
 
 var QuestionType =
-    { 'MCQ': 1, 'Gap Filling': 2, 'Match the following': 3, 'True or False': 4, 'One word answer': 5 }
+    { 'MCQ': 1, 'Gap Filling': 2, 'Match the following': 3, 'True or False': 4, 'One word answer': 5, 'Re-Arrange':6 }
 
 
 function formvalidator() {
@@ -359,16 +378,16 @@ function formvalidator() {
         return isvalid;
 }
 
-function clearformvalues(form) {
+function clearformvalues(form,clearDefaultSelection=true) {
+
     $(form).find('input,select,textarea').toArray().forEach(fun => {
-        
-        if (fun.tagName.toLowerCase() === 'select') {
-            $(fun).val($(fun).find('option:first').val());
-        } else {
-            fun.value == "";
+        if (clearDefaultSelection) {
+            if (fun.tagName.toLowerCase() === 'select') {
+                $(fun).val($(fun).find('option:first').val());
+            } else {
+                fun.value == "";
+            }
         }
-        if (fun.id == 'selSection')
-            console.log($(fun).val(''));
     })
     if (tinyMCE.activeEditor !== null) {
 
@@ -384,6 +403,8 @@ function clearformvalues(form) {
     $('[name=QusID]').val('');
     $('.validator-1').remove();
 }
+
+
 
 function question_popup(cnt) {
     clearformvalues('#frmCreateExam');

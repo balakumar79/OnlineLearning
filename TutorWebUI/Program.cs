@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TutorWebUI
 {
@@ -22,7 +16,10 @@ namespace TutorWebUI
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseIISIntegration();
+                    webBuilder.ConfigureKestrel((context, options) =>
+                    {
+                        options.AddServerHeader = true;
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

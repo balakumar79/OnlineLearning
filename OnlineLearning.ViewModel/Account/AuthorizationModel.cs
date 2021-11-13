@@ -42,12 +42,13 @@ namespace Learning.ViewModel.Account
 
         public class CustomClaimTypes
         {
-            public const string Permission = "permission";
+            public const string Permission = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/permission";
             public const string TutorID = "tutorId";
             public const string Role = "role";
             public const string RoleId = "roleid";
 
         }
+        public const string IdentityApplicationDefault = "Identity.Application";    
         public class ScreenFormeter
         {
             public string ScreenName { get; set; }
