@@ -52,7 +52,7 @@ namespace TutorWebUI.Controllers
                     //await HttpContext.RefreshLoginAsync();
                     if (returnUrl==null)
                     {
-                        if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Student.ToString()))
+                        if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Minor.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
                         else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Parent.ToString()))
                             return RedirectToAction(controllerName: "Parent", actionName: "Dashboard");

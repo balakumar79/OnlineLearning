@@ -335,7 +335,7 @@
 
                 <!--Create question modal popup-->
                 <div class="modal" id="myModal2">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
 
                             <!-- Modal Header -->
@@ -382,6 +382,8 @@
                                                     </div>
                                                 </div>
 
+                                        <div id="dropdown" class="span3 pnl-dropdown"></div>
+                                                
                                         <div class="well span8">
 
                                             <div class="row">
@@ -409,8 +411,8 @@
             <a  class="dropdown-item btn btn-link" data-save="true" onclick="savequestion(this)">Save and publish</a>
         </div>*-->
                                                 
-                                                        <button type="button" class="btn-pink text-white" data-save="false" onclick="savequestion(this)">Save as draft</button>
-                                                        <button type="button" class="btn-dark" data-save="true" onclick="savequestion(this)">Save and publish</button>
+                                                        <button type="button" class="btn-pink text-white" data-save="1" onclick="savequestion(this)">Save as draft</button>
+                                                        <button type="button" class="btn-dark" data-save="2" onclick="savequestion(this)">Save and publish</button>
                                                         <button type="button" class="btn-danger" onclick="clearformvalues('#frmCreateExam')" data-dismiss="modal">Close</button>
                                                
 </div>
@@ -631,7 +633,7 @@
             $(document).ready(function () {
                 var msg = '@TempData["msg"]';
                 var type = true; type = '@TempData["status"]';
-                console.log(msg.length);
+               
                 if (msg.length > 0) {
                     notify(msg, type ? 'danger' : 'success')
                 }

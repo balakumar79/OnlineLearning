@@ -18,6 +18,7 @@ using Learning.Student.Abstract;
 using Learning.Student.Repos;
 using Learning.Student.Services;
 using Microsoft.AspNetCore.DataProtection;
+using Learning.Auth;
 
 namespace Learning.Infrastructure
 {
@@ -49,6 +50,7 @@ namespace Learning.Infrastructure
             configuration.Bind("SecretKey", secretKey);
             services.AddSingleton(secretKey);
 
+            services.AddScoped<ISecurePassword, SecurePassword>();
             //services.AddTransient(_ => new MySqlConnection(configuration.GetConnectionString("DBContext")));
             //services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IAuthRepo, AuthRepo>();

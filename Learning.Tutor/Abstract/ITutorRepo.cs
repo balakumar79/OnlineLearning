@@ -22,9 +22,11 @@ namespace Learning.Tutor.Abstract
         Task<bool> IsSectionExists(string sectionname, int? id);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int ExamId);
-         Task<int> DeleteTest(int id);
+        List<QuestionViewModel> GetQuestionsByTestId(List<int> TestIds);
+        
+        Task<int> DeleteTest(int id);
         int DeleteSection(List<int> sectionid);
-        int SetQuestionStatus(int questionid, bool status);
+        int SetQuestionStatus(int questionid, int status);
        int SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         List<Language> GetLanguages();

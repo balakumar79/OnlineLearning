@@ -49,6 +49,7 @@ namespace Learning.Auth
                 identity.AddClaim(new Claim(CustomClaimTypes.Permission, screen.ScreenName));
             });
             identity.AddClaim(new Claim(ClaimTypes.Actor, user.UserProfileImage ?? "[Click to edit profile]"));
+            if(sessionObj.Tutor!=null)
             identity.AddClaim(new Claim(CustomClaimTypes.TutorID, sessionObj.Tutor.TutorID.ToString()));
             return identity;
         }

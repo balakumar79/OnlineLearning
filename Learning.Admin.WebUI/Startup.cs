@@ -1,3 +1,6 @@
+using Learning.Admin.Abstract;
+using Learning.Admin.Repo;
+using Learning.Admin.Service;
 using Learning.Auth;
 using Learning.Entities;
 using Learning.Infrastructure;
@@ -29,31 +32,31 @@ namespace Learning.Admin.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
+
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
-            {
-                foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
-                {
+            //services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
+            //{
+            //    foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
+            //    {
 
-                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
-                }
-            }));
+            //        option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
+            //    }
+            //}));
             //AuthenticationConfig.LearningAuthentication(services);
-            Infrastructure.Infrastructure.AddDataBase(services, Configuration);
-            services.AddSession();
-            services.AddScoped<UserManager<AppUser>>();
-            services.AddIdentity<AppUser, AppRole>()
-                .AddEntityFrameworkStores<AppDBContext>()
-                .AddSignInManager<SignInManager<AppUser>>().AddDefaultTokenProviders();
-            services.AddDataProtection()
-.SetApplicationName("LearningCommon");
-            services.AddControllersWithViews();
-            services.AddRazorPages();
-            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
+
+           
+          
+//            services.AddDataProtection()
+//.SetApplicationName("LearningCommon");
+          
+            services.AddScoped<IManageExamService, ManageExamService>();
+            services.AddScoped<IManageExamRepo, ManageExamRepo>();
             services.ConfigureApplicationCookie(op =>
             {
                 op.Cookie.Name = ".AspNet.SharedCookie";
@@ -62,10 +65,27 @@ namespace Learning.Admin.WebUI
                 op.Cookie.IsEssential = true;
                 op.Cookie.MaxAge = TimeSpan.FromDays(4);
                 op.SlidingExpiration = true;
-                op.Cookie.Domain = "localhost";
+                op.Cookie.Path = "/";
                 op.Cookie.SameSite = SameSiteMode.Lax;
                 //op.LoginPath = "/tutor.domockexam.com/account/login";
             });
+
+            Infrastructure.Infrastructure.AddDataBase(services, Configuration);
+
+            Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
+
+            services.AddSession();
+            services.AddIdentity<AppUser, AppRole>(op =>
+            {
+
+            })
+.AddEntityFrameworkStores<AppDBContext>().AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+.AddDefaultTokenProviders();
+
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+            services.AddScoped<UserManager<AppUser>>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,12 +110,11 @@ namespace Learning.Admin.WebUI
 
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

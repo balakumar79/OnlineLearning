@@ -61,7 +61,7 @@ namespace Learning.API
 
             services.AddIdentity<AppUser, AppRole>(op =>
             {
-
+                op.User.RequireUniqueEmail = true;
             })
         .AddEntityFrameworkStores<AppDBContext>()
         .AddDefaultTokenProviders();
@@ -76,7 +76,8 @@ namespace Learning.API
                 op.RequireHttpsMetadata = false;
                 op.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    //ValidateIssuer = true,
+                    ValidateIssuer = false,
+                    ValidateAudience=false,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey:SecretKeyValue"]))
 
                 };
@@ -97,9 +98,8 @@ namespace Learning.API
             services.AddMvc();
             //services.AddControllersWithViews();
             //services.AddRazorPages();
-
             Infrastructure.Infrastructure.AddServices(services, Configuration);
-
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,9 +113,10 @@ namespace Learning.API
             app.UseAuthentication();
 
             app.UseRouting();
-            app.UseCors(x=>x.WithOrigins("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()) ;
+            app.UseCors(x => x.AllowAnyOrigin()
+            //WithOrigins("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
             //app.UseMiddleware<JSWMiddleware>();
 
             app.UseAuthorization();

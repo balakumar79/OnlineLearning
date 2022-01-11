@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+@inject Learning.Admin.Abstract.IManageExamService manageExamService
+  @{ 
+      var statuslist = manageExamService.GetAllStatuses().Select(p => new SelectListItem { Text = p.Status, Value = p.Id.ToString() });
+  }
+<table class="display responsive nowrap" style="width:100%" id="examtable">
+    <thead>
+        <tr>
+            <th>
+                TestId
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Grade
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Dur.
+            </th>
+            <th>
+
+                EndDate
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Created
+            </th>
+
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@item.Title</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GradeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubjectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.Label(item.EndDate.Date.ToShortDateString())
+                </td>
+                <td>
+                    @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
+                    @Html.DropDownListFor(m=>item.StatusID,statuslist,new { @onchange= "changeteststatus(this)" })
+                </td>
+                <td>
+                    @Html.Label(item.Created.ToShortDateString())
+                </td>
+
+
+                <td>
+                    <a href="CreateTest?id=@item.Id">
+                        <i class="fa fa-eye text-info"> </i>
+                    </a> |
+                    <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    function changeteststatus(cnt) {
+        var testid = $(cnt).closest('tr').find('td').eq(0).text();
+        console.log($(cnt).closest('tr').find('td').eq(0));
+        insertdata('/ManageExams/UpdateTestStatus', { testid: testid, statusid: cnt.value }).done(function (res) {
+            if (res > 0) {
+                notify('Status updated successfully.', 'success');
+            } else {
+                notify('There is no update to be processed.', 'warning');
+            }
+        });
+    }
+</script>

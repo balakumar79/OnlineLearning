@@ -2127,12 +2127,10 @@ h1{
 #myModal2 {
     height: 100%;
     background: #191b19bd;
-    left: 259px !important;
 }
 #myModal2 .modal-dialog {
     width: 100%;
     top: 0;
-    float: left;
 }
 .validator {
     color: #ffc107;
@@ -2148,3 +2146,12 @@ h1{
         border-bottom: solid 1px grey;
         width: 100%;
     }
+    /*dropdown question type */
+.pnl-dropdown {
+    display: flex;
+    justify-content: space-evenly;
+    width: auto;
+    margin: 0 auto;
+    background: #A0C5E8;
+    padding: 10px 0;
+}

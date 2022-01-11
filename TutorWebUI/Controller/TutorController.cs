@@ -75,7 +75,7 @@ namespace TutorWebUI.Controllers
         {
             return View();
         }
-        public IActionResult Partial_QuestionsById(int testId)
+        public IActionResult Partial_QuestionsByTestId(int testId)
         {
             return PartialView(_tutorService.GetQuestionsByTestId(testId));
         }
@@ -192,7 +192,7 @@ namespace TutorWebUI.Controllers
             return RedirectToAction(nameof(Exams));
         }
 
-        public int SetQuestionStatus(int questionid, bool status)
+        public int SetQuestionStatus(int questionid, int status)
         {
            return _tutorService.SetQuestionStatus(questionid, status);
         }
@@ -216,7 +216,6 @@ namespace TutorWebUI.Controllers
             else return Json(count);
         }
 
-        [AllowAnonymous]
         public async Task<JsonResult> GetTest()
         {
             return Json(_tutorService.GetTestByUserID(User.Identity.GetTutorId()));

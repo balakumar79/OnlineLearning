@@ -31,6 +31,10 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.GetQuestionsByTestId(TestId);
         }
+        public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestIds)
+        {
+            return _tutorRepo.GetQuestionsByTestId(TestIds);
+        }
         public Task<List<QuestionType>> GetQuestionTypes() => _tutorRepo.GetQuestionTypes();
         public List<TestSection> GetTestSections(int sectionid)
         {
@@ -54,7 +58,7 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.GetTestById(id);
         }
-        public int SetQuestionStatus(int questionid, bool status)
+        public int SetQuestionStatus(int questionid, int status)
         {
             return _tutorRepo.SetQuestionStatus(questionid, status);
         }

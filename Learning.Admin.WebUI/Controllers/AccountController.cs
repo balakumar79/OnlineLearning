@@ -3,6 +3,8 @@ using Learning.Auth;
 using Learning.Entities;
 using Learning.Tutor.Abstract;
 using Learning.ViewModel.Account;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +19,14 @@ namespace Learning.Admin.WebUI.Controllers
     {
         readonly IAuthService authService;
         readonly UserManager<AppUser> _userManager;
+        SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
         
-        public AccountController(IAuthService authService,UserManager<AppUser> userManager)
+        public AccountController(IAuthService authService,UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
         {
             this._userManager = userManager;
             this.authService = authService;
+            this._signInManager = signInManager;
         }
         public IActionResult Index()
         {
@@ -44,8 +48,10 @@ namespace Learning.Admin.WebUI.Controllers
                     var roles = await _userManager.GetRolesAsync(user);
                     var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = null };
                     await AuthenticationConfig.DoLogin(HttpContext, null, sessionObj,model.RememberMe);
-                    if (roles.Contains(Utils.Enums.Roles.Student.ToString()))
+                    if (roles.Contains(Utils.Enums.Roles.Admin.ToString()))
                         return Redirect("~/Dashboard");
+                    else
+                        return Forbid();
                 }
                 else
                 {
@@ -58,9 +64,18 @@ namespace Learning.Admin.WebUI.Controllers
                 foreach (var error in ModelState.Select(p => p.Value).Where(p => p.Errors.Count > 0))
                     ModelState.AddModelError("", error.Errors.FirstOrDefault().ErrorMessage);
             }
-            return View(model);
+            return View(Json("returned no result"));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> LogOut()
+        {
+            _signInManager.SignOutAsync().Wait();
+            HttpContext.SignOutAsync().Wait();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var us = User;
+            return RedirectToAction("Login");
+        }
         [AllowAnonymous]
         public IActionResult IsEmailExists(string Email, int id)
         {

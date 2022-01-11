@@ -31,16 +31,18 @@ namespace Learning.API.Controllers
         private SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
         readonly Utils.Config.SecretKey _secretkey;
+        readonly ISecurePassword _securePassword;
         #endregion
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-            Utils.Config.SecretKey appSet)
+           ISecurePassword securePassword, Utils.Config.SecretKey appSet)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
             this.authService = auth;
             this._signInManager = signInManager;
+            this._securePassword = securePassword;
             _secretkey = appSet;
         }
         #endregion
@@ -48,33 +50,48 @@ namespace Learning.API.Controllers
         //post: login
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model,string UserName, string returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     var user = await authService.GetUser(model);
-                    if (user != null)
+                    var student = await authService.GetStudent(model);
+                    if (user != null || student != null)
                     {
-                        var roles = await _userManager.GetRolesAsync(user);
-                        var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
-                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = _tutorService.GetTutorProfile(user.Id) };
-                        //await HttpContext.RefreshLoginAsync();
-                     var result=    AuthenticationConfig.DoLogin(screens, sessionObj,_secretkey.SecretKeyValue);
-                     
-                        return Ok(new
+                        if (user != null && student == null)
                         {
-                            Id = user.Id,
-                            Username = user.UserName,
-                            Email = user.Email,
-                            useraccess = user.HasUserAccess,
-                            result.Value
-                        });
+                            var roles = await _userManager.GetRolesAsync(user);
+                            var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
+
+                            var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = student, Tutor = _tutorService.GetTutorProfile(user.Id),Childs=await authService.GetAssociatedStudents(user.Id) };
+                            //await HttpContext.RefreshLoginAsync();
+                            var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
+
+                            return Ok(new
+                            {
+                                user = new
+                                {
+                                    Id = user.Id,
+                                    Username = user.UserName,
+                                    Email = user.Email,
+                                    useraccess = user.HasUserAccess,
+                                    result.Value,
+                                    roles = sessionObj.RoleID
+                                },
+                                childs =  sessionObj.Childs
+
+                            });
+                        }
+                        else
+                        {
+                            return await StudentLogin(model);
+                        }
                     }
                     else
                     {
-                        return new JsonResult(new { result = false }); ;
+                        return new JsonResult(new { result = false });
                     }
                 }
                 catch (Exception ex)
@@ -85,53 +102,115 @@ namespace Learning.API.Controllers
             }
             else
             {
-                return new JsonResult(ModelState.Select(p=>p.Value).Where(o=>o.Errors.Count>0));
+                return new JsonResult(ModelState.Select(p => p.Value).Where(o => o.Errors.Count > 0));
             }
         }
-       
+
+        public async Task<IActionResult> StudentLogin(LoginViewModel model)
+        {
+            var student = await authService.GetStudent(model);
+            if (student == null)
+                return new JsonResult(new { user = new AppUser() });
+            var roles = new List<string> { Utils.Enums.Roles.Minor.ToString() };
+            var userscreens = await authService.GetScreenAccessPrivilage(student.Id,roles);
+            
+            var sessionObj = new SessionObject
+            {
+                RoleID = roles.ToList(),
+                ScreenAccess = userscreens,
+                User = new AppUser { Id = student.Id, FirstName = student.FirstName, LastName = student.LastName, UserName = student.UserName, Student = student },
+                Student = student
+            };
+            var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, userscreens);
+            return Ok(new
+            {
+                student = new
+                {
+                    studentId = student.Id,
+                    username = student.UserName,
+                    UserId = student.UserID,
+                    firstName = student.FirstName,
+                    lastName = student.LastName,
+                    languageKnown = student.LanguagesKnown,
+                    motherTongue = student.MotherTongue,
+                    district = student.StudentDistrict,
+                    institution = student.Institution,
+                    roles=sessionObj.RoleID
+                },
+                token = result.Value
+            });
+        }
+
         [HttpPost]
         public async Task<object> Register(RegisterViewModel registerViewModel)
         {
+            if (authService.IsStudentUserNameExists(registerViewModel.StudentModel.StudentUserName))
+                return new JsonResult(new { error = "Student username already exists." });
             if (ModelState.IsValid)
             {
+                var roleRequested = (Utils.Enums.Roles)registerViewModel.Role;
                 var user = new AppUser
                 {
                     FirstName = registerViewModel.FirstName,
                     LastName = registerViewModel.LastName,
                     Email = registerViewModel.Email,
                     PhoneNumber = registerViewModel.PhoneNumber,
-                    //Gender = registerViewModel.Gender,
+                    Gender =((Utils.Enums.Genders)registerViewModel.Gender).ToString(),
                     UserName = registerViewModel.UserName,
+                    District = registerViewModel.District
                 };
-                var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = "Parent" });
+                var useresult =await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = roleRequested.ToString() });
                 if (!useresult.Succeeded)
                 {
-                    return new JsonResult(new { status =useresult});
+                    return new JsonResult(new { useresult });
                 }
                 else
                 {
-                    var student = new Entities.Student
+
+
+                    if (registerViewModel.StudentModel != null && (registerViewModel.Role == (int)Utils.Enums.Roles.Minor||registerViewModel.Role==(int)Utils.Enums.Roles.Major) )
                     {
-                        FirstName = registerViewModel.StudentFirstName,
-                        LastName = registerViewModel.StudentLastName,
-                        Grade = registerViewModel.GradeLevels,
-                        ParentID = user.Id,
-                        Gender = registerViewModel.StudentGender,
-                        MotherTongue = registerViewModel.MotherTongue,
-                        UserID = registerViewModel.StudentUserName
-                    };
-                    var res = await authService.AddStudent(student);
-                    return new JsonResult(new { result = res });
+                        var student = new Entities.Student
+                        {
+                            FirstName = registerViewModel.StudentModel.StudentFirstName,
+                            LastName = registerViewModel.StudentModel.StudentLastName,
+                            Grade = registerViewModel.StudentModel.GradeLevels,
+                            UserID = user.Id,
+                            Password= _securePassword.Secure(_secretkey.StudentSaltKey,registerViewModel.StudentModel.StudentPassword),
+                            Gender = registerViewModel.StudentModel.StudentGender,
+                            MotherTongue = registerViewModel.StudentModel.MotherTongue,
+                            UserName = registerViewModel.StudentModel.StudentUserName ,
+                            Institution=registerViewModel.    StudentModel.Institution,
+                            LanguagesKnown=registerViewModel.StudentModel.LanguageKnown,
+                            StudentDistrict=registerViewModel.StudentModel.StudentDistrict
+                        };
+                        var res =await authService.AddStudent(student);
+                        return new JsonResult(new {result=true, studentId= res.Id, res.UserID, res.UserName });
+                    }
+                    else if (registerViewModel.Role == (int)Utils.Enums.Roles.Teacher){
+                        var teacher = new Teacher
+                        {
+                            UserId = user.Id,
+                        };
+                      new JsonResult(new {result=true, teacher = await authService.AddTeacher(teacher) });
+                    }
+                    else
+                    {
+                        new JsonResult(new { result = useresult.Succeeded });
+                    }
+
                 }
             }
             else
             {
-                return new JsonResult(ModelState.Select(p=>p.Value).Where(l=>l.Errors.Count>0));
+                return new JsonResult(ModelState.Select(p => p.Value).Where(l => l.Errors.Count > 0));
             }
+            return new JsonResult(new { result = false, message = "Something went wrong" });
         }
 
       
         [HttpGet]
+        [AllowAnonymous]
         public async Task<object> ConfirmEmail(string token, int userid)
         {
             return new JsonResult(new { result = authService.EmailConfirmation(token, userid).Result });
@@ -139,22 +218,25 @@ namespace Learning.API.Controllers
 
        
         [HttpPost]
+        [AllowAnonymous]
         public async Task<object> ForgotPassword(string Email)
         {
-           return new JsonResult(new { result = await authService.ForgotPassword(Email) });
+            var result =  authService.ForgotPassword(Email);
+           return new JsonResult(new { result = result.Result });
             
         }
         [HttpGet]
+        [AllowAnonymous]
         public object ResetPassword(string Token, string Email)
         {
             if (!string.IsNullOrWhiteSpace(Token.Trim()) && !string.IsNullOrWhiteSpace(Email.Trim()))
             {
                 var model = new ResetPasswordViewModel { Email = Email, Token = Token };
-                return  ResultFormatter.JsonResponse(true);
+                return  true;
             }
             else
             {
-                return ResultFormatter.JsonResponse(false, null, "Invalid request");
+                return false;
             }
         }
 
@@ -164,21 +246,28 @@ namespace Learning.API.Controllers
             await HttpContext.SignOutAsync(AuthorizationModel.IdentityApplicationDefault);
             return Ok();
         }
-        //[HttpPost]
-        //public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        //{
-        //    var resut = await authService.ResetPassword(model);
-        //    if (resut.Succeeded)
-        //        return View("ResetPasswordConfirmation");
-        //    else
-        //    {
-        //        foreach (var item in resut.Errors)
-        //        {
-        //            ModelState.AddModelError("", item.Description);
-        //        }
-        //        return View();
-        //    }
-        //}
+
+        public IActionResult IsStudentUserNameExists(string username,int id)
+        {
+           var isexists= authService.IsStudentUserNameExists(username, id);
+            if (isexists)
+                return new JsonResult($"This student username has been already taken.  Please try another one.");
+            else
+                return new JsonResult(true);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<object> ResetPassword(ResetPasswordViewModel model)
+        {
+            var resut = await authService.ResetPassword(model);
+            if (resut.Succeeded)
+                return new { status=true};
+            else
+            {
+                return new { result = false, errors = resut.Errors };
+            }
+        }
 
         //[AcceptVerbs("Get", "Post")]
         //public async Task<IActionResult> LogOut()

@@ -10,24 +10,29 @@ namespace Learning.Tutor.ViewModel
         public int QusID { get; set; }
         [Required]
 
-        [Display(Name ="Qus.Name")]
+        [Display(Name ="Qus. Name")]
         public string QuestionName { get; set; }
         
+        [Display(Name ="Qus. Type")]
         public string QusType { get; set; }
         [Required]
         [Display(Name ="Qus.Type")]
         public int QuestionTypeId { get; set; }
         [Required]
         public int TestId { get; set; }
+        public int SectionId { get; set; }
         public string TestName { get; set; }
         public int Language { get; set; }
-        public int SectionId { get; set; }
-        [Display(Name ="Sec.Name")]
+        public TestSectionViewModel  TestSection { get; set; }
+        [Display(Name ="Sec. Name")]
         public string SectionName { get; set; }
         public List<OptionsViewModel> Options { get; set; }
         public int Mark { get; set; }
         [Display(Name = "Active")]
-        public bool IsActive { get; set; }
+        public int StatusId { get; set; }
+        [Display(Name ="Status")]
+        public string StatusName { get; set; }
+        public string CorrectOption { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
     }

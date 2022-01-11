@@ -11,7 +11,7 @@ namespace Learning.ViewModel.Account
         public string FirstName { get; set; }
         public string LastName { get; set; }
         [Required]
-        public ViewModel.Enums.Genders Gender { get; set; }
+        public int Gender { get; set; }
 
         [Required,DataType(DataType.EmailAddress)]
         [Remote(action: "IsEmailExists", controller: "Account")]

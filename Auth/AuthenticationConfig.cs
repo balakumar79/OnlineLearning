@@ -18,6 +18,7 @@ using Learning.Utils.Config;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Learning.Auth
 {
@@ -41,7 +42,14 @@ namespace Learning.Auth
             }));
         }
 
-
+                     /// <summary>
+                     /// validate using identity
+                     /// </summary>
+                     /// <param name="context"></param>
+                     /// <param name="screenFormeters"></param>
+                     /// <param name="sessionObject"></param>
+                     /// <param name="isPersist"></param>
+                     /// <returns></returns>
         public async static Task DoLogin(HttpContext context, List<ScreenFormeter> screenFormeters, SessionObject sessionObject,bool isPersist)
         {
 
@@ -60,7 +68,7 @@ namespace Learning.Auth
             claims.Add(new Claim(ClaimTypes.GivenName, sessionObject.User.UserName));
             claims.Add(new Claim(ClaimTypes.Name, sessionObject.User.FirstName + " " + sessionObject.User.LastName));
             claims.Add(new Claim(ClaimTypes.Email, sessionObject.User.Email));
-            claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject.Tutor.TutorID.ToString()));
+            claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject.Tutor?.TutorID == null ? string.Empty : sessionObject.Tutor.TutorID.ToString()));
 
             var authProperties = new AuthenticationProperties
             {
@@ -76,7 +84,14 @@ namespace Learning.Auth
             //await context.RequestServices.GetRequiredService<UserManager<AppUser>>().AddClaimsAsync(sessionObject.User, claims);
         }
 
-        public static JsonResult DoLogin(List<ScreenFormeter> screenFormeters, SessionObject sessionObject,string key)
+        /// <summary>
+        /// valildate using JWT
+        /// </summary>
+        /// <param name="screenFormeters"></param>
+        /// <param name="sessionObject"></param>
+        /// <param name="key">JWT secret key</param>
+        /// <returns></returns>
+        public static JsonResult DoLogin(SessionObject sessionObject,string key, List<ScreenFormeter> screenFormeters = null)
         {
 
             var claims = new List<Claim>();
@@ -96,8 +111,15 @@ namespace Learning.Auth
             claims.Add(new Claim(ClaimTypes.NameIdentifier, sessionObject.User.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.GivenName, sessionObject.User.UserName));
             claims.Add(new Claim(ClaimTypes.Name, sessionObject.User.FirstName + " " + sessionObject.User.LastName));
-            claims.Add(new Claim(ClaimTypes.Email, sessionObject.User.Email));
-            claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject.Tutor.TutorID.ToString()));
+            if (sessionObject.Student != null)
+                claims.Add(new Claim(CustomClaimTypes.StudentId, sessionObject.Student.Id.ToString()));
+            if (sessionObject.Childs!=null)
+            {
+                var studentids =string.Join(",", sessionObject.Childs.Select(p => p.Id));
+                claims.Add(new Claim(CustomClaimTypes.ChildIds, studentids));
+            }
+            if(sessionObject.Tutor!=null)
+                claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject?.Tutor.TutorID.ToString()));
             //var token = new JwtSecurityToken(null, null, claims);
 
             //return new JsonResult( new JwtSecurityTokenHandler().WriteToken(token));
@@ -116,7 +138,7 @@ namespace Learning.Auth
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
             var token = new JwtSecurityToken(
-                expires: DateTime.Now.AddHours(30),
+                expires: DateTime.Now.AddDays(7),
                 claims: claims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );

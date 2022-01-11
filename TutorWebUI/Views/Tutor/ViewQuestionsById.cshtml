@@ -83,7 +83,7 @@
         }
     })
     function loaddata() {
-        return insertdata('/tutor/Partial_QuestionsById', { testId: '@Context.Request.Query["TestId"]' }, 'html').done(res => {
+        return insertdata('/tutor/Partial_QuestionsByTestId', { testId: '@Context.Request.Query["TestId"]' }, 'html').done(res => {
             $('#pnlQus').empty().html(res);
         });
     }

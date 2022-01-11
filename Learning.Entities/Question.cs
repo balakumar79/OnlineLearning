@@ -14,7 +14,8 @@ namespace Learning.Entities
         public int TestId { get; set; }
         public int SectionId { get; set; }
         public int Mark { get; set; }
-        public bool IsActive { get; set; }
+        public int StatusId { get; set; }
+        public string CorrectOption { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
 

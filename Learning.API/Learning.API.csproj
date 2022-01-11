@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
+    <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
   </ItemGroup>
 
 </Project>

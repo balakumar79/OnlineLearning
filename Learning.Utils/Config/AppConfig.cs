@@ -30,5 +30,6 @@ namespace Learning.Utils.Config
     public class SecretKey
     {
         public string  SecretKeyValue { get; set; }
+        public string StudentSaltKey { get; set; }
     }
 }

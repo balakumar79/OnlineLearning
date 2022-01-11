@@ -12,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
     <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+    <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
   </ItemGroup>
 </Project>

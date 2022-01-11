@@ -25,9 +25,12 @@ namespace Learning.Entities
 
         public virtual DbSet<GradeLevels> GradeLevels { get; set; }
         public virtual DbSet<Student> Students { get; set; }
+        public virtual DbSet<Teacher> Teachers{ get; set; }
         public virtual DbSet<StudentTest> StudentTests{ get; set; }
         public virtual DbSet<StudentAnswerLog> StudentAnswerLogs { get; set; }
         public virtual DbSet<StudentTestHistory> StudentTestHistories{ get; set; }
+        public virtual DbSet<CalculatedResult> CalculatedResults { get; set; }
+        public virtual DbSet<StudentTestStats> StudentTestStats{ get; set; }
 
         public virtual DbSet<Tutor> Tutors { get; set; }
         public virtual DbSet<Language> Languages { get; set; }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Learning.ViewModel.Admin;
 
 namespace Learning.Admin.Repo
 {
@@ -85,6 +86,15 @@ namespace Learning.Admin.Repo
                 await _dBContext.SaveChangesAsync();
             }
                 return tutor.TutorId;
+        }
+
+        public async Task<List<ScreenAccessViewModel>> GetScreenAccessAsync(Utils.Enums.Roles ? roles)
+        {
+            return _dBContext.ScreenAccesses.Select(s => new ScreenAccessViewModel
+            {
+                ScreenName = s.ScreenPermission,
+                Roles = (ViewModel.Enums.Roles)s.RoleID
+            }).ToList();
         }
 
     }

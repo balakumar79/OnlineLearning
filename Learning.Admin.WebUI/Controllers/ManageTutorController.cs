@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace Learning.Admin.WebUI.Controllers
 {
-    [Authorize(ViewModel.Account.AuthorizationModel.Permissions.Administrator.Admin)]
+    //[Authorize(ViewModel.Account.AuthorizationModel.Permissions.Administrator.Admin)]
+    [Authorize(Roles = Utils.Config.RolesConstant.Admin)]
     public class ManageTutorController : Controller
     {
         private readonly ILogger<ManageTutorController> _logger;

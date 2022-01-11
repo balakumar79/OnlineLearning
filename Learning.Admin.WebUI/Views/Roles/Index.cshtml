@@ -1,0 +1,35 @@
+﻿@using Learning.Utils.Enums
+
+@{
+    ViewData["Title"] = "Roles";
+    var roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
+    var permissions = typeof(Learning.ViewModel.Account.AuthorizationModel).GetProperties();
+}
+<h1>Manage Roles</h1>
+<div class="accordion" id="accordionExample">
+    @foreach (var item in roles)
+    {
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        @item.ToString()
+                    </button>
+                    @Learning.ViewModel.Account.AuthorizationModel.Permissions
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="">
+                    @{
+                        if (item == Roles.Tutor)
+                {
+                            
+                }
+                    }
+                </div>
+            </div>
+        </div>
+}
+</div>
+

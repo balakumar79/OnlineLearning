@@ -26,20 +26,22 @@ namespace Auth.Account
         private readonly IHttpContextAccessor httpContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly RoleManager<AppRole> _roleManager;
+        private readonly ISecurePassword _securePassword;
+        private readonly AppConfig _appConfig;
         private readonly ITutorService _tutorService;
         #endregion
 
         #region constructor
-        public AuthService(IAuthRepo authRepo,IHttpContextAccessor httpContextAccessor,UserManager<AppUser> userManager,RoleManager<AppRole> roleManager,
-            IEmailService _email,SignInManager<AppUser> signInManager,ITutorService tutorService)
+        public AuthService(IAuthRepo authRepo,IHttpContextAccessor httpContextAccessor,UserManager<AppUser> userManager,
+            IEmailService _email,SignInManager<AppUser> signInManager,ISecurePassword securePassword,AppConfig appConfig, ITutorService tutorService)
         {
             _signInManager = signInManager;
             httpContext = httpContextAccessor;
             this.emailService = _email;
             this._userManager = userManager;
-            this._roleManager = roleManager;
             _tutorService = tutorService;
+            _appConfig = appConfig;
+            _securePassword = securePassword;
             this._authRepo = authRepo;
         }
         #endregion
@@ -47,7 +49,7 @@ namespace Auth.Account
         #region methods
         public async Task<AppUser> GetUser(LoginViewModel viewModel)
         {
-            var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true);
+            var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true) ?? await _userManager.FindByEmailAsync(viewModel.UserName);
             if (user != null)
             {
                 var result = await _signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
@@ -58,6 +60,19 @@ namespace Auth.Account
                 }
             }
             return null;
+        }
+
+        public async Task<Student> GetStudent(LoginViewModel viewModel)
+        {
+            //Do the logic for Password with password salt
+            var passwordHash = _securePassword.Secure(_appConfig.SecretKey.StudentSaltKey, viewModel.Password);
+            var user = await _authRepo.GetStudentAsync(viewModel.UserName, passwordHash);
+            return user;
+        } 
+
+        public async Task<List<Student>> GetAssociatedStudents(int parentUserId)
+        {
+           return await _authRepo.GetAssociatedStudents(parentUserId);
         }
 
         public async Task<AppUser> GetUserByUserId(string userid)
@@ -74,7 +89,11 @@ namespace Auth.Account
             }
             return errors;
         }
-        public Task<int> AddStudent(Student student)
+        public async Task<IdentityResult> UpdateUser(AppUser app)
+        {
+            return await _userManager.UpdateAsync(app);
+        }
+        public Task<Student> AddStudent(Student student)
         {
             return _authRepo.AddStudent(student);
         }
@@ -121,7 +140,7 @@ namespace Auth.Account
             var emailBody =await emailService.GetEmailTemplateContent(EmailTemplate.ConfirmEmail);
             var tokenBytes = Encoding.UTF8.GetBytes(await _userManager.GenerateEmailConfirmationTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenBytes);
-            var link = $"{ httpContext.HttpContext.Request.Scheme}://{"localhost:44390"}/Account/ConfirmEmail?token={tokenEncoded}&&userid={user.Id}";
+            var link = $"{ httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&userid={user.Id}";
             emailBody = emailBody.Replace("{link}", link);
             return emailBody;
         }
@@ -143,14 +162,22 @@ namespace Auth.Account
        
         public async Task LogOut() => await _signInManager.SignOutAsync();
 
-        Task<List<ScreenFormeter>> IAuthService.GetScreenAccessPrivilage(int? userID, IList<string> roleId)
+       public Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null)
         {
             return _authRepo.GetScreenAccessPrivilage(userID, roleId);
         }
-
+        public bool IsStudentUserNameExists(string username, int? id=0)
+        {
+            return _authRepo.IsStudentUserNameExists(username, id);
+        }
         public Task<int> AddTutor(Tutor entity)
         {
            return _authRepo.AddTutor(entity);
+        }
+
+        public Task<int> AddTeacher(Teacher teacher)
+        {
+            return _authRepo.AddTeacher(teacher);
         }
 
         #endregion

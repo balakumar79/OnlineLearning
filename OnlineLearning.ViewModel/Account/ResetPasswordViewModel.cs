@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Learning.ViewModel.Account
 {
-public    class ResetPasswordViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
         [Display(Name = "New Password")]

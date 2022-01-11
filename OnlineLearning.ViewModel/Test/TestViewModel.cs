@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,12 +32,15 @@ namespace Learning.Tutor.ViewModel
         public DateTime EndDate { get; set; }
         [Required]
         public int Language { get; set; }
+        public List<int> LanguageVariants { get; set; }
         public int StatusID { get; set; }
         public string StatusName { get; set; }
-
         public DateTime Created { get; set; }
-        
         public DateTime Modified { get; set; }
         public string TutorId { get; set; }
+
+        public decimal MaximumMarkScored { get; set; }
+        public decimal MinimumMarkScored { get; set; }
+        public decimal AverageScore { get; set; }
     }
 }

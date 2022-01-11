@@ -14,6 +14,7 @@ namespace Learning.Auth
         public Tutor.ViewModel.TutorViewModel Tutor { get; set; }
         public List<ScreenFormeter>  ScreenAccess { get; set; }
         public Student Student { get; set; }
+        public List<Student> Childs { get; set; }
         public List<string> RoleID { get; set; }
     }
 }

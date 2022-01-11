@@ -52,7 +52,7 @@ namespace Learning.WebUI.Controllers
                     await AuthenticationConfig.DoLogin(HttpContext, screens,sessionObj,model.RememberMe);
                     if (returnUrl==null)
                     {
-                        if (roles.Contains(Utils.Enums.Roles.Student.ToString()))
+                        if (roles.Contains(Utils.Enums.Roles.Minor.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
                         else if (roles.Contains(Utils.Enums.Roles.Parent.ToString()))
                             return RedirectToAction(controllerName: "Parent", actionName: "Dashboard");
@@ -108,16 +108,16 @@ namespace Learning.WebUI.Controllers
                 {
                     var student = new Entities.Student
                     {
-                        FirstName = registerViewModel.StudentFirstName,
-                        LastName = registerViewModel.StudentLastName,
-                        Grade = registerViewModel.GradeLevels,
-                        ParentID = user.Id,
-                        Gender = registerViewModel.StudentGender,
+                        FirstName = registerViewModel.StudentModel.StudentFirstName,
+                        LastName = registerViewModel.StudentModel.StudentLastName,
+                        Grade = registerViewModel.StudentModel.GradeLevels,
+                        UserID = user.Id,
+                        Gender = registerViewModel.StudentModel.StudentGender,
                         MotherTongue = registerViewModel.MotherTongue,
-                        UserID = registerViewModel.StudentUserName
+                        UserName = registerViewModel.StudentModel.StudentUserName
                     };
                     var res = await authService.AddStudent(student);
-                    if (res > 0)
+                    if (res.Id > 0)
                     {
                         return RedirectToAction(nameof(RegisterConfirmation));
                     }

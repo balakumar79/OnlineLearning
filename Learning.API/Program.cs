@@ -1,5 +1,9 @@
+using Learning.Entities;
+using Learning.Utils;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,14 +17,22 @@ namespace Learning.API
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            
+            var host = CreateHostBuilder(args).Build();
+            using(var scope = host.Services.CreateScope())
+            {
+                var serviceprovider = scope.ServiceProvider;
+                var rolemanger = serviceprovider.GetRequiredService<RoleManager<AppRole>>();
+                CommonData.SeedRoles(rolemanger);
+            }
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>().UseUrls("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com");
+                    webBuilder.UseStartup<Startup>();
                 });
     }
 }

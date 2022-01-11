@@ -1,0 +1,19 @@
+﻿@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+
+@{
+    ViewData["Title"] = "Exams";
+}
+
+        <div id="pnlExam"></div>
+    
+
+<script>
+    $(document).ready(doc => {
+        initLoader();
+        getdata('/ManageExams/Partial_Exams', null, 'html').done(function (res) {
+            $('#pnlExam').append(res);
+            $('#examtable').DataTable();
+            removeLoader();
+        });
+    });
+</script>

@@ -12,4 +12,8 @@ namespace Learning.Utils.Config
         public readonly static string ConfirmEmail = "ConfirmEmail.html";
         public readonly static string ResetPassword = "ForgotPassword.html";
     }
+    public static class RolesConstant
+    {
+        public const string Admin = "Admin";
+    }
 }

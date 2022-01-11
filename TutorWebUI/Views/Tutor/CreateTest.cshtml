@@ -8,7 +8,7 @@
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
         <h1>Create Test</h1>
-          <a class="text-white h6" href="/tutor/exams"> <i class="fa fa-arrow-circle-left"></i> Back</a> |
+          <a class="text-white h6" href="/tutor/exams"> <i class="fa fa-arrow-circle-left"></i> Back | </a> 
         <a class="text-white h6" href="/tutor/createtest">Create a Test</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
 
@@ -33,12 +33,8 @@
                 <div class="row justify-content-center">
                     <div class="form-group col-md-4">
                         <label asp-for="SubjectID" class="control-label"></label>
-                        <select asp-for="SubjectID" id="selSubject" class="custom-input"></select>
+                        <select asp-for="SubjectID" class="custom-input"></select>
                         <span asp-validation-for="SubjectID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <input asp-for="SubjectName" style="display:none" id="txtSubject" class="custom-input" />
-                        <span asp-validation-for="SubjectName" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-4">
                         <label asp-for="Language" class="control-label"></label>
@@ -46,45 +42,51 @@
                         <span asp-validation-for="Language" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                  
-
-                    <div class="form-group col-md-4">
-                        <label asp-for="StartDate" class="control-label"></label>
-                        <input asp-for="StartDate" class="custom-input" />
-                        <span asp-validation-for="StartDate" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label asp-for="EndDate" class="control-label"></label>
-                        <input asp-for="EndDate" class="custom-input" />
-                        <span asp-validation-for="EndDate" class="text-danger"></span>
-                    </div>
-
-                </div>
-                <div class="row justify-content-center">
-                    <div class="form-group col-md-4">
-                        <label asp-for="Duration" class="control-label"></label> (Mins)
-                        <input asp-for="Duration" class="custom-input" />
-                        <span asp-validation-for="Duration" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label asp-for="Description" class="control-label"></label>
-                        <textarea asp-for="Description" class="custom-input"></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
+                <div id="pnlSubjectName" class="row justify-content-center">
                     <div class="form-group col-md-8">
-
-
-                        <button type="submit" class="btn-submit">
-                            <i class="fa fa-save"></i>
-                            @(Model==null? "Save" :"Update")
-                        </button>
-
+                        <input asp-for="SubjectName" placeholder="Enter Subject Name" class="custom-input" />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
                     </div>
                 </div>
+                    <div class="row justify-content-center">
+
+
+                        <div class="form-group col-md-4">
+                            <label asp-for="StartDate" class="control-label"></label>
+                            <input asp-for="StartDate" class="custom-input" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label asp-for="EndDate" class="control-label"></label>
+                            <input asp-for="EndDate" class="custom-input" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-4">
+                            <label asp-for="Duration" class="control-label"></label> (Mins)
+                            <input asp-for="Duration" class="custom-input" />
+                            <span asp-validation-for="Duration" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="custom-input"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-8">
+
+
+                            <button type="submit" class="btn-submit">
+                                <i class="fa fa-save"></i>
+                                @(Model==null? "Save" :"Update")
+                            </button>
+
+                        </div>
+                    </div>
 
             </form>
             </div>
@@ -96,18 +98,21 @@
         <script>
             $(document).ready(function () {
                 bindGradeLevels('#selGrade', '@Model?.GradeID');
-                bindSubject('#selSubject', '@Model?.SubjectID');
+                bindSubject('#@Html.IdFor(s=>s.SubjectID)', '@Model?.SubjectID');
                 bindLanguage('#Language', '@Model?.Language');
                 $('[name=StartDate],[name=EndDate]')
                     .attr('min', moment().format('YYYY-MM-DDTkk:mm'));
                 $('[name=StartDate]').val(moment().format('YYYY-MM-DDTkk:mm'))
                 document.getElementById('@Html.IdFor(s=>s.SubjectID)').addEventListener('change', function (e) {
 
-                    if ($('#selSubject option:selected').text().toLowerCase() == 'others')
-                        document.getElementById('@Html.IdFor(s=>s.SubjectName)').style.display = 'block';
-                    else
-                        document.getElementById('@Html.IdFor(m=>m.SubjectName)').style.display = 'none';
-                })
+                    if (e.target[e.target.selectedIndex].text.toLowerCase() == 'other') {
+                        $('#pnlSubjectName').show('slow');
+                    }
+                    else {
+                        $('#pnlSubjectName').hide('slow');
+                    }
+                });
+                document.getElementById('@Html.IdFor(p=>p.SubjectID)').dispatchEvent(new window.event('change', { 'bubbles': true }));
             })
         </script>
     }

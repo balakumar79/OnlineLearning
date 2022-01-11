@@ -13,17 +13,16 @@ using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace Auth.Account
 {
-   public class AuthRepo:IAuthRepo
+    public class AuthRepo : IAuthRepo
     {
         readonly UserManager<AppUser> userManager;
-        readonly RoleManager<AppRole> roleManager;
+
         private readonly AppDBContext dBContext;
-       
-        public AuthRepo(UserManager<AppUser> userManager,RoleManager<AppRole> roleManager,AppDBContext appDBContext)
+
+        public AuthRepo(UserManager<AppUser> userManager, AppDBContext appDBContext)
         {
-            
+
             this.dBContext = appDBContext;
-            this.roleManager = roleManager;
             this.userManager = userManager;
         }
         public async Task<IdentityResult> AddUser(AppUser appUser, string password, AppRole role)
@@ -35,24 +34,31 @@ namespace Auth.Account
             }
             return res;
         }
-        public Task<int> AddStudent(Student student)
+       
+        public async Task<Student> AddStudent(Student student)
         {
-             dBContext.Students.Add(student);
-           return Task.FromResult(dBContext.SaveChangesAsync().Result);
+            dBContext.Students.Add(student);
+           await dBContext.SaveChangesAsync();
+            return student;
+        }
+        public Task<int> AddTeacher(Teacher teacher)
+        {
+            dBContext.Teachers.Add(teacher);
+            return dBContext.SaveChangesAsync();
         }
         public async Task<int> AddTutor(Tutor entity)
         {
             dBContext.Tutors.Add(entity);
-           return await dBContext.SaveChangesAsync();
+            return await dBContext.SaveChangesAsync();
         }
-       
-        public async Task<bool> IsEmailExists(string email,int ?id)
+
+        public async Task<bool> IsEmailExists(string email, int? id)
         {
             if (id == null)
                 return await dBContext.Users.AnyAsync(o => o.Email == email);
             else
                 return await dBContext.Users.AnyAsync(k => k.Email == email && k.Id != id);
-                    
+
         }
         public async Task<bool> IsUserNameExists(string username, int? id)
         {
@@ -62,7 +68,20 @@ namespace Auth.Account
                 return await dBContext.Users.AnyAsync(k => k.UserName == username && k.Id != id);
 
         }
-      
+        public bool IsStudentUserNameExists(string username, int ? id=0)
+        {
+            var entity = dBContext.Students.Where(p => p.UserName == username);
+            if (id > 0)
+                return entity.Any(p => p.Id != id && p.UserName == username);
+            else
+                return entity.Any();
+        }
+        public async Task<Student> GetStudentAsync(string username, string password) => await dBContext.Students.FirstOrDefaultAsync(s => s.UserName == username && s.Password == password);
+
+       public async Task<List<Student>> GetAssociatedStudents(int parentUserId)
+        {
+            return await dBContext.Students.Where(p => p.UserID == parentUserId).ToListAsync();
+        }
         public async Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username)
         {
             var user = await userManager.FindByNameAsync(username);
@@ -86,23 +105,25 @@ namespace Auth.Account
             }
         }
 
-        public async Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> role=default(IList<string>))
+        public async Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> role = null)
         {
 
             if (dBContext.UserScreensAccess.Any(p => p.UserID == userID) && userID != null)
                 return await dBContext.UserScreensAccess.Where(p => p.UserID == userID).Select(o => new ScreenFormeter { ScreenName = o.Screen }).ToListAsync();
-            else 
+            else
             {
-            var roleid = dBContext.Roles.Where(p => role.Contains(p.Name)).Select(l=>l.Id).ToList();
-                var screens=  dBContext.ScreenAccesses.Where(p => roleid.ToString().Contains(p.RoleID.ToString()))
-                    .Select(o => new ScreenFormeter { ScreenName = o.ScreenPermission }).ToListAsync().Result;
-                return screens;
+                if (role!=null)
+                {
+                    var roleid = dBContext.Roles.Where(p => role.Contains(p.Name)).Select(l => l.Id)?.ToList();
+                    var screen =  dBContext.ScreenAccesses.Where(p => roleid.Contains(p.RoleID))
+                        .Select(o => new ScreenFormeter { ScreenName = o.ScreenPermission }).ToList();
+                    return screen;
+                }
+                else
+                    return new List<ScreenFormeter>();
             }
         }
-        public async Task<Student> GetStudentById(int userid) => await dBContext.Students.Where(p => p.Id == userid).FirstOrDefaultAsync();
+        public async Task<Student> GetStudentByUserName(string userid) => await dBContext.Students.Where(p => p.UserName == userid).FirstOrDefaultAsync();
         public async Task<Tutor> GetTutorByUserID(int userid) => await dBContext.Tutors.Where(p => p.UserId == userid).FirstOrDefaultAsync();
-       
-
-
     }
 }
