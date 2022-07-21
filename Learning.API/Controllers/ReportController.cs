@@ -16,8 +16,8 @@ namespace Learning.API.Controllers
     [Route("[controller]/[action]/{id?}")]
     public class ReportController : ControllerBase
     {
-        readonly IStudentTestService _studentService;
-        public ReportController(IStudentTestService studentTestService)
+        readonly IStudentService _studentService;
+        public ReportController(IStudentService studentTestService)
         {
             _studentService = studentTestService;
 
@@ -30,7 +30,7 @@ namespace Learning.API.Controllers
                 userids.Add(Convert.ToInt32(User.Identity.GetStudentId()));
             else
                 userids.AddRange(User.Identity.GetChildIds());
-            var reports = _studentService.GetStudentTestByStudentID(userids);
+            var reports = _studentService.GetStudentTestByStudentIDs(userids);
             switch (filterId)
             {
                 case 1:
@@ -58,7 +58,7 @@ namespace Learning.API.Controllers
                     break;
             }
            
-            return new JsonResult(Ok(new { report =reports  }));
+            return new JsonResult(Ok(new { report =reports.OrderByDescending(s=>s.Modified)  }));
         }
 
         public object GetCalculatedResults(int ? filterId=0,int ? filterValue = 0)

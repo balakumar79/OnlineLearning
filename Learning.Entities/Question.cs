@@ -13,6 +13,8 @@ namespace Learning.Entities
         public int QusType { get; set; }
         public int TestId { get; set; }
         public int SectionId { get; set; }
+        public string Topics { get; set; }
+        public string SubTopics { get; set; }
         public int Mark { get; set; }
         public int StatusId { get; set; }
         public string CorrectOption { get; set; }

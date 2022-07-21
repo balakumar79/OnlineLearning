@@ -277,7 +277,9 @@ button.btn.btn-hide {
 }
 
 .btn-pink {
-    background-color: #e0009dce
+    background-color: #e0009dce;
+    padding:4px;
+    border:0;
 }
 
 .btn-green {
@@ -2150,8 +2152,60 @@ h1{
 .pnl-dropdown {
     display: flex;
     justify-content: space-evenly;
+    border: 0px solid;
+    padding: 5px;
+    border-radius: 12px;
+    /* background: #db86156b; */
+    box-shadow: 1px 1px 9px 4px #bdb5b5;
+}
+.ans {
+    width: 100%;
+    border: none;
+    background: #f6f4f7;
+}
+#matching table {
+    background-color: #043c4e12;
+    color: #043c4e;
+    font-weight: 600;
+}
+    #matching table td input {
+        width: 95%;
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid #3826cb;
+        color: darkslategray;
+    }
+    #matching table td{
+        padding:3px 22px;
+    }
+.input-sm-xl {
+    font-size: small;
+    border: 0;
+    padding-left: 10px;
+}
+#pnlShowMore {
+    justify-content: space-evenly;
+    background: #0d21b1b8;
+    box-shadow: 0px 0px 8px 2px lightyellow;
+}
+.pnlShowMoreHeader {
+    background-color: rgb(5 165 150 / 82%);
+    height: 25px;
+}
+.btnMatchingAdd, .btnMatchingDelete {
+    border: 0;
+    background-color: #f0f0f0;
+}
+#txtMarks {
+    width: 2em;
+   
+   
+    border: 0;
+    margin-right: 16px;
+    text-align: center;
+}
+.test-category select,.test-category input {
+    padding: 4px;
+    border-radius: 6px;
     width: auto;
-    margin: 0 auto;
-    background: #A0C5E8;
-    padding: 10px 0;
 }

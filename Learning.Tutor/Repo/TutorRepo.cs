@@ -39,6 +39,7 @@ namespace Learning.Tutor.Repo
                         Id = test.Id,
                         Modified = test.Modified,
                         Title = test.Title,
+                        IsActive=test.IsActive,
                         TutorId = test.TutorId
                     }).ToList();
         }
@@ -52,7 +53,7 @@ namespace Learning.Tutor.Repo
                 EndDate = p.EndDate,
                 StatusID = p.StatusID,
                 SubjectID = p.SubjectID,
-                SubTopics = p.SubTopics,
+               
                 Duration = p.Duration,
                 Description = p.TestDescription,
                 Language = p.Language,
@@ -60,7 +61,8 @@ namespace Learning.Tutor.Repo
                 Modified = p.Modified,
                 Title = p.Title,
                 TutorId = p.TutorId,
-                Topics = p.Topics
+                IsActive=p.IsActive
+               
             }).FirstOrDefault();
         }
         public List<TestViewModel> GetAllTest()
@@ -69,6 +71,8 @@ namespace Learning.Tutor.Repo
                     join sub in _dBContext.TestSubjects on test.SubjectID equals sub.Id
                     join teststatus in _dBContext.TestStatuses on test.StatusID equals teststatus.Id
                     join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
+                    join tutor in _dBContext.Tutors on test.TutorId equals tutor.TutorId.ToString()
+
 
                     select new TestViewModel
                     {
@@ -85,6 +89,7 @@ namespace Learning.Tutor.Repo
                         Modified = test.Modified,
                         Title = test.Title,
                         TutorId = test.TutorId,
+                        TutorUserName=tutor.UserName
                     }).ToList();
         }
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
@@ -99,7 +104,7 @@ namespace Learning.Tutor.Repo
                              TestSection =_dBContext.TestSections.Where(s=>s.Id==qus.SectionId).Select(sec=> new TestSectionViewModel
                              {
                                  SectionName = sec.SectionName ?? "N/A",
-                                 SubTopic = sec.SubTopic ?? "N/A",
+                                 SubTopic = qus.SubTopics ?? "N/A",
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Created = sec.Created,
@@ -109,7 +114,7 @@ namespace Learning.Tutor.Repo
                                  IsOnline = sec.IsOnline,
                                  Modified = sec.Modified,
                                  TestName = test.Title,
-                                 Topic = sec.Topic,
+                                 Topic = qus.Topics??"N/A",
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
                              }).FirstOrDefault()??new TestSectionViewModel
@@ -153,13 +158,13 @@ namespace Learning.Tutor.Repo
                          {
                              TestSection = new TestSectionViewModel
                              {
-                                 SubTopic = sec.SubTopic,
+                                 SubTopic = qus.SubTopics,
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Id = sec.Id,
                                  IsActive = sec.IsActive,
                                  IsOnline = sec.IsOnline,
-                                 Topic = sec.Topic,
+                                 Topic = qus.Topics,
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
                              },
@@ -204,14 +209,14 @@ namespace Learning.Tutor.Repo
             {
                 TestSection = new TestSectionViewModel
                 {
-                    SubTopic = ques.sec?.SubTopic??"N/A",
+                    //SubTopic = ques.qus?.SubTopics??"N/A",
                     AddedQuestions =ques.sec?.AddedQuestions??0,
                     AdditionalInstruction =ques.sec?.AdditionalInstruction,
                     Id = ques.sec?.Id??0,
                     IsActive =ques.sec?.IsActive??false,
                     IsOnline =ques.sec?.IsOnline??false,
                     SectionName=ques.sec?.SectionName??"No section",
-                    Topic =ques.sec?.Topic??"N/A",
+                    //Topic =ques.qus?.Topics??"N/A",
                     TotalMarks =ques.sec?.TotalMarks??0,
                     TotalQuestions =ques.sec?.TotalQuestions??0
                 },
@@ -221,6 +226,11 @@ namespace Learning.Tutor.Repo
                 QuestionTypeId = ques.qus.QusType,
                 QuestionName = ques.qus.QuestionName,
                 TestId = ques.qus.TestId,
+                Topic=ques.qus.Topics,
+                SubTopic=ques.qus.SubTopics,
+                SectionId=ques.qus.SectionId,
+                StatusId=ques.qus.StatusId,
+                Modified=ques.qus.Modified,
                 QusType = ques.qustype.QustionTypeName,
                 CorrectOption=ques.qus.CorrectOption,
                 Options = options.Select(l => new OptionsViewModel
@@ -229,7 +239,7 @@ namespace Learning.Tutor.Repo
                     Option = l.Answer,
                     Id = l.Id,
                     Position = l.Position
-                }).ToList()
+                }).OrderBy(p=>p.Position).ToList()
             };
 
             return model;
@@ -281,8 +291,8 @@ namespace Learning.Tutor.Repo
             test.StatusID = 1;
             test.SubjectID = model.SubjectID;
             test.TestDescription = model.Description;
-            test.Topics = model.Topics;
-            test.SubTopics = model.SubTopics;
+            //test.Topics = model.Topics;
+            //test.SubTopics = model.SubTopics;
             test.Duration = model.Duration;
             test.StartDate = model.StartDate;
             test.EndDate = model.EndDate;
@@ -291,10 +301,19 @@ namespace Learning.Tutor.Repo
             test.Title = model.Title;
             test.Language = model.Language;
             test.TutorId = model.TutorId;
+            test.IsActive = model.IsActive;
             if (model.Id == 0)
                 _dBContext.Tests.Add(test);
             await _dBContext.SaveChangesAsync();
             return test.Id;
+        }
+
+        public async Task<int> TestUpsert(IList<Test> entity)
+        {
+            if (entity == null)
+                throw new Exception(nameof(Test));
+            _dBContext.Tests.UpdateRange(entity);
+           return await _dBContext.SaveChangesAsync();
         }
         public async Task<bool> CreateTestSection(TestSectionViewModel model)
         {
@@ -303,8 +322,8 @@ namespace Learning.Tutor.Repo
                 Created = DateTime.Now,
                 Modified = DateTime.Now,
                 SectionName = model.SectionName,
-                Topic = model.Topic,
-                SubTopic = model.SubTopic,
+                //Topic = model.Topic,
+                //SubTopic = model.SubTopic,
                 IsActive = true,
                 IsOnline = model.IsOnline,
                 TestId = model.TestId,
@@ -316,8 +335,12 @@ namespace Learning.Tutor.Repo
             return true;
 
         }
-        public async Task<bool> CreateQuestion(QuestionViewModel model)
+        public async Task<bool> UpsertQuestion(QuestionViewModel model)
         {
+            if (model == null)
+                throw new Exception("Model cannot be null.");
+            if (model.Options == null)
+                throw new Exception("Options cannot be null.");
             Question question = new Question();
             if (model.QusID > 0)
             {
@@ -330,6 +353,8 @@ namespace Learning.Tutor.Repo
                 question.QuestionName = model.QuestionName;
                 question.StatusId = model.StatusId;
                 question.CorrectOption = model.CorrectOption;
+                question.Topics = model.Topic;
+                question.SubTopics = model.SubTopic;
                 _dBContext.Questions.Update(question);
 
                 //delete options by question id for update
@@ -366,18 +391,20 @@ namespace Learning.Tutor.Repo
                     TestId = model.TestId,
                     CorrectOption=model.CorrectOption,
                     Mark = model.Mark,
+                    Topics=model.Topic,
+                    SubTopics=model.SubTopic
                 };
             }
             _dBContext.Questions.Add(question);
             await _dBContext.SaveChangesAsync();
 
-            //UPDATE ADDED QUESTIONS IN SECTIONS
+            //UPDATE ADDED QUESTIONS COUNT IN SECTIONS
             if (model.SectionId > 0)
             {
                 var section = _dBContext.TestSections.FirstOrDefault(p => p.Id == model.SectionId);
                 section.AddedQuestions += 1;
                 _dBContext.TestSections.Update(section);
-                _dBContext.SaveChanges();
+                await _dBContext.SaveChangesAsync();
             }
 
             //update/insert language variant
@@ -388,7 +415,7 @@ namespace Learning.Tutor.Repo
             //    case 1:
             //        {
             var mcq = new List<Options>();
-            foreach (var item in model.Options)
+            foreach (var item in model?.Options)
             {
                 mcq.Add(new Options
                 {

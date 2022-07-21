@@ -49,7 +49,7 @@ namespace Learning.Admin.WebUI.Controllers
                     return View(model);
             }
         }
-        public async Task<IActionResult> Tutors()
+        public IActionResult Tutors()
         {
             return View();
         }

@@ -219,6 +219,33 @@ namespace Learning.Entities.Migrations
                     b.ToTable("LanguageVariantQuestions");
                 });
 
+            modelBuilder.Entity("Learning.Entities.Logger", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Loggers");
+                });
+
             modelBuilder.Entity("Learning.Entities.MCQAnswer", b =>
                 {
                     b.Property<int>("Id")
@@ -305,8 +332,14 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SubTopics")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TestId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Topics")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("QusID");
 
@@ -380,6 +413,9 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("StudentDistrict")
                         .HasColumnType("nvarchar(max)");
 
@@ -394,6 +430,33 @@ namespace Learning.Entities.Migrations
                     b.HasIndex("LanguageNavigationId");
 
                     b.ToTable("Student");
+                });
+
+            modelBuilder.Entity("Learning.Entities.StudentAccountRecoveryAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentAccountRecoveryAnswers");
                 });
 
             modelBuilder.Entity("Learning.Entities.StudentAnswerLog", b =>
@@ -435,6 +498,36 @@ namespace Learning.Entities.Migrations
                     b.HasIndex("TestId");
 
                     b.ToTable("StudentAnswerLogs");
+                });
+
+            modelBuilder.Entity("Learning.Entities.StudentInvitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AcceptedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Parentid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Response")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentInvitations");
                 });
 
             modelBuilder.Entity("Learning.Entities.StudentTest", b =>
@@ -583,6 +676,9 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("GradeID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Language")
                         .HasColumnType("int");
 
@@ -598,9 +694,6 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("StatusID")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubTopics")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("SubjectID")
                         .HasColumnType("int");
 
@@ -608,9 +701,6 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Topics")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TutorId")
@@ -649,14 +739,8 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("SectionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubTopic")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("TestId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Topic")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalMarks")
                         .HasColumnType("int");
@@ -756,6 +840,9 @@ namespace Learning.Entities.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TutorId");
 

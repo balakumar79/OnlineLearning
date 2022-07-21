@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace Learning.API
 {
-    public static class ResultFormatter
+    public class ResponseFormat
     {
-        public static object JsonResponse(bool status, object result = null, string message = null)
-        {
-            return JsonResponse(status, result, message);
-        }
+        public bool Result { get; set; }
+        public string Message { get; set; }
+        public object Description { get; set; }
     }
 }

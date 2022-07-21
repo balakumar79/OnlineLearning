@@ -23,7 +23,7 @@ namespace Auth.Account
         bool IsStudentUserNameExists(string username, int ? id=0);
 
 
-        Task<string> EmailConfirmation(string token, int userid);
+        Task<string> EmailConfirmation(string token, string email);
         Task<bool> ForgotPassword(string email);
         Task<IdentityResult> ResetPassword(ResetPasswordViewModel model);
 
@@ -31,7 +31,9 @@ namespace Auth.Account
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
         Task<List<Student>> GetAssociatedStudents(int parentUserId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
-        
+        int UpserStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
+        List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);
+        int UpdateStudentPassword(int studentId, string password);
         Task LogOut();
     }   
 }

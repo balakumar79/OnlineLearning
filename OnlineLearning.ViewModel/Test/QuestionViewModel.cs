@@ -26,6 +26,8 @@ namespace Learning.Tutor.ViewModel
         public TestSectionViewModel  TestSection { get; set; }
         [Display(Name ="Sec. Name")]
         public string SectionName { get; set; }
+        public string Topic { get; set; }
+        public string SubTopic { get; set; }
         public List<OptionsViewModel> Options { get; set; }
         public int Mark { get; set; }
         [Display(Name = "Active")]

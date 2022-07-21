@@ -12,9 +12,11 @@ namespace Learning.Utils
    public class EmailService:IEmailService
     {
         private readonly AppConfig appConfig;
-        public EmailService(AppConfig config)
+        private readonly LoggerRepo _logger;
+        public EmailService(AppConfig config,LoggerRepo logger)
         {
             appConfig = config;
+            _logger = logger;
 
         }
         public async Task SendEmailConfirmation(string emailId,string body)
@@ -24,6 +26,11 @@ namespace Learning.Utils
         public async Task SendForgotPassword(string email, string body)
         {
             await SendEmailAsync(email, "Rest pasword link", body);
+        }
+
+        public async Task SendStudentInvitationLink(string email,string body)
+        {
+            await SendEmailAsync(email, "You have received an student invitation from a teacher", body);
         }
 
         public async Task<Boolean> SendEmailAsync(string toEmail,string subject, string message, List<string> ccEmail=default(List<string>),
@@ -71,6 +78,7 @@ namespace Learning.Utils
                 return true;
             }catch(Exception ex)
             {
+                _logger.InsertLogger(new Entities.Logger { Type = "Error", Message = "EmailService", Description = ex.ToString() });
                 throw new InvalidOperationException(ex.Message);
             }
         }

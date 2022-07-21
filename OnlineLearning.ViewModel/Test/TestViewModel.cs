@@ -38,6 +38,9 @@ namespace Learning.Tutor.ViewModel
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public string TutorId { get; set; }
+        public string TutorUserName { get; set; }
+        [Display(Name ="Active")]
+        public bool IsActive { get; set; }
 
         public decimal MaximumMarkScored { get; set; }
         public decimal MinimumMarkScored { get; set; }

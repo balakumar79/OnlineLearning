@@ -22,6 +22,9 @@
                 Dur.
             </th>
             <th>
+                Tutor Username
+            </th>
+            <th>
 
                 EndDate
             </th>
@@ -41,7 +44,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                   <span>@item.Id</span>
                 </td>
                 <td>
                     <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@item.Title</a>
@@ -56,11 +59,14 @@
                     @Html.DisplayFor(modelItem => item.Duration)
                 </td>
                 <td>
+                    @Html.DisplayFor(m=>item.TutorUserName)
+                </td>
+                <td>
                     @Html.Label(item.EndDate.Date.ToShortDateString())
                 </td>
                 <td>
                     @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
-                    @Html.DropDownListFor(m=>item.StatusID,statuslist,new { @onchange= "changeteststatus(this)" })
+                    @Html.DropDownListFor(m=>item.StatusID,statuslist,new { @onchange= "changeteststatus(this)",@data_id=item.Id })
                 </td>
                 <td>
                     @Html.Label(item.Created.ToShortDateString())
@@ -79,8 +85,8 @@
 </table>
 <script>
     function changeteststatus(cnt) {
-        var testid = $(cnt).closest('tr').find('td').eq(0).text();
-        console.log($(cnt).closest('tr').find('td').eq(0));
+        var testid = $(cnt).data('id');
+        
         insertdata('/ManageExams/UpdateTestStatus', { testid: testid, statusid: cnt.value }).done(function (res) {
             if (res > 0) {
                 notify('Status updated successfully.', 'success');

@@ -13,8 +13,7 @@ namespace Learning.Entities
         public string TestDescription { get; set; }
         public int GradeID { get; set; }
         public int SubjectID { get; set; }
-        public string Topics { get; set; }
-        public string SubTopics { get; set; }
+      
         public int Duration { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -24,6 +23,7 @@ namespace Learning.Entities
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
         public string TutorId { get; set; }
+        public bool IsActive { get; set; }
 
     }
 }

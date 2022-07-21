@@ -19,6 +19,8 @@ using Learning.Student.Repos;
 using Learning.Student.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Learning.Auth;
+using Learning.Teacher.Repos;
+using Learning.Teacher.Services;
 
 namespace Learning.Infrastructure
 {
@@ -49,6 +51,9 @@ namespace Learning.Infrastructure
             var secretKey = new SecretKey();
             configuration.Bind("SecretKey", secretKey);
             services.AddSingleton(secretKey);
+            var encryptionKey = new EncryptionKey();
+            configuration.Bind("EncryptionKey", encryptionKey);
+            services.AddSingleton(encryptionKey);
 
             services.AddScoped<ISecurePassword, SecurePassword>();
             //services.AddTransient(_ => new MySqlConnection(configuration.GetConnectionString("DBContext")));
@@ -57,8 +62,11 @@ namespace Learning.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<IEmailService, EmailService>();
 
-            services.AddTransient<IStudentTestRepo, StudentTestRepo>();
-            services.AddTransient<IStudentTestService, StudentTestService>();
+            services.AddTransient<IStudentRepo, StudentRepo>();
+            services.AddTransient<IStudentService, StudentService>();
+
+            services.AddTransient<ITeacherRepo, TeacherRepo>();
+            services.AddTransient<ITeacherService, TeacherService>();
             
             services.AddTransient<ITutorRepo, TutorRepo>();
             services.AddTransient<ITutorService, TutorService>();
@@ -66,6 +74,7 @@ namespace Learning.Infrastructure
             services.AddTransient<IManageTutorRepo, ManageTutorRepo>();
             services.AddTransient<IManageTutorService, ManageTutorService>();
 
+            services.AddTransient<LoggerRepo>();
         }
     }
 }

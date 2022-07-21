@@ -10,13 +10,15 @@ namespace Learning.Utils.Config
         {
 
         }
-        public AppConfig(SMTPConfig sMTPConfig,SecretKey secretKey)
+        public AppConfig(SMTPConfig sMTPConfig,SecretKey secretKey,EncryptionKey encryptionKey)
         {
             SMTPConfig = sMTPConfig;
             SecretKey = secretKey;
+            EncryptionKey = encryptionKey;
         }
         public SMTPConfig SMTPConfig{ get; }
         public SecretKey SecretKey { get; }
+        public EncryptionKey EncryptionKey { get; set; }
     }
     public class SMTPConfig
     {
@@ -31,5 +33,8 @@ namespace Learning.Utils.Config
     {
         public string  SecretKeyValue { get; set; }
         public string StudentSaltKey { get; set; }
+    }
+    public class EncryptionKey {
+        public string Key { get; set; }
     }
 }

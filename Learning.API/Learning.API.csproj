@@ -19,7 +19,12 @@
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
+    <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
     <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

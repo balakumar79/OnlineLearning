@@ -29,7 +29,7 @@ namespace TutorWebUI.Controllers
 
         [Authenticate(Permissions.Tutor.DashBoardView)]
 
-        public async Task<IActionResult> Dashboard()
+        public IActionResult Dashboard()
         {
             return View();
         }
@@ -96,7 +96,7 @@ namespace TutorWebUI.Controllers
                          select new TestSectionViewModel
                          {
                              SectionName = sec.SectionName,
-                             SubTopic = sec.SubTopic,
+                             //SubTopic = sec.SubTopic,
                              AddedQuestions = sec.AddedQuestions,
                              Created = sec.Created,
                              Id = sec.Id,
@@ -117,14 +117,14 @@ namespace TutorWebUI.Controllers
                 {
                     Id = m.Id,
                     SectionName = m.SectionName,
-                    SubTopic = m.SubTopic,
+                    //SubTopic = m.SubTopic,
                     AddedQuestions = m.AddedQuestions,
                     Created = m.Created,
                     IsActive = m.IsActive,
                     IsOnline = (bool)m.IsOnline,
                     Modified = m.Modified,
                     TestId = m.TestId,
-                    Topic = m.Topic,
+                    //Topic = m.Topic,
                     TotalMarks = m.TotalMarks,
                     TotalQuestions = m.TotalQuestions
                 }).FirstOrDefault();
@@ -153,10 +153,10 @@ namespace TutorWebUI.Controllers
             }
         }
 
-        public async Task<IActionResult> CreateQuestion(int questionId=0)
+        public IActionResult CreateQuestion(int questionId = 0)
         {
             var model = new QuestionViewModel();
-            if (questionId>0)
+            if (questionId > 0)
             {
                 model = _tutorService.GetQuestionDetails(questionId);
             }
@@ -201,6 +201,13 @@ namespace TutorWebUI.Controllers
             return _tutorService.SetOnlineStatus(sectionid, status);
         }
 
+        public async Task<int> SetExamActiveAsync(int examid,bool isChecked)
+        {
+            var exam = _tutorService.GetTestById(examid);
+            exam.IsActive = isChecked;
+           return await _tutorService.TestUpsert(exam);
+        }
+
         public IActionResult DeleteQuestions(List<int> QuestionIds,int TestId)
         {
             _tutorService.DeleteQuestion(QuestionIds);
@@ -216,9 +223,9 @@ namespace TutorWebUI.Controllers
             else return Json(count);
         }
 
-        public async Task<JsonResult> GetTest()
+        public JsonResult GetTest()
         {
-            return Json(_tutorService.GetTestByUserID(User.Identity.GetTutorId()));
+            return Json( _tutorService.GetTestByUserID(User.Identity.GetTutorId()));
         }
         //[AllowAnonymous]
         //public async Task<JsonResult> GetTestSections() => Json( _tutorService.GetTestSections(null));

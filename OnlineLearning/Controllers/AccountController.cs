@@ -144,9 +144,9 @@ namespace Learning.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string token, int userid)
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
         {
-            ViewData["message"] =  authService.EmailConfirmation(token, userid).Result;
+            ViewData["message"] = await authService.EmailConfirmation(token, email);
 
             return View("EmailConfirmedConfirmation");
         }

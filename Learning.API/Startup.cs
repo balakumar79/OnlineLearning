@@ -62,6 +62,7 @@ namespace Learning.API
             services.AddIdentity<AppUser, AppRole>(op =>
             {
                 op.User.RequireUniqueEmail = true;
+                op.SignIn.RequireConfirmedAccount = true;
             })
         .AddEntityFrameworkStores<AppDBContext>()
         .AddDefaultTokenProviders();

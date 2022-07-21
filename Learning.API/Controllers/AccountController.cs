@@ -2,6 +2,8 @@
 using Learning.Auth;
 using Learning.Entities;
 using Learning.Tutor.Abstract;
+using Learning.Utils;
+using Learning.Utils.Enums;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,17 +34,19 @@ namespace Learning.API.Controllers
         readonly ITutorService _tutorService;
         readonly Utils.Config.SecretKey _secretkey;
         readonly ISecurePassword _securePassword;
+        readonly LoggerRepo _logger;
         #endregion
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-           ISecurePassword securePassword, Utils.Config.SecretKey appSet)
+           ISecurePassword securePassword, Utils.Config.SecretKey appSet, LoggerRepo logger)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
             this.authService = auth;
             this._signInManager = signInManager;
             this._securePassword = securePassword;
+            _logger = logger;
             _secretkey = appSet;
         }
         #endregion
@@ -56,47 +60,108 @@ namespace Learning.API.Controllers
             {
                 try
                 {
-                    var user = await authService.GetUser(model);
+                    var user = await _userManager.FindByNameAsync(model.UserName).ConfigureAwait(true) ?? await _userManager.FindByEmailAsync(model.UserName).ConfigureAwait(true);
                     var student = await authService.GetStudent(model);
-                    if (user != null || student != null)
+
+                    IList<string> roles = new List<string>();
+                    if (user != null)
+                        roles = await _userManager.GetRolesAsync(user);
+                    if (student != null && !roles.Any())
+                        roles.Add(((Roles)student.RoleId).ToString());
+                    if (user != null && student == null)
                     {
-                        if (user != null && student == null)
+                        var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+
+                        //email confirmation
+                        if (signInResult.IsNotAllowed)
+                            return new JsonResult(new { result = false, message = "Email confirmation required !!! You need to confirm your email to activate your account" });
+
+                        //login unsuccessfull
+                        if (!signInResult.Succeeded)
+                            return new JsonResult(new { result = false, message = "Incorrect password." });
+
+                    }
+                    //check if login user is valid appuser
+                    if (roles.Any(p => p == Roles.Parent.ToString() || p == Roles.Admin.ToString() || p == Roles.Teacher.ToString() || p == Roles.Tutor.ToString()))
+                    {
+                        var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
+
+                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = await authService.GetAssociatedStudents(user.Id) };
+                        //await HttpContext.RefreshLoginAsync();
+                        var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
+
+                        return Ok(new
                         {
-                            var roles = await _userManager.GetRolesAsync(user);
-                            var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
-
-                            var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = student, Tutor = _tutorService.GetTutorProfile(user.Id),Childs=await authService.GetAssociatedStudents(user.Id) };
-                            //await HttpContext.RefreshLoginAsync();
-                            var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
-
-                            return Ok(new
+                            user = new
                             {
-                                user = new
-                                {
-                                    Id = user.Id,
-                                    Username = user.UserName,
-                                    Email = user.Email,
-                                    useraccess = user.HasUserAccess,
-                                    result.Value,
-                                    roles = sessionObj.RoleID
-                                },
-                                childs =  sessionObj.Childs
+                                Id = user.Id,
+                                Username = user.UserName,
+                                Email = user.Email,
+                                useraccess = user.HasUserAccess,
+                                result.Value,
+                                roles = sessionObj.RoleID
+                            },
+                            childs = sessionObj.Childs
 
-                            });
-                        }
-                        else
+                        });
+
+                    }
+                    else if (roles.Contains(Roles.Major.ToString()) || roles.Contains(Roles.Minor.ToString()) ||
+                        roles.Contains(Roles.Student.ToString()) || student?.RoleId == (int)Roles.Minor)
+                    {
+
+                        if (student == null)
+                            new JsonResult(new { status = false, message = "Sorry. No student account found !!!" });
+                        if (roles.Contains(Roles.Major.ToString()))
+                            if (user == null)
+                            {
+                                _logger.InsertLogger(new Logger { Message = "No first user account found for the user" + user?.UserName + ".  Student: " + student?.UserName, CreatedAt = DateTime.Now, Type = "Warning" });
+                                return new JsonResult(new { result = false, message = "This student account needs a first user account.  Please recreate your account in Account/Register link." });
+
+                            }
+                            else
+                            {
+                                if (!await _userManager.IsEmailConfirmedAsync(user))
+                                {
+                                    return new JsonResult(new { status = false, message = "Your account is yet to be activatede.  We need your email to be confirmed in order to activate your account.  Please click the link which we sent to your email at the time of registration." });
+                                }
+                            }
+
+
+                        var userscreens = await authService.GetScreenAccessPrivilage(student.Id, roles);
+                        var sessionObj = new SessionObject
                         {
-                            return await StudentLogin(model);
-                        }
+                            RoleID = roles.ToList(),
+                            ScreenAccess = userscreens,
+                            User = new AppUser { Id = student.Id, FirstName = student.FirstName, LastName = student.LastName, UserName = student.UserName, Student = student },
+                            Student = student
+                        };
+                        var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, userscreens);
+
+                        return Ok(new
+                        {
+                            student = new
+                            {
+                                studentId = student.Id,
+                                username = student.UserName,
+                                UserId = student.UserID,
+                                firstName = student.FirstName,
+                                lastName = student.LastName,
+                                languageKnown = student.LanguagesKnown,
+                                motherTongue = student.MotherTongue,
+                                district = student.StudentDistrict,
+                                institution = student.Institution,
+                                roles = sessionObj.RoleID
+                            },
+                            token = result.Value
+                        });
                     }
                     else
-                    {
-                        return new JsonResult(new { result = false });
-                    }
+                        return new JsonResult(new { result = false, message = "Invalid username or password entered." });
                 }
                 catch (Exception ex)
                 {
-
+                    _logger.InsertLogger(new Logger { Message = ex.Message, Description = ex.ToString(), Type = "Error" });
                     return new JsonResult(new { result = false, error = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
                 }
             }
@@ -106,138 +171,171 @@ namespace Learning.API.Controllers
             }
         }
 
-        public async Task<IActionResult> StudentLogin(LoginViewModel model)
-        {
-            var student = await authService.GetStudent(model);
-            if (student == null)
-                return new JsonResult(new { user = new AppUser() });
-            var roles = new List<string> { Utils.Enums.Roles.Minor.ToString() };
-            var userscreens = await authService.GetScreenAccessPrivilage(student.Id,roles);
-            
-            var sessionObj = new SessionObject
-            {
-                RoleID = roles.ToList(),
-                ScreenAccess = userscreens,
-                User = new AppUser { Id = student.Id, FirstName = student.FirstName, LastName = student.LastName, UserName = student.UserName, Student = student },
-                Student = student
-            };
-            var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, userscreens);
-            return Ok(new
-            {
-                student = new
-                {
-                    studentId = student.Id,
-                    username = student.UserName,
-                    UserId = student.UserID,
-                    firstName = student.FirstName,
-                    lastName = student.LastName,
-                    languageKnown = student.LanguagesKnown,
-                    motherTongue = student.MotherTongue,
-                    district = student.StudentDistrict,
-                    institution = student.Institution,
-                    roles=sessionObj.RoleID
-                },
-                token = result.Value
-            });
-        }
-
         [HttpPost]
         public async Task<object> Register(RegisterViewModel registerViewModel)
         {
-            if (authService.IsStudentUserNameExists(registerViewModel.StudentModel.StudentUserName))
-                return new JsonResult(new { error = "Student username already exists." });
-            if (ModelState.IsValid)
+            try
             {
-                var roleRequested = (Utils.Enums.Roles)registerViewModel.Role;
-                var user = new AppUser
-                {
-                    FirstName = registerViewModel.FirstName,
-                    LastName = registerViewModel.LastName,
-                    Email = registerViewModel.Email,
-                    PhoneNumber = registerViewModel.PhoneNumber,
-                    Gender =((Utils.Enums.Genders)registerViewModel.Gender).ToString(),
-                    UserName = registerViewModel.UserName,
-                    District = registerViewModel.District
-                };
-                var useresult =await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = roleRequested.ToString() });
-                if (!useresult.Succeeded)
-                {
-                    return new JsonResult(new { useresult });
-                }
-                else
-                {
 
-
-                    if (registerViewModel.StudentModel != null && (registerViewModel.Role == (int)Utils.Enums.Roles.Minor||registerViewModel.Role==(int)Utils.Enums.Roles.Major) )
+                if (authService.IsStudentUserNameExists(registerViewModel.StudentModel.StudentUserName))
+                    return new JsonResult(new ResponseFormat { Result = false, Message = "Student username already exists." });
+                AppUser user = null;
+                var availableRolesId = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
+                if (!availableRolesId.Contains((Roles)registerViewModel.Role))
+                    return new JsonResult(new ResponseFormat{ Result = false, Message = "Invalid user role id." });
+                if (!availableRolesId.Contains((Roles)registerViewModel.StudentModel.RoleRequested))
+                    return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid student role id." });
+                if (ModelState.IsValid)
+                {
+                    var roleRequested = (Roles)registerViewModel.Role;
+                    user = new AppUser
                     {
-                        var student = new Entities.Student
-                        {
-                            FirstName = registerViewModel.StudentModel.StudentFirstName,
-                            LastName = registerViewModel.StudentModel.StudentLastName,
-                            Grade = registerViewModel.StudentModel.GradeLevels,
-                            UserID = user.Id,
-                            Password= _securePassword.Secure(_secretkey.StudentSaltKey,registerViewModel.StudentModel.StudentPassword),
-                            Gender = registerViewModel.StudentModel.StudentGender,
-                            MotherTongue = registerViewModel.StudentModel.MotherTongue,
-                            UserName = registerViewModel.StudentModel.StudentUserName ,
-                            Institution=registerViewModel.    StudentModel.Institution,
-                            LanguagesKnown=registerViewModel.StudentModel.LanguageKnown,
-                            StudentDistrict=registerViewModel.StudentModel.StudentDistrict
-                        };
-                        var res =await authService.AddStudent(student);
-                        return new JsonResult(new {result=true, studentId= res.Id, res.UserID, res.UserName });
+                        FirstName = registerViewModel.FirstName,
+                        LastName = registerViewModel.LastName,
+                        Email = registerViewModel.Email,
+                        PhoneNumber = registerViewModel.PhoneNumber,
+                        Gender = ((Genders)registerViewModel.Gender).ToString(),
+                        UserName = registerViewModel.UserName,
+                        District = registerViewModel.District
+                    };
+                    IdentityResult userresult = null;
+                    if (roleRequested != Roles.Minor)
+                    {
+                        userresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = roleRequested.ToString() });
+                        if (!userresult.Succeeded)
+                            return new JsonResult(new ResponseFormat { Result = userresult.Succeeded, Description = userresult, Message = string.Join(" | ", userresult.Errors.Select(s => s.Description)) });
                     }
-                    else if (registerViewModel.Role == (int)Utils.Enums.Roles.Teacher){
-                        var teacher = new Teacher
+                    else
+                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid role Id !!!.  First user cannot be a minor." });
+
+                    if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel.RoleRequested == (int)Roles.Student)
+                    {
+                        registerViewModel.StudentModel.UserId = user == null ? 0 : user.Id;
+                        return new JsonResult( await RegisterStudent(registerViewModel.StudentModel));
+
+                    }
+                    else if (registerViewModel.Role == (int)Roles.Teacher)
+                    {
+                        var teacher = new Entities.Teacher
                         {
                             UserId = user.Id,
                         };
-                      new JsonResult(new {result=true, teacher = await authService.AddTeacher(teacher) });
+                        return new JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher),Message="Your teacher account has been created successfully.  Please confirm your email to activate your account." });
                     }
                     else
                     {
-                        new JsonResult(new { result = useresult.Succeeded });
+                        if (user != null)
+                            await _userManager.DeleteAsync(user);
+                        return new JsonResult(new ResponseFormat { Result = false, Description = "No user is registered.  Please check if the role id is correct" });
                     }
-
+                }
+                else
+                {
+                    return new JsonResult(new ResponseFormat { Result = false, Message = "Some required field/s are empty.", Description = ModelState.Select(p => p.Value).Where(l => l.Errors.Count > 0) });
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return new JsonResult(ModelState.Select(p => p.Value).Where(l => l.Errors.Count > 0));
+                _logger.InsertLogger(ex);
+                throw;
             }
-            return new JsonResult(new { result = false, message = "Something went wrong" });
+        }
+        [HttpPost]
+        public async Task<ResponseFormat> RegisterStudent(StudentModel registerViewModel)
+        {
+            if (!authService.IsStudentUserNameExists(registerViewModel.StudentUserName))
+            {
+                var student = new Entities.Student
+                {
+                    FirstName = registerViewModel.StudentFirstName,
+                    LastName = registerViewModel.StudentLastName,
+                    Grade = registerViewModel.GradeLevels,
+                    UserID = registerViewModel.UserId,
+                    Password = _securePassword.Secure(_secretkey.StudentSaltKey, registerViewModel.StudentPassword),
+                    Gender = registerViewModel.StudentGender,
+                    MotherTongue = registerViewModel.MotherTongue,
+                    UserName = registerViewModel.StudentUserName,
+                    Institution = registerViewModel.Institution,
+                    LanguagesKnown = registerViewModel.LanguageKnown,
+                    StudentDistrict = registerViewModel.StudentDistrict,
+                    RoleId = registerViewModel.RoleRequested,
+                };
+
+                var res = await authService.AddStudent(student);
+                if (registerViewModel.StudentAccountRecoveryAnswers.Any())
+                {
+                    registerViewModel.StudentAccountRecoveryAnswers.ForEach(ans =>
+                    {
+                        ans.StudentId = res.Id;
+                        if (ans.Id == 0)
+                            ans.Created = DateTime.Now;
+                        ans.Updated = DateTime.Now;
+                    });
+                    authService.UpserStudentSecretAnswer(registerViewModel.StudentAccountRecoveryAnswers);
+                }
+                if (res == null)
+                    return new ResponseFormat { Result = false, Message = "Sorry !!! Student registration failed." };
+                else
+                    return new ResponseFormat { Result = true, Message = "Student account has been created successfully.  ",Description=res };
+            }
+            else
+                return new ResponseFormat{Result = false, Message = "Student username already taken." };
         }
 
-      
+
         [HttpGet]
         [AllowAnonymous]
-        public async Task<object> ConfirmEmail(string token, int userid)
+        public async Task<object> ConfirmEmail(string token, string email)
         {
-            return new JsonResult(new { result = authService.EmailConfirmation(token, userid).Result });
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+                return new JsonResult(new { result = false, message = "Invalid token or email." });
+            return new JsonResult(new { result = await authService.EmailConfirmation(token, email) });
         }
 
-       
-        [HttpPost]
+
+
         [AllowAnonymous]
         public async Task<object> ForgotPassword(string Email)
         {
-            var result =  authService.ForgotPassword(Email);
-           return new JsonResult(new { result = result.Result });
-            
+            if (string.IsNullOrEmpty(Email))
+                return new JsonResult(new ResponseFormat { Message = "Email cannot be blank !!!", Result = false });
+            var result =await authService.ForgotPassword(Email);
+            return new JsonResult(new { result = result });
+
         }
-        [HttpGet]
-        [AllowAnonymous]
-        public object ResetPassword(string Token, string Email)
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public object ResetPassword(string Token, string Email)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(Token.Trim()) && !string.IsNullOrWhiteSpace(Email.Trim()))
+        //    {
+        //        var model = new ResetPasswordViewModel { Email = Email, Token = Token };
+        //        return  true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
+        public object ResetStudentPasswordByStudent(ResetStudentPasswordModel model)
         {
-            if (!string.IsNullOrWhiteSpace(Token.Trim()) && !string.IsNullOrWhiteSpace(Email.Trim()))
+            if (ModelState.IsValid)
             {
-                var model = new ResetPasswordViewModel { Email = Email, Token = Token };
-                return  true;
+                var answers = authService.GetStudentAccountRecoveryAnswers(model.UserId).FirstOrDefault(s => s.QuestionId == model.QuestionId);
+                if (answers?.Answer == model.Answer)
+                {
+                    var rows = authService.UpdateStudentPassword(model.UserId, model.Password);
+                    if (rows == 1)
+                        return new JsonResult(new { status = true, message = "Password updated successfully" });
+                    else
+                        return new JsonResult(new { status = false, message = "Password update failed !!!.  No use account found." });
+                }
+                else
+                {
+                    return new JsonResult(new { status = false, message = "Secret question/answer is not correct !!!  Please try again." });
+                }
             }
-            else
-            {
-                return false;
-            }
+            return new JsonResult(new { status = false, message = string.Join(" | ", ModelState.Select(s => s.Value).Where(e => e.Errors.Count > 0).Select(g => g.Errors.FirstOrDefault())) });
         }
 
         [AcceptVerbs("Get", "Post")]
@@ -247,22 +345,34 @@ namespace Learning.API.Controllers
             return Ok();
         }
 
-        public IActionResult IsStudentUserNameExists(string username,int id)
+        [HttpPost]
+        public int SaveStudentSecretAnswers(List<StudentAccountRecoveryAnswer> studentAccounts)
         {
-           var isexists= authService.IsStudentUserNameExists(username, id);
+            studentAccounts.ForEach(student =>
+            {
+                if (student.Id == 0)
+                    student.Created = DateTime.Now;
+                student.Updated = DateTime.Now;
+            });
+            return authService.UpserStudentSecretAnswer(studentAccounts);
+        }
+
+        public IActionResult IsStudentUserNameExists(string username, int id)
+        {
+            var isexists = authService.IsStudentUserNameExists(username, id);
             if (isexists)
                 return new JsonResult($"This student username has been already taken.  Please try another one.");
             else
                 return new JsonResult(true);
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<object> ResetPassword(ResetPasswordViewModel model)
         {
             var resut = await authService.ResetPassword(model);
             if (resut.Succeeded)
-                return new { status=true};
+                return new { status = true };
             else
             {
                 return new { result = false, errors = resut.Errors };
@@ -313,6 +423,5 @@ namespace Learning.API.Controllers
 
 
     }
-    
-}
 
+}

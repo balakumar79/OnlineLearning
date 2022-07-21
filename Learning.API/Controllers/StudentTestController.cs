@@ -2,13 +2,16 @@
 using Learning.Entities;
 using Learning.Student;
 using Learning.Student.Abstract;
+using Learning.Student.ViewModel;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static Learning.ViewModel.Account.AuthorizationModel;
@@ -26,64 +29,70 @@ namespace Learning.API.Controllers
     public class StudentTestController : ControllerBase
     {
         #region variables
-        readonly IStudentTestService _studentService;
+        readonly IStudentService _studentService;
         readonly ITutorService _tutorService;
         #endregion
 
         #region ctor
-        public StudentTestController(IStudentTestService studentService, ITutorService tutorService)
+        public StudentTestController(IStudentService studentService, ITutorService tutorService)
         {
             _tutorService = tutorService;
             this._studentService = studentService;
         }
         #endregion
+
         #region methods
         [HttpGet]
         public IEnumerable<StudentTestViewModel> GetStudentTest()
         {
-           List<int> userids =new List<int>();
+            List<int> userids = new List<int>();
             if (User.IsInRole(Utils.Enums.Roles.Parent.ToString()))
                 userids = User.Identity.GetChildIds();
-            if(User.IsInRole(Utils.Enums.Roles.Major.ToString())||User.IsInRole(Utils.Enums.Roles.Minor.ToString()))
-            userids =new List<int> { Convert.ToInt32(HttpContext.User.Identity.GetUserID()) };
-            return _studentService.GetStudentTestByStudentID(userids).ToList();
+            if (User.IsInRole(Utils.Enums.Roles.Major.ToString()) || User.IsInRole(Utils.Enums.Roles.Minor.ToString()))
+                userids = new List<int> { Convert.ToInt32(HttpContext.User.Identity.GetUserID()) };
+            return _studentService.GetStudentTestByStudentIDs(userids).OrderByDescending(p=>p.Modified).ToList();
         }
 
 
         [HttpPost]
         [Authenticate(Permissions.Student.Examination)]
         public JsonResult SaveStudentAnswerLog(StudentAnswerLog log)
-        { 
-            log.StudentId=Convert.ToInt32(User.Identity.GetStudentId());
+        {
+            log.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
             return new JsonResult(new { studentAnswerLogId = _studentService.InsertStudentAnswerLog(log) });
         }
 
         [HttpPost]
-        public JsonResult SaveStudentTest(StudentTest studentTest)
+        public JsonResult SaveStudentTest(List<StudentTest> studentTests)
         {
             try
             {
-                if (User.IsInRole(Utils.Enums.Roles.Minor.ToString()) || User.IsInRole(Utils.Enums.Roles.Major.ToString()))
-                    studentTest.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
-                else
+                foreach (var studentTest in studentTests)
                 {
-                    if (studentTest.StudentId == 0)
-                        return new JsonResult(new { studentTestId = 0, error = "Please enter the valid student id/s to proceed" });
-                    var studentids = User.Identity.GetChildIds().Where(p=>p.ToString().Contains(studentTest.StudentId.ToString()));
-                    if (!studentids.Any())
-                        return new JsonResult(new { studentTestId = 0, error = "Invalid student id/s." });
-                }
-                var studentstats = new StudentTestStats
-                {
-                    Testid = studentTest.TestId,
-                    //total registration 1 is passed because to consider this entity (StudentTestStats) as new registration 
-                    TotalRegistration = 1,
-                    MaximumMarkScored = 0,
-                    MinimumMarkScored = 0,
-                    UpdatedAt=DateTime.Now
-                };
+
+
+                    if (User.IsInRole(Utils.Enums.Roles.Minor.ToString()) || User.IsInRole(Utils.Enums.Roles.Major.ToString()))
+                        studentTest.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
+                    else
+                    {
+                        if (studentTest.StudentId == 0)
+                            return new JsonResult(new { studentTestId = 0, error = "Please enter the valid student id/s to proceed" });
+                        var studentids = User.Identity.GetChildIds().Where(p => p.ToString().Contains(studentTest.StudentId.ToString()));
+                        if (!studentids.Any())
+                            return new JsonResult(new { studentTestId = 0, error = "Invalid student id/s." });
+                    }
+                    var studentstats = new StudentTestStats
+                    {
+                        Testid = studentTest.TestId,
+                        //total registration 1 is passed because to consider this entity (StudentTestStats) as new registration 
+                        TotalRegistration = 1,
+                        MaximumMarkScored = 0,
+                        MinimumMarkScored = 0,
+                        UpdatedAt = DateTime.Now
+                    };
                 _studentService.UpsertStudentTestStats(studentstats);
-                return new JsonResult(new { studentTestId = _studentService.InsertStudentTest(studentTest) });
+                }
+                return new JsonResult(new { studentTestId = _studentService.InsertStudentTest(studentTests) });
             }
             catch (Exception ex)
             {
@@ -98,12 +107,14 @@ namespace Learning.API.Controllers
             try
             {
                 model.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
+                if (model.StudentId == 0)
+                    return new JsonResult(new ResponseFormat { Result = false, Message = "No student account has been found." });
                 var studenttest = _studentService.GetStudentTests(model.StudentTestId);
                 var studentstats = new StudentTestStats
                 {
-                   MinimumMarkScored=model.Score,
-                   MaximumMarkScored=model.Score,
-                   Testid=studenttest.TestId,
+                    MinimumMarkScored = model.Score,
+                    MaximumMarkScored = model.Score,
+                    Testid = studenttest.TestId,
                 };
                 studentstats.UpdatedAt = DateTime.Now;
                 var studentTestHistory = _studentService.InsertStudentTestResult(model);
@@ -116,49 +127,55 @@ namespace Learning.API.Controllers
                 throw;
             }
         }
-         [HttpPost]
-         public JsonResult SaveStudentCalculatedResult(CalculatedResult result)
+        [HttpPost]
+        public JsonResult SaveStudentCalculatedResult(CalculatedResult result)
         {
             result.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
             return new JsonResult(new { studentCalculatedResultId = _studentService.InsertCalculatedResults(result) });
         }
 
         [HttpGet]
-        public JsonResult GetTest(int? testid)
+        [AllowAnonymous,Authorize]
+        public JsonResult GetTest(int? testid,bool isTutorviewOnly)
         {
+            if (User.IsInRole(Utils.Enums.Roles.Tutor.ToString()) && isTutorviewOnly)
+            {
+               return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTutorId()) }));
+            }
             if (testid == null)
-                return new JsonResult(Ok(new { test = _tutorService.GetAllTest() }));
+                return new JsonResult(Ok(new { test = _studentService.GetAllTest().OrderByDescending(s => s.Modified).ToList() }));
             else
-                return new JsonResult(Ok(new { test = _tutorService.GetTestById(testid) }));
-
+                return new JsonResult(Ok(new { test = _studentService.GetTestById(testid) }));
+             
         }
 
         [HttpGet]
         public JsonResult GetQuestionsByQuestionId(int questionid)
         {
-            return new JsonResult(new { Question = _tutorService.GetQuestionDetails(questionid) });
+            return new JsonResult(new { Question = _studentService.GetQuestionDetails(questionid) });
         }
         [HttpGet]
+        [AllowAnonymous]
         public JsonResult GetQuestionsByTestId(int testid, int? groupby)
         {
-            if (testid > 0 )
+            if (testid > 0)
 
             {
 
                 switch (groupby)
                 {
                     case 1:
-                        var query = _tutorService.GetQuestionsByTestId(testid).OrderBy(s=>s.SectionId);
+                        var query = _studentService.GetQuestionsByTestId(testid).OrderBy(s => s.SectionId);
                         var result = new List<object>();
                         query.Select(s => s.SectionId).Distinct().ToList().ForEach(section =>
                             {
                                 result.Add(new { section = section, Questions = query.Where(s => s.SectionId == section).ToList() });
                             });
-                        
+
                         return new JsonResult(new { Questions = result });
 
                     default:
-                        return new JsonResult(new { Questions = _tutorService.GetQuestionsByTestId(testid) });
+                        return new JsonResult(new { Questions = _studentService.GetQuestionsByTestId(testid) });
                 }
             }
             else
@@ -167,7 +184,9 @@ namespace Learning.API.Controllers
             }
 
         }
-        public JsonResult GetQuestionsByTestId(List<int> testIds,int?groupby)
+
+        [AllowAnonymous]
+        public JsonResult GetQuestionsByTestId(List<int> testIds, int? groupby)
         {
             if (testIds.Any())
 
@@ -176,7 +195,7 @@ namespace Learning.API.Controllers
                 switch (groupby)
                 {
                     case 1:
-                        var query = _tutorService.GetQuestionsByTestId(testIds).OrderBy(s => s.SectionId);
+                        var query = _studentService.GetQuestionsByTestId(testIds).OrderBy(s => s.SectionId);
                         var result = new List<object>();
                         query.Select(s => s.SectionId).Distinct().ToList().ForEach(section =>
                         {
@@ -186,7 +205,7 @@ namespace Learning.API.Controllers
                         return new JsonResult(new { Questions = result });
 
                     default:
-                        return new JsonResult(new { Questions = _tutorService.GetQuestionsByTestId(testIds) });
+                        return new JsonResult(new { Questions = _studentService.GetQuestionsByTestId(testIds) });
                 }
             }
             else
@@ -200,7 +219,7 @@ namespace Learning.API.Controllers
             return new JsonResult(new { subject = subjectId == null ? sub : sub.Where(o => o.Id == subjectId) });
 
         }
-        public async Task<JsonResult> GetTestSectionByTestId(int testid) => new JsonResult(Ok(new {sections=(await _tutorService.GetTestSectionByTestId(testid))}));
+        public async Task<JsonResult> GetTestSectionByTestId(int testid) => new JsonResult(Ok(new { sections = (await _tutorService.GetTestSectionByTestId(testid)) }));
         public JsonResult GetGradeLevels(int? gradeid)
         {
             return new JsonResult(Ok(new { grades = gradeid == null ? _tutorService.GetGradeLevels() : _tutorService.GetGradeLevels().Where(s => s.Id == gradeid) }));
@@ -211,8 +230,10 @@ namespace Learning.API.Controllers
             var grades = new List<int>();
             if (!string.IsNullOrEmpty(gradeids))
                 gradeids.Split(",").ToList().ConvertAll(int.Parse);
-            return new JsonResult(new { subjects = _studentService.GetTestSubjectViewModels(grades) });
+            return new JsonResult(new { subjects = _studentService.GetTestSubjectViewModels(grades).OrderBy(s=>s.Language) });
         }
+
+        [AllowAnonymous, HttpGet]
         public JsonResult GetSubjectWiseGrades(string subjects)
         {
             var subjectIds = new List<int>();
@@ -223,11 +244,29 @@ namespace Learning.API.Controllers
         [HttpPost]
         public JsonResult UpdateStudentTestStatus(StudentTestStatusPartialModel[] partialModels)
         {
-           return new JsonResult(_studentService.UpdateTestStatus(partialModels.ToList()));
-        }                                     
+            return new JsonResult(_studentService.UpdateTestStatus(partialModels.ToList()));
+        }
+        [AllowAnonymous]
         public JsonResult GetLoggedInUser()
         {
-            return new JsonResult(new {user= User.Identity,TokenBasedUser= HttpContext.Items["User"] });
+            return new JsonResult(new ResponseFormat { Description = new { User.Identity, TokenBasedUser = HttpContext.Items["User"] }, Result = true });
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<bool> SendEmailAsync(SendEmailRequestModel requestModel)
+        {
+            if (requestModel.FormFile != null)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    requestModel.FormFile.CopyTo(ms);
+                    return await _studentService.SendEmailAsync(requestModel.toEmail, requestModel.Subject, requestModel.Body, requestModel.CC, ms, requestModel.FileName);
+                }
+            }
+            else
+            {
+                return await _studentService.SendEmailAsync(requestModel.toEmail, requestModel.Subject, requestModel.Body, requestModel.CC);
+            }
         }
         //// POST api/<Test>
         //[HttpPost]

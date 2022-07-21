@@ -111,6 +111,7 @@ namespace TutorWebUI.Controllers
                     {
                         CreatedAt = DateTime.Now,
                         UserId = user.Id,
+                        UserName=user.UserName,
                         ModifiedAt = DateTime.Now,
                         HearAbout = registerViewModel.HearAbout
                     };
@@ -139,10 +140,10 @@ namespace TutorWebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string token, int userid)
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
         {
 
-            ViewData["message"] =  authService.EmailConfirmation(token, userid).Result;
+            ViewData["message"] = await authService.EmailConfirmation(token, email);
 
             return View("EmailConfirmedConfirmation");
         }
@@ -192,10 +193,9 @@ namespace TutorWebUI.Controllers
        [AcceptVerbs("Get","Post")]
         public async Task<IActionResult> LogOut()
         {
-             _signInManager.SignOutAsync().Wait();
-             HttpContext.SignOutAsync().Wait();
+            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync();
             //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var us = User;
             return RedirectToAction("Login");
         }
         public IActionResult ParentProfile(RegisterViewModel model)

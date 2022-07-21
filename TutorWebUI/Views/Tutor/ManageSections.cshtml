@@ -60,29 +60,26 @@
         let testid = 0;
         $(document).ready(doc => {
             testid = parseInt(localStorage.getItem('sec_testid'));
-            if (testid > 0)
-                ;
-            
             var tb = $('#tblSection').DataTable({
                 autoWidth: true,
                 ajax: {
                     url: 'PartialTestSectionByTestId',
-                    data: function(d){d.testid= testid },
+                    data: function (d) { d.testid = testid },
                     type: 'post',
                     dataSrc: function (data) {
                         console.log(data, testid)
                         return data;
                     }
                 },
-                dom:'1<"#divTests"> 1 <"#divTestLink"> ftrip',
+                dom: '1<"#divTests"> 1 <"#divTestLink"> ftrip',
                 columnDefs: [
                     { targets: [0], data: function (d, t, y, s) { return s.row + 1 } },
-                  /*  { targets: [1], data: "testName", render: function (d, t, r) { return `<a href='/tutor/createtest?Id=${r.testId}'>${d !== null?(d.length > 10 ? d.substring(0, 10) + '...' : d):'N/A' }</a>` } },*/
+                    /*  { targets: [1], data: "testName", render: function (d, t, r) { return `<a href='/tutor/createtest?Id=${r.testId}'>${d !== null?(d.length > 10 ? d.substring(0, 10) + '...' : d):'N/A' }</a>` } },*/
                     { targets: [1], data: 'sectionName', render: function (d, t, r) { return `<a href='/tutor/createsection?sectionId=${r.id}'>${d}</a>` } },
-                    { targets: [2], data: 'subTopic', render: function (d) { return d !== null?( d.length > 10 ? d.substring(0, 10) + '...' : d):'N/A' } },
+                    { targets: [2], data: 'subTopic', render: function (d) { return d !== null ? (d.length > 10 ? d.substring(0, 10) + '...' : d) : 'N/A' } },
                     { targets: [3], data: 'totalMarks' },
                     //{ targets: [5], data:'id', render: function (d) { return 'languageName' } },
-                    { width:"6%", targets: [4], data: 'totalQuestions' },
+                    { width: "6%", targets: [4], data: 'totalQuestions' },
                     { targets: [5], data: 'addedQuestions' },
                     { targets: [6], data: 'created', render: function (t) { return moment(t).format('DD-MM-yyyy H:mm'); } },
                     {
@@ -133,7 +130,7 @@
             });
             //append extra filter select option to datatable
             $('#divTests').append($('<select id="ddlTests" class="form-control-sm w-75"></select>'))
-            $('#divTestLink').append($('<a href="/tutor/createtest?Id=' + localStorage.getItem("sec_testid") + '">Go to test</a> | ' +
+            $('#divTestLink').append($('<button class="btn btn-link" type="button">Go to test</button> | ' +
                 '<a href="/Tutor/CreateSection">Create New</a>'))
 
             bindTest('#ddlTests');
@@ -143,7 +140,10 @@
                 tb.ajax.reload();
                 tb.draw();
             })
+            $('#divTestLink button').eq(0).click(test => {
 
+                location.href = '/tutor/createtest?Id=' + testid + '&returnUrl=' + location.href;
+            });
             //tb.columns.adjust().draw();
         });
         function deleteSection(id) {

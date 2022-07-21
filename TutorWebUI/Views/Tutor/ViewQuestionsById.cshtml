@@ -85,6 +85,10 @@
     function loaddata() {
         return insertdata('/tutor/Partial_QuestionsByTestId', { testId: '@Context.Request.Query["TestId"]' }, 'html').done(res => {
             $('#pnlQus').empty().html(res);
+            $('#tblQus').DataTable({
+                'pageLength': 25,
+                'order':[[6,'desc']]
+            });
         });
     }
     function setactivestatus(cnt) {

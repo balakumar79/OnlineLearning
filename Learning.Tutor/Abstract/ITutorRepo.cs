@@ -11,8 +11,9 @@ namespace Learning.Tutor.Abstract
     {
         TutorViewModel GetTutorProfile(int id);
         Task<int> TestUpsert(TestViewModel model);
+        Task<int> TestUpsert(IList<Test> entity);
         Task<bool> CreateTestSection(TestSectionViewModel model);
-        Task<bool> CreateQuestion(QuestionViewModel model);
+        Task<bool> UpsertQuestion(QuestionViewModel model);
         List<TestViewModel> GetTestByUserID(string tutorid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();

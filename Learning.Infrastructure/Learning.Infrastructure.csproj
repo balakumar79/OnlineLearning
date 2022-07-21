@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Learning.Admin\Learning.Admin.csproj" />
     <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
+    <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
     <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
   </ItemGroup>
 </Project>

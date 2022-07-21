@@ -20,8 +20,10 @@ namespace Learning.Tutor.Service
         }
         public TutorViewModel GetTutorProfile(int id) => _tutorRepo.GetTutorProfile(id);
         public Task<int> TestUpsert(TestViewModel model) => _tutorRepo.TestUpsert(model);
+        public Task<int> TestUpsert(List<Test> model) => _tutorRepo.TestUpsert(model);
+        
         public Task<bool> CreateTestSection(TestSectionViewModel model) => _tutorRepo.CreateTestSection(model);
-        public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.CreateQuestion(model);
+        public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.UpsertQuestion(model);
         public List<TestViewModel> GetTestByUserID(string tutorid) => _tutorRepo.GetTestByUserID(tutorid);
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {

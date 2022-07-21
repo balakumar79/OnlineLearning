@@ -6,12 +6,13 @@ namespace Learning.Utils.Enums
 {
    public enum Roles
     {
-        Minor=1,
+        Student=1,
         Parent=2,
         Tutor=3,
         Teacher=4,
         Admin=5,
-        Major=6
+        Minor=6,
+        Major=7
 
     }
     public enum Genders

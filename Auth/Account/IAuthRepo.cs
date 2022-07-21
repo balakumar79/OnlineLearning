@@ -26,6 +26,9 @@ namespace Auth.Account
         Task<List<Student>> GetAssociatedStudents(int parentUserId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
-        
+        int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
+        List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);
+        int UpdateStudentPassword(int studentId, string password);
+
     }
 }

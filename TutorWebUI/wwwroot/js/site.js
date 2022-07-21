@@ -7,7 +7,8 @@ document.addEventListener('readystatechange', doc => {
 	if (doc.target.readyState === 'complete') {
     }
 })
-function notify(msg, type) {
+function notify(msg, type, timeout) {
+	timeout = timeout ?? 10000;
 	$.notify({
 		icon: '/images/new-notification-icon.jpg',
 		title: 'Online Learning',
@@ -20,7 +21,7 @@ function notify(msg, type) {
 			},
 			icon_type: 'image',
 			type: 'pastel-' + type,
-			delay: 10000,
+			delay: timeout,
 			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 				'<span data-notify="title">{1}</span>' +
 				'<span data-notify="message">{2}</span>' +
@@ -85,10 +86,10 @@ function bindSubject(cnt, subjectid) {
 			$(cnt).append($('<option/>').text(el.subjectName).val(el.id));
 		})
 		subjectid !== undefined ? $(cnt).val(subjectid) : null;
-		return $(cnt);
 	})
+	return $(cnt);
 }
-function bindTest(cnt,testid) {
+function bindTest(cnt, testid) {
 	getdata('/tutor/GetTest').done(res => {
 		$(cnt).empty();
 		$(cnt).append($('<option/>').text('--Select Test--').val(''));
@@ -98,9 +99,8 @@ function bindTest(cnt,testid) {
 		if (testid !== undefined && testid !== null && testid !== '') {
 			//$(cnt).val(testid)
 		}
-		console.log(cnt, testid);
-		return $(cnt);
 	});
+	return $(cnt);
 }
 function bindTestSection(cnt, testid) {
 	if (testid !== undefined) {
@@ -123,16 +123,31 @@ function bindQuestionType(cnt) {
 	getdata('/tutor/GetQuestionType').done(res => {
 		$(cnt).empty();
 		$(cnt).append($('<option/>').text('--Select Qus Type--').val(''));
-			res.forEach(el => {
+		res.forEach(el => {
 			$(cnt).append($('<option/>').text(el.qustionTypeName).val(el.id));
 		})
-		return $(cnt);
-	})
+	});
+	return $(cnt);
+}
+
+function deleteTest(id, dt = null) {
+	$('#modalConfirm').modal('show');
+	$('#modalConfirm #btnDelete').on('click', del => {
+		initLoader();
+		insertdata('/Tutor/DeleteTest', { id: id }).done(res => {
+			notify('Test has been deleted successfully !!!', 'success');
+			removeLoader();
+			if (dt != null) {
+				if ($(dt).length>0)
+				$(dt).DataTable().ajax.reload();
+            }
+		})
+	});
 }
 
 function initDataTable(tbl) {
-	var tb = $(tbl).DataTable();
-	console.log(tb)
+	return $(tbl).DataTable();
+	
 }
 function initLoader() {
 	$('.loading').css('display', 'block');

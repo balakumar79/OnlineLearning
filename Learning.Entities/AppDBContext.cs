@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Learning.Entities
@@ -10,7 +12,7 @@ namespace Learning.Entities
     public partial class AppDBContext : IdentityDbContext<AppUser, AppRole, int>
     {
         public int userID;
-        
+
         public AppDBContext() { }
         public AppDBContext(DbContextOptions<AppDBContext> dbContextOptions, IHttpContextAccessor httpContext) : base(dbContextOptions)
         {
@@ -25,12 +27,13 @@ namespace Learning.Entities
 
         public virtual DbSet<GradeLevels> GradeLevels { get; set; }
         public virtual DbSet<Student> Students { get; set; }
-        public virtual DbSet<Teacher> Teachers{ get; set; }
-        public virtual DbSet<StudentTest> StudentTests{ get; set; }
+        public virtual DbSet<Teacher> Teachers { get; set; }
+        public virtual DbSet<StudentTest> StudentTests { get; set; }
         public virtual DbSet<StudentAnswerLog> StudentAnswerLogs { get; set; }
-        public virtual DbSet<StudentTestHistory> StudentTestHistories{ get; set; }
+        public virtual DbSet<StudentTestHistory> StudentTestHistories { get; set; }
         public virtual DbSet<CalculatedResult> CalculatedResults { get; set; }
-        public virtual DbSet<StudentTestStats> StudentTestStats{ get; set; }
+        public virtual DbSet<StudentTestStats> StudentTestStats { get; set; }
+        public virtual DbSet<StudentInvitation> StudentInvitations { get; set; }
 
         public virtual DbSet<Tutor> Tutors { get; set; }
         public virtual DbSet<Language> Languages { get; set; }
@@ -44,10 +47,10 @@ namespace Learning.Entities
         public virtual DbSet<TestSection> TestSections { get; set; }
         public virtual DbSet<QuestionType> QuestionTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
-        public virtual DbSet<Options> Options{ get; set; }
-        public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions{ get; set; }
-        
-        public virtual DbSet<MCQAnswer> MCQAnswers{ get; set; }
+        public virtual DbSet<Options> Options { get; set; }
+        public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions { get; set; }
+
+        public virtual DbSet<MCQAnswer> MCQAnswers { get; set; }
         //public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
         public virtual DbSet<TrueOrFalse> TrueOrFalses { get; set; }
         //public virtual DbSet<Matching> Matchings{ get; set; }
@@ -56,7 +59,10 @@ namespace Learning.Entities
 
         public virtual DbSet<UserScreenAccess> UserScreensAccess { get; set; }
         public virtual DbSet<ScreenAccess> ScreenAccesses { get; set; }
+        public virtual DbSet<StudentAccountRecoveryAnswer> StudentAccountRecoveryAnswers { get; set; }
 
+
+        public virtual DbSet<Logger> Loggers { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             //builder.HasDefaultSchema("identity");
@@ -72,5 +78,12 @@ namespace Learning.Entities
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        optionsBuilder.UseSqlServer("");
+        //    }
+        //}
     }
 }

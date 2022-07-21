@@ -88,7 +88,7 @@ namespace Learning.Admin.Repo
                 return tutor.TutorId;
         }
 
-        public async Task<List<ScreenAccessViewModel>> GetScreenAccessAsync(Utils.Enums.Roles ? roles)
+        public List<ScreenAccessViewModel> GetScreenAccess(Utils.Enums.Roles? roles)
         {
             return _dBContext.ScreenAccesses.Select(s => new ScreenAccessViewModel
             {

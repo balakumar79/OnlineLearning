@@ -2,48 +2,22 @@
 
     if (doc.target.readyState === 'complete') {
         var questiontypeid = parseInt($('.selQuestionType').val());
-
+       bindTest('.selTest');
+        bindQuestionType('.selQuestionType');
         $('#mcqoptions').hide();
         $('#trueorfalse').hide();
         $('#dropdown').hide();
+       
         formatSection([]);
-
 
         //bind to section dropdown upon test select change
         $('.selTest').on('change', testF => {
+            currenttestid = testF.target.value;
             getdata('/tutor/GetTestSectionByTestId?testid=' + $('.selTest').val()).done(res => {
                 formatSection(res);
+                console.log('SelTest: ' + testF.target.value);
             });
-            //$('#selSection').select2({
-            //        ajax: {
-            //            url: '/tutor/GetTestSectionByTestId?testid=' + $('.selTest').val(),
-            //            dataType: 'json',
-            //            processResults: function (res) {
-            //                dt = [];
-            //                res.forEach(el => {
-            //                    dt.push({
-            //                        html: '<div class="text-center"><span class="col-md-5">' + el.sectionName + '</span><span class="col-md-5 small">' +
-            //                            el.topic + '</span><em class="col-md-4 small text-white-50">' + el.subTopic + '</em></div>',
-            //                        id: el.id,
-            //                        text: el.sectionName,
-            //                        title: el.sectionName
-            //                    });
-            //                });
-            //                var te = {
-            //                    results: dt
-            //                };
-            //                console.log(te);
-            //                return te;
-            //            },
-            //        },
-            //        templateResult: function (el) {
-            //            return $(el.html);
-            //    },
-
-            //    dropdownAutoWidth: true
-            //});
-            //});
-
+            $('.selQuestionType').val(currentquestiontypeid).change()
         });
         //CKEDITOR.instances.editor1.create({
         //    ckfinder: {
@@ -76,61 +50,95 @@
                     questiontypeid = parseInt($('.selQuestionType').val());
                     switch (questiontypeid) {
                         case QuestionType.MCQ: {
-                            var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
                             let ans = [];
+                            let textStr = tinyMCE.activeEditor.getContent({ format: 'html' }).split('{');
+                            $('#mcqoptions .labels').empty();
                             if (textStr.length > 0) {
                                 textStr.forEach(el => {
                                     if (el.indexOf('}') > 0) {
                                         ans.push(el.match("(.*)}")[1]);
+                                        //$('#mcqoptions .options').append('</label>').html(el.match("(.*)}")[1]);
+                                        //$('#mcqoptions .labels').append('<label class="alert alert-info">' + el.match("(.*)}")[1] + '</label>');
+                                        if (el.match("(.*)}")[1] === qusOptions.filter(f => f.isCorrect)[0].option)
+                                        $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                                            el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" checked type="checkbox"/></sup></label>');
+                                        else
+                                            $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                                                el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" type="checkbox"/></sup></label>');
                                     }
                                 });
+                                //options.empty().select2({ data: ans });
                             }
-                            $('#mcqoptions .options select').select2({ data: ans }).val(ans).change();
-                            $('#mcqoptions .ans select').select2({ data: ans }).change();
                             break;
                         }
                         case QuestionType["Match the following"]: {
-                            correctopts.forEach(el => {
-                                el = el.option ?? '';
-                                tr = $(
-                                    `<tr>
-                                       <td>${el.substring(0, el.lastIndexOf('{'))}</td>
-                                       <td><input class="ans" value='${el.substring(el.lastIndexOf('{') + 1, el.lastIndexOf('}'))}'/></td>
-                                     </tr>`
-                                );
-                                $('#matching .table tbody').append(tr);
+                            //correctopts.forEach(el => {
+                            //    el = el.option ?? '';
+                            //    tr = $(
+                            //        `<tr>
+                            //           <td>${el.substring(0, el.lastIndexOf('{'))}</td>
+                            //           <td><input class="ans" value='${el.substring(el.lastIndexOf('{') + 1, el.lastIndexOf('}'))}'/></td>
+                            //         </tr>`
+                            //    );
+                            //    $('#matching .table tbody').append(tr);
 
-                            });
+                            //});
+                            break;
                         }
-                        //bind options to gap filling select2
-                        case QuestionType["Gap Filling"]: case QuestionType["One word answer"]:
+                        case QuestionType["Gap Filling"]:
+                        case QuestionType["One word answer"]:
                             {
-
-                                var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
+                                var textStr = tinyMCE.activeEditor.getContent({ format: 'html' }).split('{');
                                 let ans = [];
+                                $('#mcqoptions .labels').empty()
+                                $('#mcqoptions .options').empty()
+
                                 if (textStr.length > 0) {
                                     textStr.forEach(el => {
                                         if (el.indexOf('}') > 0) {
                                             ans.push(el.match("(.*)}")[1]);
+                                            //$('#mcqoptions .options').append('</label>').html(el.match("(.*)}")[1]);
+                                            $('#mcqoptions .labels').append('<label class="alert alert-info">' + el.match("(.*)}")[1] + '</label>');
                                         }
                                     });
                                 }
-                                $('#mcqoptions .options select').select2({ data: ans }).val(ans).change();
-                                $('#mcqoptions .ans select').select2({ data: ans }).val(ans).change();
+                              
+                               // $('#mcqoptions .options select').select2({ data: ans }).val(ans).change();
+                                //$('#mcqoptions .ans select').select2({ data: ans }).val(ans).change();
                                 break;
                             }
                         case QuestionType["True or False"]: {
-                            var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
+                            //var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
+                            //let ans = [];
+                            //if (textStr.length > 0) {
+                            //    textStr.forEach(el => {
+                            //        if (el.indexOf('}') > 0) {
+                            //            ans.push(el.match("(.*)}")[1]);
+                            //        }
+                            //    });
+                            //}
+                            //$('#mcqoptions .options select').select2({ data: ans }).val(ans).change();
+                            //$('#mcqoptions .ans select').select2({ data: ans });
+                            break;
+                        }
+                        case QuestionType["Re-Arrange"]: {
+                            var textStr = tinyMCE.activeEditor.getContent({ format: 'html' }).split('{');
                             let ans = [];
+                            $('#mcqoptions .labels').empty()
+                            $('#mcqoptions .options').empty() 
+                            
+
                             if (textStr.length > 0) {
                                 textStr.forEach(el => {
                                     if (el.indexOf('}') > 0) {
                                         ans.push(el.match("(.*)}")[1]);
                                     }
                                 });
+                                //correctoption.empty().select2({'data': ans });
+                                //$('#mcqoptions .labels').append('<label class="alert alert-info">' + el.match("(.*)}")[1] + '</label>');
+                                console.log('re-arrange value:',ans)
                             }
-                            $('#mcqoptions .options select').select2({ data: ans }).val(ans).change();
-                            $('#mcqoptions .ans select').select2({ data: ans });
+                            break;
                         }
                         case QuestionType.Dropdown:
                             {
@@ -151,14 +159,12 @@
                                     $('#dropdown').append(ddl);
                                     $('#selDropdown' + i).select2({ data: el.split(','), minimumResultsForSearch: -1 }).val(el.split(','))
                                 });
+                                break;
                             }
                     }
                 })
             },
-                    
-                    
             images_upload_handler: function (blobInfo, success, failure) {
-                alert('gone')
                 var image_size = blobInfo.blob().size / 1000;  // image size in kbytes
                 var max_size = max_size_value                // max size in kbytes
                 if (image_size > max_size) {
@@ -169,7 +175,6 @@
                 }
             }
         });
-
 
         var options = $('#mcqoptions .options select');
 
@@ -187,8 +192,8 @@
 
         //option select change function
         $('.selQuestionType').change(fun => {
-            $('#matching').hide('fast');
-            $('#dropdown').hide();
+            currentquestiontypeid = fun.target.value;
+            $('#matching, .mcqoption-options .labels, #dropdown').hide();
 
             var s2correct = correctoption.select2({
                 tags: true,
@@ -203,11 +208,13 @@
             //bind correct answers to select2
             /*if (questiontypeID === QuestionType.MCQ || questiontypeID === QuestionType["Gap Filling"] || questiontypeID === QuestionType. || fun.target.value === '3') {*/
             $('#mcqoptions').show('slow');
-            $('#mcqoptions .ans').show();
+            $('#mcqoptions .ans').fadeIn('slow');
+            $
+            //$('#mcqoptions .mcqoption-options').show();
 
             //check if the question is new or edit
             if (opts.length > 0) {
-
+                //opts = [];
             } else {
                 opts = options.val();
                 //clear the options on select change event
@@ -216,26 +223,51 @@
                 s2correct.select2('destroy').select2();
             }
             i = 0;
-
             console.log('selectedQuestionTypeID', questiontypeID);
-
             //switch different type of questions
             switch (questiontypeID) {
-                case 1: case 5: case QuestionType["Re-Arrange"]:
+                case QuestionType.MCQ: {
+                    $('#mcqoptions .labels').empty();
+                    $('.options select, .ans, .options, #dropdown').hide();
+                    $('.mcqoption-options,.labels').fadeIn('slow');
+                    qusOptions.forEach(el => {
+                        $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                            el.option + '<sup class="sup-checkbox"><input class="checkbox" '
+                            + (el.isCorrect ?  'checked': null) + ' type="checkbox"/></sup></label>');
+                    })
+                    break;
+                }
+                case QuestionType["One word answer"]:
                     {
-                        if (questiontypeID == 5)
-                            $('#mcqoptions .ans').hide('slow');
+                        $('#mcqoptions .ans,.options').hide();
+                        $('.labels').empty();
+                        $('.mcqoption-options,.labels').fadeIn('slow');
+                        qusOptions.forEach(el => {
+                            $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                                el.option + '<sup class="sup-checkbox"><input class="checkbox" ' + (el.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
+                        })
+                        //if (questiontypeID == 5)
+                        //    $('#mcqoptions .ans').hide('slow');
                         if (questiontypeID == 6) {
                             correctoption.on("select2:select", function (evt) {
-                                tinyMCE.activeEditor.setContent('Ans: ' + $('#mcqoptions .ans select').val().join(' ') + "<br/><br/>Instruction: ");
+                                tinyMCE.activeEditor.setContent('Ans: <br/><br/>Instruction: ');
                             });
                         }
+                        $('#mcqoptions div .labels label').toArray().forEach(function (fun, i) {
+                            $(fun).find('.sup-checkbox').remove().end().html();
+                        });
+                        break;
+                    }
+                case QuestionType["Re-Arrange"] :
+                    {
 
+                        $('#mcqoptions .ans,.mcqoption-options').show('slow');
+                        $('.labels, .mcqoption-options').hide();
                         options.select2({
                             tags: true,
                             placeholder: "Enter your options here...",
                             allowClear: true,
-                            disabled: false
+                            disabled: false,
                         }).on('select2:select change', fun => {
                             correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
                         }).on('select2:clear', sclear => {
@@ -248,7 +280,8 @@
                     }
                 case 2:
                     {
-                        $('#mcqoptions .ans').hide('slow');
+                        $(' #mcqoptions .ans, #mcqoptions .options').hide();
+                        $('#mcqoptions, #mcqoptions .mcqoption-options, #mcqoptions .labels').show('slow');
                         options.select2({
                             tags: false,
                             placeholder: null,
@@ -257,13 +290,19 @@
                         }).on('select2:select change', fun => {
 
                             correctoption.select2({ data: opts });
-                        });
+                        })
+
+                        $('#mcqoptions .labels').empty()
+                       
+                        opts.forEach(op => {
+                            $('#mcqoptions .labels').append('<label class="alert alert-info">' + op + '</label>');
+                        })
                         break;
                     }
-                case 3:
+                case QuestionType["Match the following"]:
                     {
-                        $('#mcqoptions').show('slow');
-                        $('#mcqoptions .ans').hide('slow');
+                        $('#mcqoptions').fadeIn('slow');
+                        $('#mcqoptions .mcqoption-options, .labels, .ans').hide();
                         $('#matching').show('slow');
 
                         setTimeout(() => { options.change() }, 1000);
@@ -278,61 +317,84 @@
                                 $('#matching .table tbody').empty();
                                 //format unformated options
                                 if (correctopts.length === 0) {
-                                    $('#mcqoptions .options select').val().forEach(el => {
-                                        el = el;
-                                        tr = $(
+                                    //$('#mcqoptions .options select').val().forEach(el => {
+                                    //    el = el;
+                                    //    tr = $(
+                                    //        `<tr>
+                                    //        <td><input class="qus" value='${el}' /></td>
+                                    //        <td><input class="ans" value=''/></td>
+                                    //    </tr>`
+                                    //    );
+                                    //    $('#matching .table tbody').append(tr);
+
+                                    //});
+                                    tr = $(
                                             `<tr>
-                                            <td>${el}</td>
+                                            <td><input class="qus" value='' /></td>
                                             <td><input class="ans" value=''/></td>
-                                            <td><button type="button" onclick="deleteRow(this,'#matching')" class="btn btn-link"><i class="fa fa-times text-danger"></i></button></td>
+                <td><button type="button" class="btn-link btnMatchingAdd" onclick="addRow(this)"><i class="fa fa-plus-circle text-success"></i></button>
+                <button type="button" class="btn-link btnMatchingDelete" onclick="deleteRow(this,'#matching')"><i class="fa fa-times-circle text-danger"></i></button>
+                </td>
                                         </tr>`
                                         );
                                         $('#matching .table tbody').append(tr);
-
-                                    });
                                 } else {
-                                    console.log(opts)
-                                    correctopts.forEach(el => {
-                                        el = el.option ?? '';
+
+                                    console.log(correctopts)
+                                    Object.keys(correctopts).forEach(el => {
                                         tr = $(
                                             `<tr>
-                                            <td>${el.substring(0, el.lastIndexOf('{'))}</td>
-                                            <td><input class="ans" value='${el.substring(el.lastIndexOf('{') + 1, el.lastIndexOf('}'))}'/></td>
-                                            <td><button onclick="deleteRow(this,'#matching')" type="button" class="btn btn-link"><i class="fa fa-times-circle text-danger"></i></button></td>
+                                            <td><input class="qus" value="${el}"/></td >
+                                            <td><input class="ans" value='${correctopts[el]}'/></td>
+                <td><button type="button" class="border-0 btnMatchingAdd" onclick="addRow(this)" ><i class="fa fa-plus-circle text-success"></i></button> 
+                <button type="button" class="border-0 btnMatchingDelete" onclick="deleteRow(this,'#matching')"><i class="fa fa-times-circle text-danger"></i></button>
+                </td>
                                         </tr>`
                                         );
                                         $('#matching .table tbody').append(tr);
 
                                     });
-                                   
+
                                 }
                             }
-                           
+
                         });
                         break;
                     }
-
-                case 4:
+                case QuestionType["True or False"]:
                     {
+                        opts = opts.length > 0 ? opts : [{ 'id': 'True', 'text': 'True' }, { 'id': 'False', 'text': 'False' }, { 'id': 'None', 'text': 'None' }];
+
+                        $('.mcqoption-options').fadeIn('slow');
                         options.select2({
                             tags: true,
-                            placeholder: "Type your options here...",
-                            allowClear: true,
+                            data: opts,
+                            placeholder: "Type your correct options here...",
+                            allowClear: false,
                             maximumSelectionLength: 3,
                             disabled: false
                         }).on('select2:select change', fun => {
+                            opts = options.select2('val');
 
-                            $('#mcqoptions .ans select').select2({ data: options.val() });
+                            $('.ans select').select2({ data: opts }).val(correctoption);
+                            //$(fun.target).select2('data', opts)
+                        }).on('select2:unselect', fun => {
+                            opts = options.select2('val');
+                            $('.ans select').empty().select2({ data: opts }).val(correctoption);
+
                         });
+                        options.val(opts).change();
+                        correctoption.val(correctopts);
                         break;
                     }
                 case QuestionType.Dropdown: {
-                    $('#dropdown').show('slow');
-                    
+                    $('#dropdown').fadeIn('slow');
+                    $('#mcqoptions').hide();
+                    break;
                 }
-
                 default: {
-                    $('#mcqoptions').hide('slow');
+                    $('#mcqoptions').hide();
+                    break;
                 }
 
             }
@@ -340,30 +402,38 @@
 
                 el.target
             })
-
+            tinymce.activeEditor.delegates.keyup();
             //}
         });
 
         //form validator
-        $('select').change(fun => {
-            formvalidator();
+        //$('select').on('change', fun => {
+        //    setTimeout(t => {
+        //        formvalidator();
 
-        })
+        //    }, 2000)
+        //});
     }
 });
 
 var opts = [];
 var correctopts = [];
+var qusOptions = [];
 
 let currenttestid = 0;
 let currentquestiontypeid = 0;
 let currenctsectionid = 0;
-function deleteRow(e, selector) {
-    if ($(selector+ ' table tr').length > 1) {
-        $(e).closest('tr').remove();
+function deleteRow(cnt, selector) {
+    if ($(selector).find('tr').length > 1) {
+        $(cnt).closest('tr').remove();
     }
 }
-
+function addRow(cnt) {
+    var $tr = $(cnt).closest('tr');
+    var $clone = $tr.clone();
+    $clone.find(':text').val('');
+    $tr.after($clone);
+}
 function savequestion(cnt) {
     var questiontype = $('.selQuestionType').val();
 
@@ -373,93 +443,171 @@ function savequestion(cnt) {
 
     var answers = [];
     var model = {};
-    if (questiontype == QuestionType["Match the following"]) {
-        var correctoption = [];
-        //for matching type question option params
-        $('#matching table tr').toArray().forEach(function (fun, i) {
-            correctoption.push($(fun).find('td').eq(0).text() + '":"' + $(fun).find('td input').val())
-            return answers.push({
-                Option: $(fun).find('td input').val(),
-                IsCorrect:true,
-                Position: i,
-                //CorrectAnswer: $(fun).find('td input').val()
+    switch (parseInt(questiontype)) {
+        case QuestionType.MCQ: {
+            $('#mcqoptions div .labels label').toArray().forEach(function (fun, i) {
+                answers.push({
+                    Option: $(fun).clone().find('.sup-checkbox').remove().end().html(),
+                    Position: i,
+                    IsCorrect: $(fun).find('input[type=checkbox]').is(':checked')
+                });
             });
-        });
-        model = {
-            QusID: parseInt($('[name=QusID]').val()) || 0,
-            QuestionName: tinyMCE.activeEditor.getContent() ?? 'Matching',
-            QuestionTypeId: questiontype,
-            TestId: $('.selTest').val(),
-            SectionId: $('#selSection').val(),
-            Mark: $('#txtMarks').val(),
-            Options: answers,
-            CorrectOption: '[{"' + correctoption.join('","') + '"}]',
-            StatusId: $(cnt).data('save')
+            if (answers.filter(fi => { return fi.IsCorrect }).length == 0 && $(cnt).data('save') === 3) {
+                notify('MCQ question must contain atleast one option to be correct.','warning',4000);
+                return false;
+            }
+            require('../js/models/questionsModel')
+            var m = new Model()
+            model = {
+                QusID: parseInt($('[name=QusID]').val()) || 0,
+                QuestionName: tinyMCE.activeEditor.getContent(),
+                QuestionTypeId: questiontype,
+                TestId: $('.selTest').val(),
+                SectionId: parseInt($('#selSection').val()) || 0,
+                Mark: $('#txtMarks').val(),
+                Options: answers,
+                CorrectOption: JSON.stringify(answers.map(el => el.Option)),
+                StatusId: $(cnt).data('save'),
+                Topic: $('#txtTopic').val(),
+                SubTopic: $('#txtSubTopic').val()
+            }
+            break
         }
-    }
-    else if (QuestionType.Dropdown) {
-        var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
-        
-        if (textStr.length > 0) {
-            textStr.forEach(function(el,i) {
-                if (el.indexOf('}') > 0) {
-                    answers.push({
-                        Option: el.match("(.*)}")[1],
-                        Position: i
+
+
+        case QuestionType["Match the following"]:
+            {
+                var correctoption = [];
+                //for matching type question option params
+                $('#matching table tr').toArray().forEach(function (fun, i) {
+                    correctoption.push($(fun).find('.qus').eq(0).val() + '":"' + $(fun).find('.ans').val())
+                    return answers.push({
+                        Option: $(fun).find('.ans').val(),
+                        IsCorrect: true,
+                        Position: i,
+                        //CorrectAnswer: $(fun).find('td input').val()
+                    });
+                });
+                model = {
+                    QusID: parseInt($('[name=QusID]').val()) || 0,
+                    QuestionName: tinyMCE.activeEditor.getContent() ?? 'Matching',
+                    QuestionTypeId: questiontype,
+                    TestId: $('.selTest').val(),
+                    SectionId: $('#selSection').val(),
+                    Topic: $('#txtTopic').val(),
+                    SubTopic: $('#txtSubTopic').val(),
+                    Mark: $('#txtMarks').val(),
+                    Options: answers,
+                    CorrectOption: '[{"' + correctoption.join('","') + '"}]',
+                    StatusId: $(cnt).data('save')
+                }
+                break;
+            }
+
+        case QuestionType.Dropdown:
+            {
+                var textStr = tinyMCE.activeEditor.getContent({ format: 'text' }).split('{');
+                if ($('#dropdown select').toArray().filter(el => el.value == 'select').length > 0 && $(cnt).data('save') === 3) {
+                    notify('Please check you have selected correct answers for all options.', 'info', 2000);
+                    return false;
+                }
+                if (textStr.length > 0) {
+                    textStr.forEach(function (el, i) {
+                        if (el.indexOf('}') > 0) {
+                            answers.push({
+                                Option: el.match("(.*)}")[1],
+                                Position: i
+                            });
+                        }
                     });
                 }
+                model = {
+                    QusID: parseInt($('[name=QusID]').val()) || 0,
+                    QuestionName: tinyMCE.activeEditor.getContent(),
+                    QuestionTypeId: questiontype,
+                    TestId: $('.selTest').val(),
+                    SectionId: $('#selSection').val(),
+                    Mark: $('#txtMarks').val(),
+                    Options: answers,
+                    CorrectOption: '["' + $('#dropdown select').toArray().map(el => el.value).join('","') + '"]',
+                    StatusId: $(cnt).data('save'),
+                    Topic: $('#txtTopic').val(),
+                    SubTopic: $('#txtSubTopic').val()
+                }
+                break;
+            }
+
+        case QuestionType["Re-Arrange"]: case QuestionType["True or False"]:
+            {
+                $('#mcqoptions .ans select').select2().val().forEach(function (fun, i) {
+                    answers.push({
+                        Option: fun,
+                        Position: i,
+                        IsCorrect: $('#mcqoptions .ans select').val()
+                            == fun
+                    });
+                });
+                model = {
+                    QusID: parseInt($('[name=QusID]').val()) || 0,
+                    QuestionName: tinyMCE.activeEditor.getContent(),
+                    QuestionTypeId: questiontype,
+                    TestId: $('.selTest').val(),
+                    SectionId: parseInt($('#selSection').val()) || 0,
+                    Mark: $('#txtMarks').val(),
+                    Options: answers,
+                    CorrectOption: '["' + $('#mcqoptions .ans select').val().join('","') + '"]',
+                    StatusId: $(cnt).data('save'),
+                    Topic: $('#txtTopic').val(),
+                    SubTopic: $('#txtSubTopic').val()
+                }
+                break;
+            }
+
+        default:
+            //for gap filling type question option params
+            $('#mcqoptions div .labels label').toArray().forEach(function (fun, i) {
+                answers.push({
+                    Option: fun.innerHTML,
+                    Position: i,
+                    IsCorrect: $('#mcqoptions .ans select').val()
+                        .filter(el => {
+                            return el === fun.textContent
+                        }).length > 0
+                });
             });
-        }
-        model = {
-            QusID: parseInt($('[name=QusID]').val()) || 0,
-            QuestionName: tinyMCE.activeEditor.getContent(),
-            QuestionTypeId: questiontype,
-            TestId: $('.selTest').val(),
-            SectionId: $('#selSection').val(),
-            Mark: $('#txtMarks').val(),
-            Options: answers,
-            CorrectOption: '["' + $('#dropdown select').toArray().map(el => el.value).join('","') + '"]',
-            StatusId: $(cnt).data('save')
-        }
+            model = {
+                QusID: parseInt($('[name=QusID]').val()) || 0,
+                QuestionName: tinyMCE.activeEditor.getContent(),
+                QuestionTypeId: questiontype,
+                TestId: $('.selTest').val(),
+                SectionId: parseInt($('#selSection').val()) || 0,
+                Mark: $('#txtMarks').val(),
+                Options: answers,
+                CorrectOption: '["' + $('#mcqoptions .ans select').val().join('","') + '"]',
+                StatusId: $(cnt).data('save'),
+                Topic: $('#txtTopic').val(),
+                SubTopic: $('#txtSubTopic').val()
+            }
     }
 
-    else {
-        //for mcq, gap filling, true or false type question option params
-        $('.options select').val().forEach(function (fun, i) {
-            return answers.push({
-                Option: fun,
-                Position: i,
-                IsCorrect: $('#mcqoptions .ans select').val()
-                    .filter(el => { return el === fun }).length > 0
-            });
-        });
-        model = {
-            QusID: parseInt($('[name=QusID]').val()) || 0,
-            QuestionName: tinyMCE.activeEditor.getContent(),
-            QuestionTypeId: questiontype,
-            TestId: $('.selTest').val(),
-            SectionId: parseInt($('#selSection').val()) || 0,
-            Mark: $('#txtMarks').val(),
-            Options: answers,
-            CorrectOption: '["' + $('#mcqoptions .ans select').val().join('","') + '"]',
-            StatusId: $(cnt).data('save')
-        }
-    }
-    console.log(model, answers)
+    console.log(model)
     initLoader();
     insertdata('/Tutor/SaveQuestion', { model: model }).done(res => {
         removeLoader();
+
         if (res == 'ok') {
             clearformvalues('#frmCreateExam', false);
             var isupdate = (model.QusID !== 0 && model.QusID !== undefined && model.QusID !== null);
-            notify(`Question ${isupdate ? 'updated' : 'added'} successfully.`, 'success');
+            notify(`Question ${isupdate ? 'updated' : 'added'} successfully.`, 'success', 4000);
             if (isupdate)
                 $('#myModal2').modal('hide');
         }
         else
-            notify(res, 'warning')
+            notify(res, 'warning', 2000)
         console.log(res);
-    })
+    }).fail(status => {
+        removeLoader();
+    });
 }
 
 var QuestionType =
@@ -467,7 +615,7 @@ var QuestionType =
 
 
 function formvalidator() {
-    var formcnt = $("#frmCreateExam").find('select,input,textarea')
+    var formcnt = $("#frmCreateExam").find('select,input,textarea').not('.select2-hidden-accessible,.select2-search__field');
     if ($('.selQuestionType').val() !== '1' || $('.selQuestionType').val() !== '2') {
         formcnt = formcnt.not('.ans select,.options select')
     }
@@ -489,12 +637,19 @@ function formvalidator() {
             }
         }
     });
+    $('.selTest').val(currenttestid);
+    $('.selQuestionType').val(currentquestiontypeid);
+    $('#selSection').val(currenctsectionid);
         return isvalid;
 }
 
 function clearformvalues(form, clearDefaultSelection = true) {
+    
+    $('#mcqoptions .labels').empty();
+    $('.mcqoption-options').hide();
     $('#dropdown').empty().hide();
-    $(form).find('input,select,textarea').toArray().forEach(fun => {
+    $('#pnlShowMore').hide();
+    $(form).find('input,select,textarea').not('.select2-hidden-accessible,.select2-search__field').toArray().forEach(fun => {
         if (clearDefaultSelection) {
             if (fun.tagName.toLowerCase() === 'select') {
                 $(fun).val($(fun).find('option:first').val());
@@ -504,16 +659,15 @@ function clearformvalues(form, clearDefaultSelection = true) {
             if (fun.id == 'selSection') {
                 formatSection([]);
             }
-            currenttestid = 0;
-            currenctsectionid = 0;
-            currentquestiontypeid = 0;
-        } else {
-           
-        }
+            currenttestid = '';
+            currenctsectionid = '';
+            currentquestiontypeid = '';
+        } 
     })
     if (tinyMCE.activeEditor !== null) {
         tinyMCE.activeEditor.setContent('');
     }
+    $('#mcqoptions .options div').empty()
     if ($('select').length > 0)
         $('.options select').empty();
     $('.ans select').empty();
@@ -522,51 +676,59 @@ function clearformvalues(form, clearDefaultSelection = true) {
     $('[name=QusID]').val('');
     $('.validator-1').remove();
     correctopts = [];
+    qusOptions = [];
     //$(form).find('input,select,textarea').change();
 }
 
-
-
 function question_popup(cnt) {
-    clearformvalues('#frmCreateExam');
-    bindTest('.selTest');
-    bindQuestionType('.selQuestionType');
+    //clearformvalues('#frmCreateExam');
+   
     var questionid = parseInt($(cnt).data('questionid'))||0;
     $('[name=QusID]').val(questionid);  
     $('#myModal2').modal('show');
-
+    let testid = 0;
+    let questiontypeid = 0;
     if (questionid > 0) {
         initLoader();
         insertdata('/tutor/GetQuestionDetails', { QuestionId: questionid }).done(res => {
-
-            var testid = parseInt(res.testId)
-
-            var questiontypeid = parseInt(res.questionTypeId);
-            console.log(res);
-            $('.selTest').val(testid).change();
+             testid = parseInt(res.testId)
+            questiontypeid = parseInt(res.questionTypeId);
+            qusOptions = res.options;
             $('#txtMarks').val(res.mark);
+            $('#txtTopic').val(res.topic);
+            $('#txtSubTopic').val(res.subTopic);
             tinyMCE.activeEditor.setContent(res.questionName);
             opts = []; correctopts = [];
-            res.options.forEach(function (el, i) {
+            if (questiontypeid == QuestionType["Match the following"]) {
+                correctopts = JSON.parse(res.correctOption)[0];
+            } else  {
+                correctopts = JSON.parse(res.correctOption);
+                res.options.forEach(op => {
+                    opts.push(op.option);
+                });
+            } 
+            //res.options.forEach(function (el, i) {
 
-                //format the matching type question options
-                if (questiontypeid == 3) {
-                    opts.push(el.option.slice(0, el.option.lastIndexOf('{')));
-                    correctopts.push(el);
-                }
-                else {
-                    opts.push(el.option);
-                }
-                if (el.isCorrect)
-                    correctopts.push(el.option);
-            });
+            //    //format the matching type question options
+            //    if (questiontypeid == QuestionType["Match the following"]) {
+            //        opts.push(el.option);
+            //        correctopts.push(el);
+            //    }
+            //    else {
+            //        opts.push(el.option);
+            //    }
+            //    if (el.isCorrect)
+            //        correctopts.push(el.option);
+            //});
             $('#mcqoptions .options select').select2({ data: opts }).val(opts).change();
             $('#mcqoptions .ans select').select2({ data: opts }).val(correctopts).change();
-            $('.selQuestionType').val(questiontypeid).change();
 
             currenttestid = res.testId;
             currentquestiontypeid = res.questionTypeId;
             currenctsectionid = res.sectionId;
+            console.log(res, correctopts, questiontypeid, testid);
+            $('.selTest').val(testid.toString()).change()
+            
         });
         removeLoader();
     }
@@ -577,9 +739,9 @@ function formatSection(res) {
     dt = [];
     
         dt.push({
-            html: `<div class="col-md-12 row">
-                       <span class="col-md-5">No section</span>
-                        <span class="col-md-4 text-center small">N/A</span>
+            html: `<div class="row">
+                       <span class="col-md-5 small">No section</span>
+                        <span class="col-md-4 small">N/A</span>
                         <em class="col-md-3 small text-white-50">N/A</em>
                     </div>`,
             id: 0,
@@ -590,6 +752,7 @@ function formatSection(res) {
         $('#selSection').select2({
             'data': dt,
             height: '100%',
+            width:'100%',
             templateResult: function (data) {
                 return $(data.html);
             },
@@ -603,9 +766,9 @@ function formatSection(res) {
        
     res.forEach(el => {
         dt.push({
-            html: `<div class="col-md-12 row">
-                        <span class="col-md-5">${el.sectionName}</span>
-                        <span class="col-md-4 text-center small">${el.topic??'N/A'}</span>
+            html: `<div class="row">
+                        <span class="col-md-5 small">${el.sectionName}</span>
+                        <span class="col-md-4 small">${el.topic??'N/A'}</span>
                         <em class="col-md-3 small text-white-50">${el.subTopic??'N/A'}</em>
                     </div>`,
             id: el.id,
@@ -616,7 +779,8 @@ function formatSection(res) {
        
         $('#selSection').select2({
             'data': dt,
-            height:'100%',
+            height: '100%',
+            width:'20%',
             templateResult: function (data) {
                 return $(data.html);
             },
@@ -625,9 +789,9 @@ function formatSection(res) {
             },
             dropdownAutoWidth: true
         });
-        return dt;
+        //return dt;
     })
-    $('#selSection').val(currenctsectionid).change();
+    //$('#selSection').val(currenctsectionid).change();
 };
 
 function deleteConfirmation(url) {
@@ -636,6 +800,8 @@ function deleteConfirmation(url) {
         window.location.href = url;
     })
 }
+
+class 
 
 
 

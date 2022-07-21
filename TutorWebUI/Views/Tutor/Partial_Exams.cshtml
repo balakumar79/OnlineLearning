@@ -29,7 +29,9 @@
             <th>
                 Created
             </th>
-          
+             <th>
+                 Published
+             </th>
           
             <th></th>
         </tr>
@@ -61,15 +63,20 @@
             <td>
                 @Html.Label(item.Created.ToShortDateString())
             </td>
-          
+             <td>
+               <input type="checkbox" id="@item.Id" checked="@item.IsActive" onclick="setexamactive(this)" />
+             </td>
            
             <td>
                 <a href="CreateTest?id=@item.Id">
                     <i class="fa fa-eye text-info"> </i>
                 </a> |
-                <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+                <button type="button" class="btn btn-link delTest" onclick="deleteTest('@item.Id','#examtable')"> <i class="fa fa-times-circle text-danger"></i></button>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<script>
+  
+</script>

@@ -13,5 +13,6 @@ namespace Learning.Utils
         Task<string> GetEmailTemplateContent(string templateName);
         Task SendEmailConfirmation(string emailId, string body);
         Task SendForgotPassword(string email, string body);
+        Task SendStudentInvitationLink(string email, string body);
     }
 }

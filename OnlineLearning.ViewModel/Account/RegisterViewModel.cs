@@ -48,19 +48,23 @@ namespace Learning.ViewModel.Account
         public string StudentConfirmPassword { get; set; }
         [Required,Remote(controller:"Account",action: "IsStudentUserNameExists")]
         public string StudentUserName { get; set; }
+        public int UserId { get; set; }
 
         public string Institution { get; set; }
         public string StudentDistrict { get; set; }
         public string LanguageKnown { get; set; }
         public int MotherTongue { get; set; }
         public bool IsRegisteredAsMajor { get; set; }
+        public List<StudentAccountRecoveryAnswer> StudentAccountRecoveryAnswers { get; set; }
 
         [Required]
         public int GradeLevels { get; set; }
+        public int RoleRequested { get; set; }
     }
     public  class TeacherModel
     {
         public int TeacherId { get; set; }
         public int UserId { get; set; }
     }
+   
 }

@@ -12,6 +12,7 @@ namespace Learning.Entities
         public int TutorId { get; set; }
         [ForeignKey("FK_UserID")]
         public int UserId { get; set; }
+        public string UserName { get; set; }
 
         public int TutorType { get; set; }
         public string Organization { get; set; }

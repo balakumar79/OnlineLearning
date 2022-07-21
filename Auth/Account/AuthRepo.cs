@@ -1,5 +1,7 @@
-﻿using Learning.Entities;
+﻿using Learning.Auth;
+using Learning.Entities;
 using Learning.Tutor.ViewModel;
+using Learning.Utils.Config;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,15 +17,19 @@ namespace Auth.Account
 {
     public class AuthRepo : IAuthRepo
     {
+        readonly ISecurePassword _securePassword;
         readonly UserManager<AppUser> userManager;
+        readonly SecretKey _secretkey;
 
         private readonly AppDBContext dBContext;
 
-        public AuthRepo(UserManager<AppUser> userManager, AppDBContext appDBContext)
+        public AuthRepo(UserManager<AppUser> userManager,ISecurePassword securePassword, AppDBContext appDBContext,SecretKey secretKey)
         {
 
             this.dBContext = appDBContext;
             this.userManager = userManager;
+            _securePassword = securePassword;
+            _secretkey = secretKey;
         }
         public async Task<IdentityResult> AddUser(AppUser appUser, string password, AppRole role)
         {
@@ -46,6 +52,31 @@ namespace Auth.Account
             dBContext.Teachers.Add(teacher);
             return dBContext.SaveChangesAsync();
         }
+        public int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        {
+            if (recoveryAnswer.Where(p => p.Id > 0).Any())
+            {
+                dBContext.StudentAccountRecoveryAnswers.UpdateRange(recoveryAnswer.Where(s => s.Id > 0));
+            } else
+                dBContext.StudentAccountRecoveryAnswers.AddRange(recoveryAnswer.Where(s => s.Id == 0));
+            return dBContext.SaveChanges();
+        }
+        public List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid)
+        {
+            return dBContext.StudentAccountRecoveryAnswers.Where(s => s.StudentId == userid).ToList();
+        }
+        public int UpdateStudentPassword(int studentId, string password)
+        {
+            var student = dBContext.Students.FirstOrDefault(s => s.Id == studentId);
+            if (student != null)
+            {
+                student.Password = _securePassword.Secure(_secretkey.StudentSaltKey, password);
+                dBContext.Students.Update(student);
+            }
+            return dBContext.SaveChanges();
+
+        }
+      
         public async Task<int> AddTutor(Tutor entity)
         {
             dBContext.Tutors.Add(entity);

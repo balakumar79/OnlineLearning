@@ -20,7 +20,7 @@ namespace Learning.ViewModel.Account
         public string Password { get; set; }
         [Required,DataType(DataType.Password),Compare("Password")]
         public string ConfirmPassword { get; set; }
-        [Required,DataType(DataType.PhoneNumber)]
+        [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
         [Required]
         [Remote(action: "IsUserNameExists", controller: "Account")]

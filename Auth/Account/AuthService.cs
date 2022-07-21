@@ -49,7 +49,7 @@ namespace Auth.Account
         #region methods
         public async Task<AppUser> GetUser(LoginViewModel viewModel)
         {
-            var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true) ?? await _userManager.FindByEmailAsync(viewModel.UserName);
+            var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true) ?? await _userManager.FindByEmailAsync(viewModel.UserName).ConfigureAwait(true);
             if (user != null)
             {
                 var result = await _signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
@@ -97,14 +97,22 @@ namespace Auth.Account
         {
             return _authRepo.AddStudent(student);
         }
-        public async Task<string> EmailConfirmation(string token, int userid)
+        public int AddStudentAccountRecoveryQuestions(List<StudentAccountRecoveryAnswer> recoveryAnswer)
         {
-            var user =await _userManager.FindByIdAsync(userid.ToString());
+            return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
+        }
+       public List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid)
+        {
+            return _authRepo.GetStudentAccountRecoveryAnswers(userid);
+        }
+        public async Task<string> EmailConfirmation(string token, string email)
+        {
+            var user =await _userManager.FindByEmailAsync(email);
             var decodebytes = WebEncoders.Base64UrlDecode(token);
             var decodedtoken = Encoding.UTF8.GetString(decodebytes);
             var auth = await _userManager.ConfirmEmailAsync(user,decodedtoken);
             if (auth.Succeeded)
-                return string.Empty;
+                return "Success";
             else
             {
                 return auth.Errors.FirstOrDefault().Description;
@@ -113,8 +121,13 @@ namespace Auth.Account
         public async Task<bool> ForgotPassword(string email)
         {
             string body = await GetForgotPasswordBody(email);
-            await emailService.SendForgotPassword(email, body);
-            return true;
+            if (!string.IsNullOrEmpty(body))
+            {
+                await emailService.SendForgotPassword(email, body);
+                return true;
+            }
+            else
+                return false;
         }
         public async Task<string> GetForgotPasswordBody(string email)
         {
@@ -123,7 +136,14 @@ namespace Auth.Account
                 return string.Empty;
             var tokenByte =Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenByte);
-            var link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host.Value}/Account/ResetPassword?Token={tokenEncoded}&&Email={email}";
+            string link;
+            if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
+            {
+                link = $"domockexam.com/#/ResetPassword?Token={tokenEncoded}&&Email={email}";
+            }
+            else
+                link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host.Value}/Account/ResetPassword?Token={tokenEncoded}&&Email={email}";
+            
             var emailbody = await emailService.GetEmailTemplateContent(EmailTemplate.ResetPassword);
            emailbody= emailbody.Replace("{link}", link);
             return emailbody;
@@ -133,6 +153,9 @@ namespace Auth.Account
             var user = await _userManager.FindByEmailAsync(model.Email);
             var decodedByte = WebEncoders.Base64UrlDecode(model.Token);
             var decodedToken = Encoding.UTF8.GetString(decodedByte);
+            //var student = await _authRepo.GetAssociatedStudents(user.Id);
+            //if (student.Any())
+            //    _authRepo.UpdateStudentPassword(student.FirstOrDefault().Id, model.Password);
             return await _userManager.ResetPasswordAsync(user,decodedToken, model.Password);
         }
         public async Task<string> GetEmailConfirmationBody(AppUser user)
@@ -140,7 +163,12 @@ namespace Auth.Account
             var emailBody =await emailService.GetEmailTemplateContent(EmailTemplate.ConfirmEmail);
             var tokenBytes = Encoding.UTF8.GetBytes(await _userManager.GenerateEmailConfirmationTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenBytes);
-            var link = $"{ httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&userid={user.Id}";
+            string link = "";
+            if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
+            {
+                link = $"domockexam.com/#/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
+            }else
+            link = $"{ httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
             emailBody = emailBody.Replace("{link}", link);
             return emailBody;
         }
@@ -174,10 +202,23 @@ namespace Auth.Account
         {
            return _authRepo.AddTutor(entity);
         }
+       public int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        {
+            return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
+        }
+        public int UpdateStudentPassword(int studentId, string password)
+        {
+            return _authRepo.UpdateStudentPassword(studentId, password);
+        }
 
         public Task<int> AddTeacher(Teacher teacher)
         {
             return _authRepo.AddTeacher(teacher);
+        }
+
+        public int UpserStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        {
+           return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
 
         #endregion

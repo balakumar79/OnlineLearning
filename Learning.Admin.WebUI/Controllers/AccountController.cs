@@ -20,7 +20,6 @@ namespace Learning.Admin.WebUI.Controllers
         readonly IAuthService authService;
         readonly UserManager<AppUser> _userManager;
         SignInManager<AppUser> _signInManager;
-        readonly ITutorService _tutorService;
         
         public AccountController(IAuthService authService,UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
         {
@@ -67,13 +66,13 @@ namespace Learning.Admin.WebUI.Controllers
             return View(Json("returned no result"));
         }
 
-        [HttpPost]
+        [AcceptVerbs("Get","Post")]
+        [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> LogOut()
         {
-            _signInManager.SignOutAsync().Wait();
-            HttpContext.SignOutAsync().Wait();
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var us = User;
+           await _signInManager.SignOutAsync();
+           await HttpContext.SignOutAsync();
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
         [AllowAnonymous]
@@ -102,6 +101,7 @@ namespace Learning.Admin.WebUI.Controllers
                 return Json($"Email {username} is already in use");
             }
         }
+
 
         //public Task<JsonResult> GetLanguageList() => Task.FromResult(Json(authService.GetLanguages()));
         //public Task<JsonResult> GetGradeLevels() => Task.FromResult(Json(authService.GetGradeLevels()));

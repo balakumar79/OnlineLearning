@@ -1,14 +1,15 @@
 ﻿@model Learning.Tutor.ViewModel.TestViewModel
 
 @{
-    ViewData["Title"] = "CreateTest";
+    ViewData["Title"] = "Create Test";
     Layout = "_Layout_Tutor";
+    var returnUrl= Context.Request.Query["ReturnUrl"]==string.Empty? "/tutor/exams":Context.Request.Query["ReturnUrl"].ToString();
 }
 
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
         <h1>Create Test</h1>
-          <a class="text-white h6" href="/tutor/exams"> <i class="fa fa-arrow-circle-left"></i> Back | </a> 
+          <a class="text-white h6" href="@returnUrl"> <i class="fa fa-arrow-circle-left"></i> Back | </a> 
         <a class="text-white h6" href="/tutor/createtest">Create a Test</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
 

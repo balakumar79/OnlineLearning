@@ -11,9 +11,11 @@ namespace Learning.Utils.Config
     {
         public readonly static string ConfirmEmail = "ConfirmEmail.html";
         public readonly static string ResetPassword = "ForgotPassword.html";
+        public readonly static string SendStudentInvitationLinkByTeacher = "SendStudentInvitationLinkByTeacher.html";
     }
     public static class RolesConstant
     {
         public const string Admin = "Admin";
+        public const string Teacher = "Teacher";
     }
 }

@@ -22,6 +22,7 @@ namespace Learning.Entities
         public string StudentDistrict { get; set; }
         public int MotherTongue { get; set; }
         public string Gender { get; set; }
+        public int RoleId { get; set; }
         public virtual Language LanguageNavigation { get; set; }
 
     }

@@ -9,94 +9,105 @@
 
         <h1>Questions - @Model.FirstOrDefault()?.TestName</h1>
 
-       
-            <a class="text-right h6 text-white" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
-            <a class="text-white h6" asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>
-       
-        <table class="table bg-white" id="tblQus">
-            <thead>
+
+        <a class="text-right h6 text-white" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+        <a class="text-white h6" asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+            <table class="table bg-white" id="tblQus">
+                <thead>
+                    <tr>
+                        <th>Sr.No.</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.QuestionName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.QusType)
+                        </th>
+
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.SectionName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Mark)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StatusName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4">No questions created.</td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
                 <tr>
-                    <th>Sr.No.</th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.QuestionName)
-                    </th>
-
-                    <th>
-                        @Html.DisplayNameFor(model => model.QusType)
-                    </th>
-
-
-                    <th>
-                        @Html.DisplayNameFor(model => model.SectionName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Mark)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.StatusName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Created)
-                    </th>
-
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Any())
-                {
-                    <tr>
-                        <td colspan="4">No questions created.</td>
-                    </tr>
-                }
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@(srno++)</td>
-                        <td>
-
-                            @{ if (System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Length > 35)
-                                {
-                                    <a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
-                                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Substring(0, 35)...
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
-                                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "")
-                                    </a>
-                                }
-                            }
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.QusType)
-                        </td>
-
-
-                        <td>
-                            @Html.DisplayFor(modelItem => item.TestSection.SectionName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Mark)
-                        </td>
-                        <td>
-                           @Html.DisplayFor(m=>item.StatusName)
-                        </td>
-
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Created)
-                        </td>
-
-                        <td>
-
-                            <a href="#" onclick="deleteConfirmation('/tutor/DeleteQuestions?QuestionIds=@item.QusID&TestId=@item.TestId')">
-                                <i class="fa fa-times-circle fa-2x text-danger"></i>
+                    <td>@(srno++)</td>
+                    <td>
+                        @*@if (item.QuestionName.Length > 100)
+                        {<a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                                @Html.Raw(item.QuestionName.Substring(0, 100) + " ...");
                             </a>
-                        </td>
-                    </tr>
+                        }
+                        else
+                        {
+                            <a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                                @Html.Raw(item.QuestionName);
+                            </a>
+                        }*@
+                        @{ if (System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Length > 35)
+                {
+                    <a class="btn btn-link text-left" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "").Substring(0, 35)...
+                    </a>
                 }
-            </tbody>
-        </table>
-    </div>
+                else
+                {
+                    <a class="btn btn-link text-left" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">
+                        @System.Text.RegularExpressions.Regex.Replace(item.QuestionName, @"<[^>]+>", "")
+                    </a>
+                }
+            }
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.QusType)
+                    </td>
+
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TestSection.SectionName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Mark)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.StatusName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+
+                    <td>
+                        <a href="#" onclick="deleteConfirmation('/tutor/DeleteQuestions?QuestionIds=@item.QusID&TestId=@item.TestId')">
+                            <i class="fa fa-times-circle text-danger"></i>
+                        </a>
+                    </td>
+                </tr>
+                   }
+                </tbody>
+            </table>
+        </div>
+        </div>
 </main>

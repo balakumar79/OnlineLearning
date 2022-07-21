@@ -33,7 +33,7 @@ namespace Learning.Auth
         public static string GetStudentId(this IIdentity identity)
         {
             var claim = ((ClaimsIdentity)identity).FindFirst(CustomClaimTypes.StudentId);
-            return (claim != null) ? claim.Value : string.Empty;
+            return (claim != null) ? claim.Value : "0";
         }
         public static List<int> GetChildIds(this IIdentity identity)
         {
