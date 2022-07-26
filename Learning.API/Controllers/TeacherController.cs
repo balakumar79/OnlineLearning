@@ -88,7 +88,7 @@ namespace Learning.API.Controllers
             }
         }
               [AllowAnonymous]
-        public JsonResult StudentInvitationResponse(string id, int res)
+        public JsonResult StudentInvitationResponse([FromQuery] string id, int res)
         {
             if (int.TryParse(CommonData.DecryptString(id,_encryptionKey.Key), out int idValue))
             {

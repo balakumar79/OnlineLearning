@@ -87,7 +87,11 @@
             $('#pnlQus').empty().html(res);
             $('#tblQus').DataTable({
                 'pageLength': 25,
-                'order':[[6,'desc']]
+                'order': [[6, 'desc']],
+                "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                    $("td:first", nRow).html(iDisplayIndex + 1);
+                    return nRow;
+                },
             });
         });
     }

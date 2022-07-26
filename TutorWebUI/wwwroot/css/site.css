@@ -258,14 +258,14 @@ body {
     left: 0;
     height: 100%;
     width: 100%;
-    background: rgba( 25, 25, 25, .8 ) ;
+    background: rgb(18 19 19 / 55%);
 }
 
 .text-load {
     position: absolute;
     bottom: -5px;
     left: -70px;
-    color:aliceblue;
+    color: white;
 }
 
 .loader {
@@ -278,7 +278,7 @@ body {
 }
 
     .loader .square {
-        background: #00ffe7;
+        background: #e9e910fa;
         width: 50px;
         height: 50px;
         margin: 0 auto;
@@ -297,7 +297,7 @@ body {
     }
 
         .loader .path > div {
-            background: rgb(255, 255, 238);
+            background: white;
             width: 10px;
             height: 10px;
             border-radius: 2px;

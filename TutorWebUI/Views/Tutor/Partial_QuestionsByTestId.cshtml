@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "View Questions";
-    int srno = 1;
+   
 }
 <main class="page-content">
     <div class="container-fluid tutor-orange-bg">
@@ -16,7 +16,7 @@
             <table class="table bg-white" id="tblQus">
                 <thead>
                     <tr>
-                        <th>Sr.No.</th>
+                        <th>Sr.No</th>
                         <th>
                             @Html.DisplayNameFor(model => model.QuestionName)
                         </th>
@@ -52,7 +52,7 @@
                     @foreach (var item in Model)
                     {
                 <tr>
-                    <td>@(srno++)</td>
+                     <td></td>
                     <td>
                         @*@if (item.QuestionName.Length > 100)
                         {<a class="btn btn-link" data-toggle="modal" onclick="question_popup(this)" data-questionid="@item.QusID">

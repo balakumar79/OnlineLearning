@@ -80,6 +80,8 @@ namespace Learning.Utils
 
         public static string DecryptString(string cipherText, string key)
         {
+            if (string.IsNullOrEmpty(cipherText))
+                throw new Exception(nameof(cipherText));
             byte[] iv = new byte[16];
             byte[] buffer = Convert.FromBase64String(cipherText);
             var appconfig = _appConfig;

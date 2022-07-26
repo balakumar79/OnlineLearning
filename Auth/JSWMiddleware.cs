@@ -51,7 +51,7 @@ namespace Learning.Auth
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == "nameid").Value;
+                var userId = jwtToken.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
 
                 // attach user to context on successful jwt validation
                 context.Items["User"] = await authService.GetUserByUserId(userId);

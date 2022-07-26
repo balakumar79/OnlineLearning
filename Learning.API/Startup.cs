@@ -118,7 +118,7 @@ namespace Learning.API
             //WithOrigins("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com")
                     .AllowAnyMethod()
                     .AllowAnyHeader());
-            //app.UseMiddleware<JSWMiddleware>();
+            app.UseMiddleware<JSWMiddleware>();
 
             app.UseAuthorization();
             app.UseSession();
