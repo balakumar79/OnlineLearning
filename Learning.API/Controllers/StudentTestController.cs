@@ -136,9 +136,9 @@ namespace Learning.API.Controllers
 
         [HttpGet]
         [AllowAnonymous,Authorize]
-        public JsonResult GetTest(int? testid,bool isTutorviewOnly)
+        public JsonResult GetTest(int? testid,bool isTutorviewOnly=false)
         {
-            if (User.IsInRole(Utils.Enums.Roles.Tutor.ToString()) && isTutorviewOnly)
+            if ((User.IsInRole(Utils.Enums.Roles.Tutor.ToString())||User.IsInRole(Utils.Enums.Roles.Teacher.ToString())) && isTutorviewOnly)
             {
                return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTutorId()) }));
             }
@@ -229,7 +229,7 @@ namespace Learning.API.Controllers
         {
             var grades = new List<int>();
             if (!string.IsNullOrEmpty(gradeids))
-                gradeids.Split(",").ToList().ConvertAll(int.Parse);
+               grades.AddRange(gradeids.Split(",").ToList().ConvertAll(int.Parse));
             return new JsonResult(new { subjects = _studentService.GetTestSubjectViewModels(grades).OrderBy(s=>s.Language) });
         }
 

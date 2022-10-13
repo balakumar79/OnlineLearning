@@ -109,9 +109,13 @@ namespace Auth.Account
         }
         public async Task<Student> GetStudentAsync(string username, string password) => await dBContext.Students.FirstOrDefaultAsync(s => s.UserName == username && s.Password == password);
 
-       public async Task<List<Student>> GetAssociatedStudents(int parentUserId)
+       public async Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId)
         {
             return await dBContext.Students.Where(p => p.UserID == parentUserId).ToListAsync();
+        }
+        public List<Student> GetAssociatedStudentsForTeacher(int teacherId)
+        {
+            return dBContext.Students.Where(s => dBContext.StudentInvitations.Where(st=>st.Response==1 & st.StudentId==s.Id).Select(s => s.StudentId).Contains(s.Id)).ToList();
         }
         public async Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username)
         {
@@ -138,21 +142,17 @@ namespace Auth.Account
 
         public async Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> role = null)
         {
-
+            var screens = new List<ScreenFormeter>();
             if (dBContext.UserScreensAccess.Any(p => p.UserID == userID) && userID != null)
-                return await dBContext.UserScreensAccess.Where(p => p.UserID == userID).Select(o => new ScreenFormeter { ScreenName = o.Screen }).ToListAsync();
-            else
+                screens.AddRange(await dBContext.UserScreensAccess.Where(p => p.UserID == userID).Select(o => new ScreenFormeter { ScreenName = o.Screen }).ToListAsync());
+
+            if (role != null)
             {
-                if (role!=null)
-                {
-                    var roleid = dBContext.Roles.Where(p => role.Contains(p.Name)).Select(l => l.Id)?.ToList();
-                    var screen =  dBContext.ScreenAccesses.Where(p => roleid.Contains(p.RoleID))
-                        .Select(o => new ScreenFormeter { ScreenName = o.ScreenPermission }).ToList();
-                    return screen;
-                }
-                else
-                    return new List<ScreenFormeter>();
+                var roleid = dBContext.Roles.Where(p => role.Contains(p.Name)).Select(l => l.Id)?.ToList();
+                screens.AddRange(dBContext.ScreenAccesses.Where(p => roleid.Contains(p.RoleID) && !screens.Select(s => s.ScreenName).Contains(p.ScreenPermission))
+                    .Select(o => new ScreenFormeter { ScreenName = o.ScreenPermission }).ToList());
             }
+            return screens;
         }
         public async Task<Student> GetStudentByUserName(string userid) => await dBContext.Students.Where(p => p.UserName == userid).FirstOrDefaultAsync();
         public async Task<Tutor> GetTutorByUserID(int userid) => await dBContext.Tutors.Where(p => p.UserId == userid).FirstOrDefaultAsync();

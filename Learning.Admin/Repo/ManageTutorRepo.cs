@@ -96,6 +96,16 @@ namespace Learning.Admin.Repo
                 Roles = (ViewModel.Enums.Roles)s.RoleID
             }).ToList();
         }
-
+                                                                                           public bool DeleteUser(int id)
+        {
+            _dBContext.Users.Remove(_dBContext.Users.FirstOrDefault(u => u.Id == id));
+            return true;
+        }
+        public List<AppUser> GetAppUsers(int ? id = 0)
+        {
+            if (id > 0)
+                return _dBContext.Users.Where(u => u.Id == id).ToList();
+            return _dBContext.Users.ToList();
+        }
     }
 }

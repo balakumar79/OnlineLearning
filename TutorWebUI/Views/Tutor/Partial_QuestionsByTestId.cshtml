@@ -45,9 +45,9 @@
                 <tbody>
                     @if (!Model.Any())
                     {
-                        <tr>
+                        @*<tr>
                             <td colspan="4">No questions created.</td>
-                        </tr>
+                        </tr>*@
                     }
                     @foreach (var item in Model)
                     {
@@ -95,8 +95,8 @@
                         @Html.DisplayFor(m => item.StatusName)
                     </td>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Created)
+                    <td data-order="@item.Created.Ticks.ToString()">
+                        @item.Created.ToString("dd-MM-yyyy hh:mm tt")
                     </td>
 
                     <td>

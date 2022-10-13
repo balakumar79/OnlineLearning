@@ -120,6 +120,12 @@ namespace Learning.Auth
             }
             if(sessionObject.Tutor!=null)
                 claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject?.Tutor.TutorID.ToString()));
+            if (sessionObject.TeacherId > 0)
+            {
+                claims.Add(new Claim(CustomClaimTypes.TeacherId, sessionObject.TeacherId.ToString()));
+
+            }
+
             //var token = new JwtSecurityToken(null, null, claims);
 
             //return new JsonResult( new JwtSecurityTokenHandler().WriteToken(token));

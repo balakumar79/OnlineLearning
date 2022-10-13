@@ -1,9 +1,7 @@
 using Learning.Auth;
 using Learning.Entities;
 using Learning.Middleware;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
-using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace TutorWebUI
 {
@@ -44,8 +41,9 @@ namespace TutorWebUI
                 op.Cookie.IsEssential = true;
                 op.Cookie.MaxAge = TimeSpan.FromDays(4);
                 op.SlidingExpiration = true;
-                op.Cookie.SameSite = SameSiteMode.None;
+                op.Cookie.SameSite = SameSiteMode.None; 
                 op.Cookie.Path = "/";
+                op.AccessDeniedPath = "/Account/AccessDenied";
             });
             //AuthenticationConfig.LearningAuthentication(services);
             services.AddIdentity<AppUser, AppRole>(op=>

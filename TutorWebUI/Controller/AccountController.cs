@@ -48,8 +48,8 @@ namespace TutorWebUI.Controllers
                 {
                  
                    var sessionObj= HttpContext.Session.GetObjectFromJson<SessionObject>("sessionObj");
-                    //await AuthenticationConfig.DoLogin(HttpContext, sessionObj.ScreenAccess, sessionObj, model.RememberMe);
-                    //await HttpContext.RefreshLoginAsync();
+                    await AuthenticationConfig.DoLogin(HttpContext, sessionObj.ScreenAccess, sessionObj, model.RememberMe);
+                    await HttpContext.RefreshLoginAsync();
                     if (returnUrl==null)
                     {
                         if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Minor.ToString()))
@@ -94,7 +94,7 @@ namespace TutorWebUI.Controllers
                     LastName = registerViewModel.LastName,
                     Email = registerViewModel.Email,
                     PhoneNumber = registerViewModel.PhoneNumber,
-                    Gender = registerViewModel.Gender.ToString(),
+                    Gender = registerViewModel.Gender,
                     UserName = registerViewModel.UserName,
                     
                 };
@@ -119,7 +119,7 @@ namespace TutorWebUI.Controllers
                     if (result > 0)
                     {
                         TempData["msg"] = "Your registration has been submitted successfully.  You will get notified when your account is activated.";
-                        return RedirectToAction(nameof(Login));
+                        return View("RegisterationConfirmation");
                     }
                 }
             }
@@ -164,18 +164,18 @@ namespace TutorWebUI.Controllers
         [HttpGet]
         public IActionResult ResetPassword(string Token,string Email)
         {
-            if (!string.IsNullOrWhiteSpace(Token.Trim()) && !string.IsNullOrWhiteSpace(Email.Trim()))
+            if (!string.IsNullOrWhiteSpace(Token?.Trim()) && !string.IsNullOrWhiteSpace(Email?.Trim()))
             {
-                var model = new ResetPasswordViewModel { Email = Email, Token = Token };
+                var model = new ForgotPasswordViewModel { Email = Email, Token = Token };
                 return View(model);
             }
             else
             {
-                return View("Error", new ErrorViewModel { Message = "Invalid request", RequestId = "500" });
+                throw new Exception("Invalid request !!! Required parameter is not supplied.");
             }
         }
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(ForgotPasswordViewModel model)
         {
             var resut = await authService.ResetPassword(model);
             if(resut.Succeeded)
@@ -189,6 +189,7 @@ namespace TutorWebUI.Controllers
                 return View();
             }
         }
+             
 
        [AcceptVerbs("Get","Post")]
         public async Task<IActionResult> LogOut()
@@ -228,7 +229,19 @@ namespace TutorWebUI.Controllers
             }
         }
 
-        
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        public IActionResult Error()
+        {
+            return View();
+        }
+        public IActionResult InternalServerError(string message)
+        {
+            return View();
+        }
         
 
     }

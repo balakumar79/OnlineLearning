@@ -171,6 +171,45 @@ namespace Learning.Entities.Migrations
                     b.ToTable("CalculatedResults");
                 });
 
+            modelBuilder.Entity("Learning.Entities.Comprehension", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CompQusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("QuestionQusID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TestSectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionQusID");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("TestSectionId");
+
+                    b.ToTable("Comprehensions");
+                });
+
             modelBuilder.Entity("Learning.Entities.GradeLevels", b =>
                 {
                     b.Property<int>("Id")
@@ -313,6 +352,9 @@ namespace Learning.Entities.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Mark")
                         .HasColumnType("int");
@@ -507,7 +549,7 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("AcceptedOn")
+                    b.Property<DateTime?>("AcceptedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Parentid")
@@ -1063,6 +1105,29 @@ namespace Learning.Entities.Migrations
                     b.Navigation("Student");
 
                     b.Navigation("StudentTest");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Comprehension", b =>
+                {
+                    b.HasOne("Learning.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionQusID");
+
+                    b.HasOne("Learning.Entities.Test", "Test")
+                        .WithMany()
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestSection", "TestSection")
+                        .WithMany()
+                        .HasForeignKey("TestSectionId");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Test");
+
+                    b.Navigation("TestSection");
                 });
 
             modelBuilder.Entity("Learning.Entities.MCQAnswer", b =>

@@ -12,6 +12,6 @@ namespace Learning.Entities
         public int TeacherId { get; set; }
         public int Response { get; set; }
         public DateTime SentOn { get; set; }
-        public DateTime AcceptedOn { get; set; }
+        public DateTime? AcceptedOn { get; set; }
     }
 }

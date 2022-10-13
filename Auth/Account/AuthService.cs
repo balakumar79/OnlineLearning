@@ -52,7 +52,7 @@ namespace Auth.Account
             var user = await _userManager.FindByNameAsync(viewModel.UserName).ConfigureAwait(true) ?? await _userManager.FindByEmailAsync(viewModel.UserName).ConfigureAwait(true);
             if (user != null)
             {
-                var result = await _signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, viewModel.Password, viewModel.RememberMe, false);
                 if (result.Succeeded)
                 {
                    
@@ -70,11 +70,14 @@ namespace Auth.Account
             return user;
         } 
 
-        public async Task<List<Student>> GetAssociatedStudents(int parentUserId)
+        public async Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId)
         {
-           return await _authRepo.GetAssociatedStudents(parentUserId);
+           return await _authRepo.GetAssociatedStudentsForParent(parentUserId);
         }
-
+               public List<Student> GetAssociatedStudentsForTeacher(int teacherId)
+        {
+            return _authRepo.GetAssociatedStudentsForTeacher(teacherId);
+        }
         public async Task<AppUser> GetUserByUserId(string userid)
         {
             return await _userManager.FindByIdAsync(userid);
@@ -139,7 +142,7 @@ namespace Auth.Account
             string link;
             if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
             {
-                link = $"domockexam.com/#/ResetPassword?Token={tokenEncoded}&&Email={email}";
+                link = $"https://domockexam.com/#/ResetPassword?Token={tokenEncoded}&&Email={email}";
             }
             else
                 link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host.Value}/Account/ResetPassword?Token={tokenEncoded}&&Email={email}";
@@ -148,7 +151,7 @@ namespace Auth.Account
            emailbody= emailbody.Replace("{link}", link);
             return emailbody;
         }
-        public async Task<IdentityResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IdentityResult> ResetPassword(ForgotPasswordViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             var decodedByte = WebEncoders.Base64UrlDecode(model.Token);
@@ -166,7 +169,7 @@ namespace Auth.Account
             string link = "";
             if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
             {
-                link = $"domockexam.com/#/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
+                link = $"https://domockexam.com/#/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
             }else
             link = $"{ httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
             emailBody = emailBody.Replace("{link}", link);

@@ -23,12 +23,13 @@ namespace Auth.Account
         /// </summary>
         /// <param name="parentUserId"></param>
         /// <returns></returns>
-        Task<List<Student>> GetAssociatedStudents(int parentUserId);
+        Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
         int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
         List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);
         int UpdateStudentPassword(int studentId, string password);
+        List<Student> GetAssociatedStudentsForTeacher(int teacherId);
 
     }
 }

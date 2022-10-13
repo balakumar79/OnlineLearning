@@ -5,7 +5,16 @@ using System.Text;
 
 namespace Learning.ViewModel.Account
 {
-    public class ResetPasswordViewModel
+    public class ForgotPasswordViewModel:ResetPasswordModel
+    {
+       
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Token { get; set; }
+
+    }
+      public partial class ResetPasswordModel
     {
         [Required]
         [Display(Name = "New Password")]
@@ -13,12 +22,8 @@ namespace Learning.ViewModel.Account
         [Required]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
-        [Required]
-        public string Email { get; set; }
-        [Required]
-        public string Token { get; set; }
-
     }
+    
     public class ResetStudentPasswordModel 
     {
         [Required]

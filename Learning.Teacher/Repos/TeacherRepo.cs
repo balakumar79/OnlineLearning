@@ -17,6 +17,13 @@ namespace Learning.Teacher.Repos
             _dBContext = dBContext;
             _studentService = studentService;
         }
+        public List<Entities.Teacher> GetTeacher(int? userId=null)
+        {
+            if (userId > 0)
+                return _dBContext.Teachers.Where(t => t.UserId == userId).ToList();
+            else
+              return  _dBContext.Teachers.ToList();
+        }
         public StudentInvitation StudentInvitationUpsert(StudentInvitation studentInvitation)
         {
             if (studentInvitation == null)
@@ -45,26 +52,30 @@ namespace Learning.Teacher.Repos
                 case 3:
                     return _dBContext.StudentInvitations.Where(s => Id.Contains(s.TeacherId)).ToList();
                 case 4:
-                    return _dBContext.StudentInvitations.Where(s => s.Id == valueType).ToList();
+                    return _dBContext.StudentInvitations.Where(s => Id.Contains(s.Id)).ToList();
                 default:
                     return _dBContext.StudentInvitations.ToList();
             }
         }
 
-        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string> ?instituion)
+        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string> ?instituion,int?teacherId)
         {
            district= district ?? new List<string>();
             gradeId = gradeId ?? new List<int>();
             instituion = instituion ?? new List<string>();
             var query = _dBContext.Students.AsQueryable();
+            var sids = _dBContext.StudentInvitations.Where(i => i.TeacherId == teacherId && i.Response == 1).Select(st => st.StudentId);
+            if (teacherId > 0)
+                query = query.Where(q => !sids.Contains(q.Id)).AsQueryable();
+
             if (!string.IsNullOrEmpty(fname))
                 query = query.Where(s => s.FirstName.ToLower().Contains(fname.ToLower()));
             if (!string.IsNullOrEmpty(lname))
                 query = query.Where(s => s.LastName.ToLower().Contains(lname.ToLower()));
             if (!string.IsNullOrEmpty(userName))
-                query = query.Where(s => s.UserName.ToLower().Contains(userName.ToLower()));
+                query = query.Where(s =>s.UserName.ToLower().Contains(userName));
             if (district.Any())
-                query = query.Where(s => district.Contains(s.StudentDistrict.ToLower()));
+                query = query.Where(s =>district.Contains(s.StudentDistrict.ToLower()));
             if (gradeId.Any())
             {
                 query = query.Where(s => gradeId.Contains(s.Grade));

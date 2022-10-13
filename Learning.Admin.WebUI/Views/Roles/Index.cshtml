@@ -1,4 +1,5 @@
 ﻿@using Learning.Utils.Enums
+@model IEnumerable<Learning.ViewModel.Account.AccountUserModel>
 
 @{
     ViewData["Title"] = "Roles";
@@ -6,30 +7,63 @@
     var permissions = typeof(Learning.ViewModel.Account.AuthorizationModel).GetProperties();
 }
 <h1>Manage Roles</h1>
-<div class="accordion" id="accordionExample">
-    @foreach (var item in roles)
-    {
-        <div class="card">
-            <div class="card-header" id="headingOne">
-                <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        @item.ToString()
-                    </button>
-                   
-                </h2>
-            </div>
-
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="">
-                    @{
-                        if (item == Roles.Tutor)
-                {
-                            
-                }
-                    }
-                </div>
-            </div>
-        </div>
-}
+<div class="accordion" id="tblUser">
+       <table class="table-responsive" width="100%">
+           <thead>
+               <tr>
+                   <th>S.No</th>
+                   <th>UserId</th>
+                   <th>First Name</th>
+                   <th>Last Name</th>
+                   <th>Email</th>
+                   <th>Phone</th>
+                   <th>UserName</th>
+                   <th>District</th>
+                   <th>Plan</th>
+                   <th></th>
+               </tr>
+           </thead>
+           <tbody>
+               @foreach (var item in Model)
+               {
+               <tr>
+                   <td></td>
+                 <td>@item.UserID</td>  
+                   <td>@item.FirstName</td>
+                   <td>@item.LastName</td>
+                   <td>@item.Email</td>
+                   <td>@item.PhoneNumber</td>
+                   <td>@item.UserName</td>
+                   <td>@item.District</td>
+                   <td>@item.HasUserAccess</td>
+                   <td><i class="fa fa-eye text-info"></i></td>
+                   <td><button class="btn-small"><i class="fa fa-times text-danger"></i></button></td>
+               </tr>
+               }
+           </tbody>
+       </table>
 </div>
+@section Scripts{ 
+<script>
+    $('#tblUser').DataTable();
+    function deleteUser(){
+        $('#modalConfirm').modal('show');
+        $('#modalConfirm #btnDelete').on('click', del => {
+            initLoader();
+            insertdata('/Admin/Roles/DeleteUser', { id: id }).done(res => {
+                removeLoader();
+                if (res) {
+                    notify('User has been deleted successfully !!!', 'success');
+                    if (dt != null) {
+                        if ($(dt).length > 0)
+                            $(dt).DataTable().ajax.reload();
+                    }
+                } else {
+                    notify('No user deleted.', 'warning');
+                }
+            })
+        });
+    }
+</script>
+}
 

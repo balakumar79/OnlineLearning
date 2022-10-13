@@ -1,4 +1,5 @@
-﻿using Learning.Tutor.ViewModel;
+﻿using Learning.Entities;
+using Learning.Tutor.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,7 @@ namespace Learning.Admin.Abstract
     {
         Task<IdentityResult> CreateTutor(TutorViewModel model);
         Task<List<TutorViewModel>> GetAllTutors();
+        public bool DeleteUser(int id);
+        List<AppUser> GetAppUsers(int? id = 0);
     }
 }

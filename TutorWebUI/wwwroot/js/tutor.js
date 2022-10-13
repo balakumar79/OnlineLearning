@@ -1,6 +1,7 @@
 ﻿document.addEventListener('readystatechange', doc => {
 
     if (doc.target.readyState === 'complete') {
+        require('/js/models/questionsModel.js');
         var questiontypeid = parseInt($('.selQuestionType').val());
         bindTest('.selTest');
         bindQuestionType('.selQuestionType');
@@ -9,10 +10,20 @@
         $('#dropdown').hide();
 
         formatSection([]);
-
         //bind to section dropdown upon test select change
         $('.selTest').on('change', testF => {
             currenttestid = testF.target.value;
+            insertdata('/tutor/GetComprehensionQuestion', { testId: testF.target.value }).done(function (res) {
+                $('.comper-question .selCompQus').empty().append('<option value="0">--Select Question--</option>');
+                console.log(res)
+                res.forEach(el => {
+                    console.log(el)
+                    $('.comper-question .selCompQus').append(`<option value="${el.qusId}">${el.question}</option>`)
+                });
+                if (comprehensionQuestion?.compQusId > 0)
+                    $('.comper-question .selCompQus').val(comprehensionQuestion.compQusId);
+            });
+
             getdata('/tutor/GetTestSectionByTestId?testid=' + $('.selTest').val()).done(res => {
                 formatSection(res);
                 console.log('SelTest: ' + testF.target.value);
@@ -22,7 +33,9 @@
                     $('#selSection').val(currenctsectionid).change();
             });
         });
-
+        document.getElementById('chkComp').addEventListener('click', function (et) {
+            console.log(et.target.value)
+        })
         tinymce.init({
             selector: 'div#editor2',
             height: 250,
@@ -49,21 +62,19 @@
                     let ans = [];
                     let textStr = tinyMCE.get('editor2').getContent({ format: 'html' }).split('{');
                     $('#mcqoptions .labels').empty();
+
+                    
                     if (textStr.length > 0) {
                         textStr.forEach(el => {
                             if (el.indexOf('}') > 0) {
                                 ans.push(el.match("(.*)}")[1]);
                                 //$('#mcqoptions .options').append('</label>').html(el.match("(.*)}")[1]);
-                                //$('#mcqoptions .labels').append('<label class="alert alert-info">' + el.match("(.*)}")[1] + '</label>');
-                                if (el.match("(.*)}")[1] === qusOptions.filter(f => f.isCorrect)[0]?.option)
-                                    $('#mcqoptions .labels').append('<label class="alert alert-info">' +
-                                        el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" checked type="checkbox"/></sup></label>');
-                                else
-                                    $('#mcqoptions .labels').append('<label class="alert alert-info">' +
-                                        el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" type="checkbox"/></sup></label>');
+                                $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                                    el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" '
+                                    + (qusOptions.filter(c => c.option.trim() == el.match("(.*)}")[1].trim())[0]?.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
                             }
                         })
-                        //options.empty().select2({ data: ans });
+                        options.empty().select2({ data: ans });
 
                     }
                 });
@@ -123,6 +134,9 @@
                             break;
                         }
                         case QuestionType["Match the following"]: {
+                            if (tinyMCE.editors.editor1.getContent() == '') {
+                                tinyMCE.editors.editor1.setContent('Match the following.')
+                            }
                             //correctopts.forEach(el => {
                             //    el = el.option ?? '';
                             //    tr = $(
@@ -177,18 +191,8 @@
                             let ans = [];
                             $('#mcqoptions .labels').empty()
                             //$('#mcqoptions .options').empty()
-
-
-                            if (textStr.length > 0) {
-                                textStr.forEach(el => {
-                                    if (el.indexOf('}') > 0) {
-                                        ans.push(el.match("(.*)}")[1]);
-                                    }
-                                });
-                                //correctoption.empty().select2({'data': ans });
-                                //$('#mcqoptions .labels').append('<label class="alert alert-info">' + el.match("(.*)}")[1] + '</label>');
-                                console.log('re-arrange value:', ans)
-                            }
+                            if (tinyMCE.editors.editor1.getContent() == '')
+                                tinyMCE.editors.editor1.setContent('Re-arrange the following question.');
                             break;
                         }
                         case QuestionType.Dropdown:
@@ -210,6 +214,9 @@
                                     $('#dropdown').append(ddl);
                                     $('#selDropdown' + i).select2({ data: el.split(','), minimumResultsForSearch: -1 }).val(el.split(','))
                                 });
+                                correctopts.forEach(function (el, i) {
+                                    $('#dropdown select').eq(i).val(el).change();
+                                })
                                 break;
                             }
                     }
@@ -244,7 +251,7 @@
         //option select change function
         $('.selQuestionType').change(fun => {
             currentquestiontypeid = fun.target.value;
-            $('#matching, .mcqoption-options .labels, #dropdown, #editor2').hide();
+            $('#matching, .mcqoption-options .labels, #dropdown, #editor2, .ans, .comper-question').hide();
             tinymce.editors.editor2.hide()
             var s2correct = correctoption.select2({
                 tags: true,
@@ -269,11 +276,12 @@
                     $('.options select, .ans, .options, #dropdown').hide();
                     tinymce.editors.editor2.show('slow')
                     $('.mcqoption-options,.labels').fadeIn('slow');
-                    qusOptions.forEach(el => {
-                        $('#mcqoptions .labels').append('<label class="alert alert-info">' +
-                            el.option + '<sup class="sup-checkbox"><input class="checkbox" '
-                            + (el.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
-                    })
+                    tinymce.get('editor2').setContent('{ ' + opts.join(' } { ') + ' } ');
+                    //qusOptions.forEach(el => {
+                    //    $('#mcqoptions .labels').append('<label class="alert alert-info">' +
+                    //        el.option + '<sup class="sup-checkbox"><input class="checkbox" '
+                    //        + (el.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
+                    //});
                     break;
                 }
                 case QuestionType["One word answer"]:
@@ -307,6 +315,7 @@
                             placeholder: "Enter your options here...",
                             allowClear: true,
                             disabled: false,
+                            maximumSelectionLength: 300
                         }).on('select2:select change', fun => {
                             correctoption.select2({ minimumResultsForSearch: -1, allowClear: false, data: options.val() });
                         }).on('select2:clear', sclear => {
@@ -343,7 +352,6 @@
                         $('#mcqoptions').fadeIn('slow');
                         $('#mcqoptions .mcqoption-options, .labels, .ans').hide();
                         $('#matching').show('slow');
-
                         //setTimeout(() => { options.change() }, 1000);
                         //options.select2({
                         //    tags: true,
@@ -416,7 +424,7 @@
                             .on('select2:select change', fun => {
                                 opts = options.select2('val');
 
-                                $('.ans select').select2({ data: opts }).val(correctoption);
+                                $('.ans select').select2({ data: opts });
                                 //$(fun.target).select2('data', opts)
                             })
                         //    .on('select2:unselect', fun => {
@@ -425,13 +433,17 @@
 
                         //});
                         //options.val(opts).change();
-                        //correctoption.val(correctopts);
+                        correctoption.val(correctopts);
                         break;
                     }
                 case QuestionType.Dropdown: {
                     $('#dropdown').fadeIn('slow');
                     $('#mcqoptions').hide();
+                   
                     break;
+                }
+                case QuestionType.ComphresionAnswer: {
+                    $('.comper-question').fadeIn('slow');
                 }
                 default: {
                     $('#mcqoptions').hide();
@@ -461,10 +473,12 @@
 var opts = [];
 var correctopts = [];
 var qusOptions = [];
+var comprehensionQuestion = null;
 
 let currenttestid = 0;
 let currentquestiontypeid = 0;
 let currenctsectionid = 0;
+let currentquestionId = 0;
 function deleteRow(cnt, selector) {
     if ($(selector).find('tr').length > 1) {
         $(cnt).closest('tr').remove();
@@ -479,6 +493,8 @@ function addRow(cnt) {
 function savequestion(cnt) {
     var questiontype = $('.selQuestionType').val();
 
+    currentquestionId = $('[name=QusID]').val();
+    currentquestionId = currentquestionId == '' ? 0 : currentquestionId;
     var isvalid = formvalidator();
     if (!isvalid)
         return undefined;
@@ -486,13 +502,13 @@ function savequestion(cnt) {
     var answers = [];
     var correctoption = [];
     var model = {};
-
+    var ComprehensionModels = null;
     switch (parseInt(questiontype)) {
         case QuestionType.MCQ: {
 
             $('#mcqoptions div .labels label').toArray().forEach(function (fun, i) {
                 answers.push({
-                    Option: $(fun).clone().find('.sup-checkbox').remove().end().html(),
+                    Option: $(fun).clone().find('.sup-checkbox').remove().end().html().trim(),
                     Position: i,
                     IsCorrect: $(fun).find('input[type=checkbox]').is(':checked')
                 });
@@ -502,23 +518,8 @@ function savequestion(cnt) {
                 return false;
             }
             correctoption = JSON.stringify(answers.map(el => el.Option));
-            //model = {
-            //    QusID: parseInt() || 0,
-            //    QuestionName: tinyMCE.activeEditor.getContent(),
-            //    QuestionTypeId: questiontype,
-            //    TestId: $('.selTest').val(),
-            //    SectionId: parseInt() || 0,
-            //    Mark: $('.selTest').val(),
-            //    Options: answers,
-            //    CorrectOption: JSON.stringify(answers.map(el => el.Option)),
-            //    StatusId: $(cnt).data('save'),
-            //    Topic: $('#txtTopic').val(),
-            //    SubTopic: $('#txtSubTopic').val()
-            //}
             break
         }
-
-
         case QuestionType["Match the following"]:
             {
                 //for matching type question option params
@@ -536,20 +537,6 @@ function savequestion(cnt) {
                         //CorrectAnswer: $(fun).find('td input').val()
                     });
                 });
-
-                //model = {
-                //    QusID: parseInt($('[name=QusID]').val()) || 0,
-                //    QuestionName: tinyMCE.activeEditor.getContent() ?? 'Matching',
-                //    QuestionTypeId: questiontype,
-                //    TestId: $('.selTest').val(),
-                //    SectionId: $('#selSection').val(),
-                //    Topic: $('#txtTopic').val(),
-                //    SubTopic: $('#txtSubTopic').val(),
-                //    Mark: $('#txtMarks').val(),
-                //    Options: answers,
-                //    CorrectOption: JSON.stringify(correctoption),
-                //    StatusId: $(cnt).data('save')
-                //}
                 break;
             }
 
@@ -571,51 +558,41 @@ function savequestion(cnt) {
                     });
                 }
                 correctoption = $('#dropdown select').toArray().map(el => el.value);
-                //model = {
-                //    QusID: parseInt($('[name=QusID]').val()) || 0,
-                //    QuestionName: tinyMCE.activeEditor.getContent(),
-                //    QuestionTypeId: questiontype,
-                //    TestId: $('.selTest').val(),
-                //    SectionId: $('#selSection').val(),
-                //    Mark: $('#txtMarks').val(),
-                //    Options: answers,
-                //    CorrectOption: '["' + $('#dropdown select').toArray().map(el => el.value).join('","') + '"]',
-                //    StatusId: $(cnt).data('save'),
-                //    Topic: $('#txtTopic').val(),
-                //    SubTopic: $('#txtSubTopic').val()
-                //}
                 break;
             }
 
-        case QuestionType["Re-Arrange"]: case QuestionType["True or False"]:
+        case QuestionType["Re-Arrange"]: 
             {
-                $('#mcqoptions .options select').select2().val().forEach(function (fun, i) {
+                correctoption = $('#mcqoptions .ans select').val();
+                correctoption.forEach(function (fun, i) {
                     answers.push({
                         Option: fun,
                         Position: i,
-                        IsCorrect: $('#mcqoptions .ans select').val()
-                            == fun
+                        //IsCorrect: $('#mcqoptions .ans select').val()
+                          //  == fun
                     });
                 });
-                correctoption = $('#mcqoptions .ans select').val();
-                //model = {
-                //    QusID: parseInt($('[name=QusID]').val()) || 0,
-                //    QuestionName: tinyMCE.activeEditor.getContent(),
-                //    QuestionTypeId: questiontype,
-                //    TestId: $('.selTest').val(),
-                //    SectionId: parseInt($('#selSection').val()) || 0,
-                //    Mark: $('#txtMarks').val(),
-                //    Options: answers,
-                //    CorrectOption: '["' + $('#mcqoptions .ans select').val().join('","') + '"]',
-                //    StatusId: $(cnt).data('save'),
-                //    Topic: $('#txtTopic').val(),
-                //    SubTopic: $('#txtSubTopic').val()
-                //}
                 break;
             }
-
-        default:
+        case QuestionType['True or False']: {
             correctoption = $('#mcqoptions .ans select').val();
+            $('.mcqoption-options select').val().forEach(function (fun, i) {
+                answers.push({
+                    Option: fun,
+                    Position: i,
+                    IsCorrect: $('#mcqoptions .ans select').val()== fun
+                });
+            });
+            break;
+        }
+        case QuestionType.ComphresionAnswer: case QuestionType.ComphresionQuestion: {
+            var qusId = $('.comper-question .selCompQus').val() ?? 0;
+            ComprehensionModels = new ComperhesionQustion(currenttestid, currentquestionId, qusId, currenctsectionid);
+            break;
+        }
+       
+        default:
+            correctoption = $('#mcqoptions div .labels label').toArray().map(t => t.innerHTML);
             //for gap filling type question option params
             $('#mcqoptions div .labels label').toArray().forEach(function (fun, i) {
                 answers.push({
@@ -627,23 +604,10 @@ function savequestion(cnt) {
                         }).length > 0
                 });
             });
-            //model = {
-            //    QusID: parseInt($('[name=QusID]').val()) || 0,
-            //    QuestionName: tinyMCE.activeEditor.getContent(),
-            //    QuestionTypeId: questiontype,
-            //    TestId: $('.selTest').val(),
-            //    SectionId: parseInt($('#selSection').val()) || 0,
-            //    Mark: $('#txtMarks').val(),
-            //    Options: answers,
-            //    CorrectOption: '["' + $('#mcqoptions .ans select').val().join('","') + '"]',
-            //    StatusId: $(cnt).data('save'),
-            //    Topic: $('#txtTopic').val(),
-            //    SubTopic: $('#txtSubTopic').val()
-            //}
             break;
     }
-    require('/js/models/questionsModel.js');
-    let QusModel = new Model($('[name=QusID]').val(), tinyMCE.activeEditor.getContent(), $(cnt).data('save'), $('#txtTopic').val(), $('#txtSubTopic').val(), questiontype, currenttestid, currenctsectionid, correctoption, $('#txtMarks').val(), answers
+
+    let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), $('#txtTopic').val(), $('#txtSubTopic').val(), questiontype, currenttestid, currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels
     );
     console.log(model, QusModel);
     initLoader();
@@ -653,12 +617,14 @@ function savequestion(cnt) {
         if (res == 'ok') {
             clearformvalues('#frmCreateExam', false);
             var isupdate = (model.QusID !== 0 && model.QusID !== undefined && model.QusID !== null);
-            notify(`Question ${isupdate ? 'updated' : 'added'} successfully.`, 'success', 4000);
+            notify(`Question ${isupdate ? 'updated' : 'added'} successfully.`, 'success', 1000);
             if (isupdate)
                 $('#myModal2').modal('hide');
+            if ($('#pnlQus').length > 0)
+                loaddata();
         }
         else
-            notify(res, 'warning', 2000)
+            notify(res, 'warning', 1000)
         console.log(res);
     }).fail(status => {
         removeLoader();
@@ -666,7 +632,7 @@ function savequestion(cnt) {
 }
 
 var QuestionType =
-    { 'MCQ': 1, 'Gap Filling': 2, 'Match the following': 3, 'True or False': 4, 'One word answer': 5, 'Re-Arrange': 6, 'Dropdown': 7 }
+    { 'MCQ': 1, 'Gap Filling': 2, 'Match the following': 3, 'True or False': 4, 'One word answer': 5, 'Re-Arrange': 6, 'Dropdown': 7,'ComphresionAnswer':8,'ComphresionQuestion':9 }
 
 
 function formvalidator() {
@@ -713,7 +679,7 @@ function clearformvalues(form, clearDefaultSelection = true) {
                 formatSection([]);
             }
             currenttestid = '';
-            currenctsectionid = '';
+            currenctsectionid = 0;
             currentquestiontypeid = '';
         }
     })
@@ -733,26 +699,30 @@ function clearformvalues(form, clearDefaultSelection = true) {
     correctopts = [];
     qusOptions = [];
     opts = [];
-    //$(form).find('input,select,textarea').change();
+    $(form).find('.selTest').change();
 }
 
 function question_popup(cnt) {
     //clearformvalues('#frmCreateExam');
 
-    var questionid = parseInt($(cnt).data('questionid')) || 0;
-    $('[name=QusID]').val(questionid);
+    currentquestionId = parseInt($(cnt).data('questionid')) || 0;
+    $('[name=QusID]').val(currentquestionId);
     $('#myModal2').modal('show');
     let testid = 0;
     let questiontypeid = 0;
-    if (questionid > 0) {
+    if (currentquestionId > 0) {
         initLoader();
-        insertdata('/tutor/GetQuestionDetails', { QuestionId: questionid }).done(res => {
+        insertdata('/tutor/GetQuestionDetails', { QuestionId: currentquestionId }).done(res => {
             testid = parseInt(res.testId)
             questiontypeid = parseInt(res.questionTypeId);
             qusOptions = res.options;
             $('#txtMarks').val(res.mark);
             $('#txtTopic').val(res.topic);
             $('#txtSubTopic').val(res.subTopic);
+
+
+            comprehensionQuestion = res.comprehensionModels ??  new ComperhesionQustion();
+          
             tinyMCE.editors.editor1.setContent(res.questionName);
             opts = []; correctopts = res.correctOption ?? '[]';
             //if (questiontypeid == QuestionType["Match the following"]) {
@@ -762,8 +732,8 @@ function question_popup(cnt) {
                 res.options.forEach(op => {
                     opts.push(op.option);
                 });
-            tinymce.editors.editor2.show('slow')
-            tinymce.get('editor2').setContent('{ ' + opts.join(' } { ') + ' } ');
+            //tinymce.editors.editor2.show('slow')
+            
 
             //}
             //res.options.forEach(function (el, i) {
@@ -811,7 +781,7 @@ function formatSection(res) {
         $('#selSection').select2({
             'data': dt,
             height: '100%',
-            width: '100%',
+            width: '20%',
             templateResult: function (data) {
                 return $(data.html);
             },
@@ -856,6 +826,7 @@ function formatSection(res) {
 function deleteConfirmation(url) {
     $('#modalConfirm').modal('show');
     $('#modalConfirm #btnDelete').click(fun => {
+        $('#modalConfirm #btnDelete').text('Processing...').attr('disabled', true)
         window.location.href = url;
     })
 }

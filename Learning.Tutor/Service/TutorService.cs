@@ -46,9 +46,9 @@ namespace Learning.Tutor.Service
         {
             return await _tutorRepo.GetTestSectionByTestId(testid);
         }
-        public Task<bool> IsTestExists(string testname, int? id)
+        public Task<bool> IsTestExists(string testname, int? id,string tutorId)
         {
-           return _tutorRepo.IsTestNameExists(testname,id);
+           return _tutorRepo.IsTestNameExists(testname,id,tutorId);
         }
 
         public Task<bool> IsSectionExists(string sectionname, int? id)
@@ -107,6 +107,10 @@ namespace Learning.Tutor.Service
         public int savetrueorfalse()
         {
             return _tutorRepo.savetrueorfalse();
+        }
+       public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0)
+        {
+            return _tutorRepo.GetComprehensionQuestionModels(testiD);
         }
 
     }

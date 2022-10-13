@@ -1,8 +1,9 @@
 ﻿@model Learning.ViewModel.Account.AccountUserModel
-
+    @using Learning.Utils.Enums 
 @{
     ViewData["Title"] = "Register";
     Layout = "_Layout_Login";
+    var genders = Learning.Utils.Extensions.EnumToDictionary(typeof(Genders));
 }
 
 <section class="testimonial py-5" id="testimonial">
@@ -29,7 +30,7 @@
                             <h4 class="pb-4 heading-font">Registration Form</h4>
                         </div>
                         <form method="post">
-                            <div class="text-danger" asp-validation-summary="All"></div>
+                            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
                             <div class="form-content">
                                 <div class="row">
                                     <div class="form-group">
@@ -47,27 +48,27 @@
                                         </div>
                                     </div>
                                     @*<div class="form-group">
-                                        <div class="row">
-                                            <div class=" col-md-12 col-sm-12 col-xs-12">
-                                                <label class="labeltext radioreg">Gender</label>
-                                                <div class="form-check-inline2">
-                                                    @foreach (var item in Enum.GetValues(typeof(Learning.ViewModel.Enums.Genders)))
-                                                    {
-                                                        <label class="customradio">
-                                                            <span class="radiotextsty">@item.ToString()</span>
-                                                            @Html.RadioButtonFor(m=>m,item)
-                                                            <span class="checkmark"></span>
-                                                        </label>
-                                                    }
-
-                                                 
-                                                    <span asp-validation-for="Gender" class="text-danger small"></span>
+            <div class="row">
+                <div class=" col-md-12 col-sm-12 col-xs-12">
+                    <label class="labeltext radioreg">Gender</label>
+                    <div class="form-check-inline2">
+                        @foreach (var item in Enum.GetValues(typeof(Learning.ViewModel.Enums.Genders)))
+                        {
+                            <label class="customradio">
+                                <span class="radiotextsty">@item.ToString()</span>
+                                @Html.RadioButtonFor(m=>m,item)
+                                <span class="checkmark"></span>
+                            </label>
+                        }
 
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>*@
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>*@
 
 
 
@@ -79,10 +80,11 @@
 
                                             </div>
                                             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-                                                <input type="password" asp-for="Password" class="form-control" placeholder="Password *" value="" />
-                                                <span asp-validation-for="Password" class="text-danger small"></span>
+                                                <input type="text" class="form-control" asp-for="UserName" placeholder="Username *" value="" />
+                                                <span asp-validation-for="UserName" class="text-danger small"></span>
 
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -90,8 +92,8 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-                                                <input type="text" class="form-control" asp-for="UserName" placeholder="Username *" value="" />
-                                                <span asp-validation-for="UserName" class="text-danger small"></span>
+                                                <input type="password" asp-for="Password" class="form-control" placeholder="Password *" value="" />
+                                                <span asp-validation-for="Password" class="text-danger small"></span>
 
                                             </div>
                                             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
@@ -117,6 +119,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="row justify-content-around">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                               @foreach (var gender in genders)
+                                               {
+                                                   <div class="radiotextsty d-inline ml-lg-5">
+                                                   <input asp-for="Gender" type="radio" value="@gender.Value" />
+                                                 <label asp-for="Gender" >@gender.Key</label>
+                                                     
+                                                       </div>
+                                               }
+                                            </div>
+                                            <span asp-validation-for="Gender" class="text-danger small "></span>
+
+                                        </div>
+                                    </div>
 
                                     <div class="form-group">
                                         <div class="row">
@@ -124,13 +142,13 @@
                                                 <textarea type="text" asp-for="HearAbout" class="form-control" placeholder="How You Hear Us (optional) " value=""></textarea>
                                                 <span asp-validation-for="HearAbout" class="text-danger small"></span>
                                             </div>
-                                          
 
-                                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-                                                    <select class="form-control" asp-for="MotherTongue" placeholder="Mother Tongue (Optional)" ></select>
-                                                    <span asp-validation-for="MotherTongue" class="text-danger small"></span>
-                                                </div>
-                                            
+
+                                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                                <select class="form-control" asp-for="MotherTongue" placeholder="Mother Tongue (Optional)"></select>
+                                                <span asp-validation-for="MotherTongue" class="text-danger small"></span>
+                                            </div>
+
                                         </div>
                                     </div>
 

@@ -19,7 +19,7 @@ namespace Learning.Tutor.Abstract
         Task<List<QuestionType>> GetQuestionTypes();
         List<TestSection> GetTestSections(int  sectionid);
         Task<List<TestSection>> GetTestSectionByTestId(int testid);
-        Task<bool> IsTestNameExists(string testname, int? id);
+        Task<bool> IsTestNameExists(string testname, int? id,string tutorId);
         Task<bool> IsSectionExists(string sectionname, int? id);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int ExamId);
@@ -36,6 +36,7 @@ namespace Learning.Tutor.Abstract
         Task<List<QuestionType>> GetTestType();
         List<TestViewModel> GetAllTest();
         int savetrueorfalse();
+        List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0);
 
     }
 }

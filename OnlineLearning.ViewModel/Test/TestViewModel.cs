@@ -12,7 +12,7 @@ namespace Learning.Tutor.ViewModel
         public int Id { get; set; }
 
         [Required]
-        [Remote(controller:"Tutor",action:"IsTestExists",AdditionalFields ="Id")]
+        [Remote(controller:"Tutor",action:"IsTestExists",AdditionalFields ="Id,TutorId")]
         public string Title { get; set; }
         [Required]
         [Display(Name ="Grade")]

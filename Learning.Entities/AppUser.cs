@@ -14,4 +14,5 @@ namespace Learning.Entities
         public string UserProfileImage { get; set; }
 
     }
+    
 }

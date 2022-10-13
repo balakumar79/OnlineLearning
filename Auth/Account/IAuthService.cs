@@ -25,11 +25,12 @@ namespace Auth.Account
 
         Task<string> EmailConfirmation(string token, string email);
         Task<bool> ForgotPassword(string email);
-        Task<IdentityResult> ResetPassword(ResetPasswordViewModel model);
+        Task<IdentityResult> ResetPassword(ForgotPasswordViewModel model);
 
         Task<Student> GetStudent(LoginViewModel viewModel);
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
-        Task<List<Student>> GetAssociatedStudents(int parentUserId);
+        Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId);
+        List<Student> GetAssociatedStudentsForTeacher(int teacherId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
         int UpserStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
         List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);

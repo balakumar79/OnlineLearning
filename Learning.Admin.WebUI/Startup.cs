@@ -72,12 +72,12 @@ namespace Learning.Admin.WebUI
 
             Infrastructure.Infrastructure.AddDataBase(services, Configuration);
 
-            Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
+            Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
 
-            services.AddSession();
+            services.AddSession(s=>s.IdleTimeout=TimeSpan.FromDays(2));
             services.AddIdentity<AppUser, AppRole>(op =>
             {
-
+                
             })
 .AddEntityFrameworkStores<AppDBContext>().AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
 .AddDefaultTokenProviders();

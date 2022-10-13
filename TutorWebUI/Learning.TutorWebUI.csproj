@@ -44,6 +44,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
     <PackageReference Include="SqlServerDataProtectionProvider" Version="1.0.0" />
   </ItemGroup>
 
@@ -51,6 +52,7 @@
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
     <ProjectReference Include="..\Learning.Middleware\Learning.Middleware.csproj" />
+    <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

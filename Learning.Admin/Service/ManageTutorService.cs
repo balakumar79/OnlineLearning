@@ -30,7 +30,7 @@ namespace Learning.Admin.Service
                 PhoneNumber = model.PhoneNumber,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Gender = model.Gender.ToString(),
+                Gender = model.Gender,
                 UserName = model.UserName,
             };
             var result = await _authService.AddUser(user, model.Password, new AppRole { Name = Utils.Enums.Roles.Tutor.ToString() });
@@ -45,6 +45,16 @@ namespace Learning.Admin.Service
        public async Task<List<TutorViewModel>> GetAllTutors()
         {
             return await _manageTutorRepo.GetAllTutors();
+        }
+
+        public bool DeleteUser(int id)
+        {
+            return _manageTutorRepo.DeleteUser(id);
+        }
+
+        public List<AppUser> GetAppUsers(int? id = 0)
+        {
+            return _manageTutorRepo.GetAppUsers(id);
         }
     }
 }

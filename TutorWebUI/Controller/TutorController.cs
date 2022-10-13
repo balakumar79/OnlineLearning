@@ -12,16 +12,21 @@ using Learning.Auth;
 using Microsoft.AspNetCore.Authorization;
 using static Learning.ViewModel.Account.AuthorizationModel;
 using Learning.Entities;
+using Learning.ViewModel.Account;
 
 namespace TutorWebUI.Controllers
 {
+    [Authorize(Roles =("Tutor,Admin"))]
     public class TutorController : Controller
     {
         private readonly ITutorService _tutorService;
+        private readonly UserManager<AppUser> _userManager;
+
         //private SessionObject sessionObject;
-        public TutorController(ITutorService tutorService, IHttpContextAccessor contextAccessor)
+        public TutorController(ITutorService tutorService, IHttpContextAccessor contextAccessor,UserManager<AppUser> usermanager)
         {
             this._tutorService = tutorService;
+            this._userManager = usermanager;
             //sessionObject = contextAccessor.HttpContext.Session.GetObjectFromJson<SessionObject>("UserObj");
             //if (sessionObject == null)
             //    contextAccessor.HttpContext.RefreshLoginAsync().ConfigureAwait(true);
@@ -51,6 +56,7 @@ namespace TutorWebUI.Controllers
 
             return View(model);
         }
+        [Authenticate(Permissions.Tutor.CreateTest)]
         public IActionResult CreateTest(int? Id)
         {
             TestViewModel model = null;
@@ -130,6 +136,7 @@ namespace TutorWebUI.Controllers
                 }).FirstOrDefault();
             return PartialView(model);
         }
+        [Authorize(Roles =(Permissions.Roles.Tutor))]
         public IActionResult ManageSections()
         {
 
@@ -152,17 +159,18 @@ namespace TutorWebUI.Controllers
                 return View(model);
             }
         }
-
+         [Authenticate(Permissions.Tutor.CreateQuestion)]
         public IActionResult CreateQuestion(int questionId = 0)
         {
             var model = new QuestionViewModel();
+            var t = User;
             if (questionId > 0)
             {
                 model = _tutorService.GetQuestionDetails(questionId);
             }
             return View(model);
         }
-
+        [Authenticate(Permissions.Tutor.CreateQuestion)]
         public async Task<JsonResult> SaveQuestion(QuestionViewModel model)
         {
             if (ModelState.IsValid)
@@ -191,7 +199,7 @@ namespace TutorWebUI.Controllers
             await _tutorService.DeleteTest(id);
             return RedirectToAction(nameof(Exams));
         }
-
+        [Authenticate(Permissions.Tutor.CreateQuestion)]
         public int SetQuestionStatus(int questionid, int status)
         {
            return _tutorService.SetQuestionStatus(questionid, status);
@@ -200,13 +208,14 @@ namespace TutorWebUI.Controllers
         {
             return _tutorService.SetOnlineStatus(sectionid, status);
         }
-
+        [Authenticate(Permissions.Tutor.CreateQuestion)]
         public async Task<int> SetExamActiveAsync(int examid,bool isChecked)
         {
             var exam = _tutorService.GetTestById(examid);
             exam.IsActive = isChecked;
            return await _tutorService.TestUpsert(exam);
         }
+        [Authenticate(Permissions.Tutor.CreateQuestion)]
 
         public IActionResult DeleteQuestions(List<int> QuestionIds,int TestId)
         {
@@ -214,6 +223,7 @@ namespace TutorWebUI.Controllers
             TempData["msg"] = "Select question has been deleted successfully.";
             return RedirectToAction(actionName: "ViewQuestionsById", new { TestId = TestId });
         }
+        [Authenticate(Permissions.Tutor.CreateQuestion)]
         public IActionResult DeleteSection(List<int> id,string rurl)
         {
            var count= _tutorService.DeleteSection(id);
@@ -241,8 +251,8 @@ namespace TutorWebUI.Controllers
 
         public async Task<IActionResult> IsTestExists(string Title, int? Id)
         {
-
-            var isexists = await _tutorService.IsTestExists(Title, Id);
+            var tutorId = User.Identity.GetTutorId();
+            var isexists = await _tutorService.IsTestExists(Title, Id,tutorId);
             if (isexists)
                 return Json($"Test title {Title} already exists.");
             else
@@ -268,7 +278,34 @@ namespace TutorWebUI.Controllers
            return Json( _tutorService.GetQuestionsByTestId(testid));
         }
 
-        
+         public JsonResult GetComprehensionQuestion(int testId)
+        {
+            return Json(_tutorService.GetComprehensionQuestionModels(testId));
+        }
+         [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model,[FromForm]string currentPassword)
+        {
+            if (!string.IsNullOrEmpty(model.Password)&&!string.IsNullOrEmpty(model.ConfirmPassword)&&!string.IsNullOrEmpty(currentPassword))
+            {
+                try
+                {
+                    var user =await _userManager.FindByIdAsync(User.Identity.GetUserID());
+                  var result=await  _userManager.ChangePasswordAsync(user, currentPassword, model.Password);
+                    if (!result.Succeeded)
+                    {
+                        ModelState.AddModelError("", string.Join(" | ", result.Errors.Select(s => s.Description).ToList()));
+                        return View(nameof(TutorProfile));
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+            }
+            TempData["msg"] = "Your password has been reset successfully !!!";
+            return RedirectToAction(nameof(TutorProfile));
+        }
 
     }
 }

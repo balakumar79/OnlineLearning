@@ -40,6 +40,11 @@ namespace Learning.Auth
             var claim = ((ClaimsIdentity)identity).FindFirst(CustomClaimTypes.ChildIds);
             return (claim != null) ? claim.Value.Split(",").ToList().ConvertAll(int.Parse) : new List<int>();
         }
+        public static int GetTeacherId(this IIdentity identity)
+        {
+            var claim = ((ClaimsIdentity)identity).FindFirst(CustomClaimTypes.TeacherId);
+            return (claim != null) ?Convert.ToInt32(claim.Value) : 0;
+        }
 
     }
    

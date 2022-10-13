@@ -22,6 +22,8 @@ namespace Learning.ViewModel.Account
                 public const string DashBoardView = "Permissions.Tutor.Dashboard.View";
                 public const string ProfileEdit = "Permissions.Tutor.Profile.Edit";
                 public const string ViewExams = "Permissions.Tutor.Exams.View";
+                public const string CreateTest = "Permissions.Tutor.Exams.CreateTest";
+                public const string CreateQuestion = "Permissions.Tutor.Exams.CreateQuestion";
             }
 
             public static class Student
@@ -48,7 +50,7 @@ namespace Learning.ViewModel.Account
             public const string RoleId = "roleid";
             public const string StudentId = "studentid";
             public const string ChildIds = "childIds";
-
+            public const string TeacherId = "teacherId";
 
         }
         public const string IdentityApplicationDefault = "Identity.Application";    

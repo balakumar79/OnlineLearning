@@ -38,7 +38,7 @@ namespace Learning.Infrastructure
             // Add a DbContext to store your Database Keys
             services.AddDbContext<LearningKeyContext>(options =>
                 options.UseSqlServer(
-                    configuration.GetConnectionString("DBContext")));
+                    configuration.GetConnectionString("DBContext")),ServiceLifetime.Singleton);
             services.AddDataProtection()
 .PersistKeysToDbContext<LearningKeyContext>().SetApplicationName("LearningCommon");
         }

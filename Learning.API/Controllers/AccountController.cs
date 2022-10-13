@@ -1,6 +1,7 @@
 ﻿using Auth.Account;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
 using Learning.Utils;
 using Learning.Utils.Enums;
@@ -34,12 +35,13 @@ namespace Learning.API.Controllers
         readonly ITutorService _tutorService;
         readonly Utils.Config.SecretKey _secretkey;
         readonly ISecurePassword _securePassword;
+        readonly ITeacherService _teacherService;
         readonly LoggerRepo _logger;
         #endregion
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-           ISecurePassword securePassword, Utils.Config.SecretKey appSet, LoggerRepo logger)
+           ISecurePassword securePassword, Utils.Config.SecretKey appSet,ITeacherService teacherService, LoggerRepo logger)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
@@ -48,6 +50,7 @@ namespace Learning.API.Controllers
             this._securePassword = securePassword;
             _logger = logger;
             _secretkey = appSet;
+            _teacherService = teacherService;
         }
         #endregion
 
@@ -82,11 +85,11 @@ namespace Learning.API.Controllers
 
                     }
                     //check if login user is valid appuser
-                    if (roles.Any(p => p == Roles.Parent.ToString() || p == Roles.Admin.ToString() || p == Roles.Teacher.ToString() || p == Roles.Tutor.ToString()))
+                    if (roles.Any(p => p == Roles.Parent.ToString() || p == Roles.Admin.ToString() || p == Roles.Tutor.ToString()))
                     {
                         var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
 
-                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = await authService.GetAssociatedStudents(user.Id) };
+                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = await authService.GetAssociatedStudentsForParent(user.Id) };
                         //await HttpContext.RefreshLoginAsync();
                         var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
 
@@ -106,12 +109,38 @@ namespace Learning.API.Controllers
                         });
 
                     }
+                    else if (roles.Any(p => p == Roles.Teacher.ToString()))
+                    {
+                        var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
+                        var teacher = _teacherService.GetTeacher(user.Id).FirstOrDefault();
+                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = authService.GetAssociatedStudentsForTeacher(user.Id), TeacherId =teacher?.TeacherId };
+                        //await HttpContext.RefreshLoginAsync();
+                        var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
+
+                        return Ok(new
+                        {
+                            user = new
+                            {
+                                Id = user.Id,
+                                Username = user.UserName,
+                                Email = user.Email,
+                                useraccess = user.HasUserAccess,
+                                result.Value,
+                                roles = sessionObj.RoleID
+                            },
+                            childs = sessionObj.Childs
+
+                        });
+                    }
                     else if (roles.Contains(Roles.Major.ToString()) || roles.Contains(Roles.Minor.ToString()) ||
                         roles.Contains(Roles.Student.ToString()) || student?.RoleId == (int)Roles.Minor)
                     {
 
                         if (student == null)
-                            new JsonResult(new { status = false, message = "Sorry. No student account found !!!" });
+                           return new JsonResult(new { status = false, message = "Sorry. No student account found !!!" });
+                        user = await _userManager.FindByIdAsync(student.UserID.ToString());
+                        if (!user.EmailConfirmed)
+                           return new JsonResult(new { status = false, message = "Sorry.  Your account is not enabled to login.  Please confirm your email to activate your student account." });
                         if (roles.Contains(Roles.Major.ToString()))
                             if (user == null)
                             {
@@ -177,13 +206,14 @@ namespace Learning.API.Controllers
             try
             {
 
-                if (authService.IsStudentUserNameExists(registerViewModel.StudentModel.StudentUserName))
+                if (authService.IsStudentUserNameExists(registerViewModel.StudentModel?.StudentUserName))
                     return new JsonResult(new ResponseFormat { Result = false, Message = "Student username already exists." });
                 AppUser user = null;
                 var availableRolesId = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
                 if (!availableRolesId.Contains((Roles)registerViewModel.Role))
-                    return new JsonResult(new ResponseFormat{ Result = false, Message = "Invalid user role id." });
-                if (!availableRolesId.Contains((Roles)registerViewModel.StudentModel.RoleRequested))
+                    return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid user role id." });
+                if(registerViewModel.StudentModel!=null)
+                if (!availableRolesId.Contains((Roles)(registerViewModel.StudentModel?.RoleRequested??0)))
                     return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid student role id." });
                 if (ModelState.IsValid)
                 {
@@ -194,7 +224,7 @@ namespace Learning.API.Controllers
                         LastName = registerViewModel.LastName,
                         Email = registerViewModel.Email,
                         PhoneNumber = registerViewModel.PhoneNumber,
-                        Gender = ((Genders)registerViewModel.Gender).ToString(),
+                        Gender = registerViewModel.Gender,
                         UserName = registerViewModel.UserName,
                         District = registerViewModel.District
                     };
@@ -206,9 +236,9 @@ namespace Learning.API.Controllers
                             return new JsonResult(new ResponseFormat { Result = userresult.Succeeded, Description = userresult, Message = string.Join(" | ", userresult.Errors.Select(s => s.Description)) });
                     }
                     else
-                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid role Id !!!.  First user cannot be a minor." });
+                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid role Id !!!.  First user cannot be other than Parent." });
 
-                    if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel.RoleRequested == (int)Roles.Student)
+                    if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel?.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Student)
                     {
                         registerViewModel.StudentModel.UserId = user == null ? 0 : user.Id;
                         return new JsonResult( await RegisterStudent(registerViewModel.StudentModel));
@@ -292,8 +322,6 @@ namespace Learning.API.Controllers
             return new JsonResult(new { result = await authService.EmailConfirmation(token, email) });
         }
 
-
-
         [AllowAnonymous]
         public async Task<object> ForgotPassword(string Email)
         {
@@ -368,7 +396,7 @@ namespace Learning.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<object> ResetPassword(ResetPasswordViewModel model)
+        public async Task<object> ResetPassword(ForgotPasswordViewModel model)
         {
             var resut = await authService.ResetPassword(model);
             if (resut.Succeeded)

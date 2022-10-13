@@ -393,3 +393,13 @@ body {
     min-height: 3em;
     border-radius: 13px;
 }
+.question-header {
+    background: repeating-linear-gradient(180deg, #0dc5e082, #da717100 90%);
+}
+.test-category {
+    background: #0d0f0f36;
+    box-shadow: 2px 4px 14px 1px black;
+}
+.form-control-sm {
+    border: 1px #0c0e27 solid;
+}

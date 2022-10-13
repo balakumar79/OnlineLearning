@@ -17,6 +17,7 @@ namespace Learning.Entities
         public string SubTopics { get; set; }
         public int Mark { get; set; }
         public int StatusId { get; set; }
+        public bool Deleted { get; set; }
         public string CorrectOption { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }

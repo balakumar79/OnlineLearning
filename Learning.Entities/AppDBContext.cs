@@ -55,6 +55,7 @@ namespace Learning.Entities
         public virtual DbSet<TrueOrFalse> TrueOrFalses { get; set; }
         //public virtual DbSet<Matching> Matchings{ get; set; }
         public virtual DbSet<TestStatus> TestStatuses { get; set; }
+        public virtual DbSet<Comprehension> Comprehensions { get; set; }
 
 
         public virtual DbSet<UserScreenAccess> UserScreensAccess { get; set; }

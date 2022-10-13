@@ -12,6 +12,7 @@
         <a class="text-right h6 text-white" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
         <a class="text-white h6" asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>-->
         <div id="pnlQus" class="bg-white">
+            @*@await Html.PartialAsync("Partial_QuestionsByTestId",Html.ViewContext.RouteData.Values["TestId"])*@
             @*<table id="tblQus" class="display responsive nowrap" style="width:100%;">
                 <thead>
                     <tr>

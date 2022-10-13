@@ -98,7 +98,7 @@ namespace Learning.Tutor.Repo
                          join status in _dBContext.TestStatuses on qus.StatusId equals status.Id
                          join test in _dBContext.Tests on qus.TestId equals test.Id
                          join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
-                          
+                          where !qus.Deleted
                          select new QuestionViewModel
                          {
                              TestSection =_dBContext.TestSections.Where(s=>s.Id==qus.SectionId).Select(sec=> new TestSectionViewModel
@@ -210,16 +210,21 @@ namespace Learning.Tutor.Repo
                 TestSection = new TestSectionViewModel
                 {
                     //SubTopic = ques.qus?.SubTopics??"N/A",
-                    AddedQuestions =ques.sec?.AddedQuestions??0,
-                    AdditionalInstruction =ques.sec?.AdditionalInstruction,
-                    Id = ques.sec?.Id??0,
-                    IsActive =ques.sec?.IsActive??false,
-                    IsOnline =ques.sec?.IsOnline??false,
-                    SectionName=ques.sec?.SectionName??"No section",
+                    AddedQuestions = ques.sec?.AddedQuestions ?? 0,
+                    AdditionalInstruction = ques.sec?.AdditionalInstruction,
+                    Id = ques.sec?.Id ?? 0,
+                    IsActive = ques.sec?.IsActive ?? false,
+                    IsOnline = ques.sec?.IsOnline ?? false,
+                    SectionName = ques.sec?.SectionName ?? "No section",
                     //Topic =ques.qus?.Topics??"N/A",
-                    TotalMarks =ques.sec?.TotalMarks??0,
-                    TotalQuestions =ques.sec?.TotalQuestions??0
+                    TotalMarks = ques.sec?.TotalMarks ?? 0,
+                    TotalQuestions = ques.sec?.TotalQuestions ?? 0
                 },
+                ComprehensionModels = _dBContext.Comprehensions.Where(c =>
+                c.QusId == ques.qus.QusID).Select(q => new ComprehensionModel
+                {
+                    SectionId = q.SectionId, CompQusId = q.CompQusId, Id = q.Id, QusId = q.QusId, TestId = q.TestId
+                }).FirstOrDefault(),
                 Created = ques.qus.Created,
                 QusID = ques.qus.QusID,
                 Mark = ques.qus.Mark,
@@ -339,8 +344,10 @@ namespace Learning.Tutor.Repo
         {
             if (model == null)
                 throw new Exception("Model cannot be null.");
-            if (model.Options == null)
+            if (model.Options == null&&model.QuestionTypeId!=9&&model.QuestionTypeId!=8)
                 throw new Exception("Options cannot be null.");
+            model.Options = model.Options ?? new List<OptionsViewModel>();
+
             Question question = new Question();
             if (model.QusID > 0)
             {
@@ -358,7 +365,9 @@ namespace Learning.Tutor.Repo
                 _dBContext.Questions.Update(question);
 
                 //delete options by question id for update
-                _dBContext.Options.RemoveRange(_dBContext.Options.Where(p => p.QuestionId == model.QusID));
+                var optiontoremove = _dBContext.Options.Where(p => p.QuestionId == model.QusID);
+                _dBContext.Options.RemoveRange(optiontoremove);
+                _dBContext.SaveChanges();
 
                 var opts = new List<Options>();
 
@@ -373,13 +382,12 @@ namespace Learning.Tutor.Repo
 
                     });
                 }
-                _dBContext.Options.AddRange(opts);
-                await _dBContext.SaveChangesAsync();
-                return true;
+                if (opts.Count > 0)
+                    _dBContext.Options.AddRange(opts);
+                _dBContext.SaveChanges();
             }
             else
             {
-
                 question = new Question
                 {
                     SectionId = model.SectionId,
@@ -394,8 +402,24 @@ namespace Learning.Tutor.Repo
                     Topics=model.Topic,
                     SubTopics=model.SubTopic
                 };
-            }
             _dBContext.Questions.Add(question);
+                _dBContext.SaveChanges();
+                var mcq = new List<Options>();
+                foreach (var item in model?.Options)
+                {
+                    mcq.Add(new Options
+                    {
+                        Answer = item.Option,
+                        IsCorrect = item.IsCorrect,
+                        QuestionId = question.QusID,
+                        Position = item.Position,
+
+                    });
+                }
+                _dBContext.Options.AddRange(mcq);
+                await _dBContext.SaveChangesAsync();
+            }
+           
             await _dBContext.SaveChangesAsync();
 
             //UPDATE ADDED QUESTIONS COUNT IN SECTIONS
@@ -404,87 +428,39 @@ namespace Learning.Tutor.Repo
                 var section = _dBContext.TestSections.FirstOrDefault(p => p.Id == model.SectionId);
                 section.AddedQuestions += 1;
                 _dBContext.TestSections.Update(section);
-                await _dBContext.SaveChangesAsync();
+             await _dBContext.SaveChangesAsync();
             }
 
-            //update/insert language variant
-
-
-            //switch (model.QuestionTypeId)
-            //{
-            //    case 1:
-            //        {
-            var mcq = new List<Options>();
-            foreach (var item in model?.Options)
+            if (model.ComprehensionModels != null&&model.QuestionTypeId==8)
             {
-                mcq.Add(new Options
+            var comp = _dBContext.Comprehensions.FirstOrDefault(com => com.QusId == model.ComprehensionModels.QusId);
+                if (comp != null)
                 {
-                    Answer = item.Option,
-                    IsCorrect = item.IsCorrect,
-                    QuestionId = question.QusID,
-                    Position = item.Position,
-
-                });
+                    comp.CompQusId = model.ComprehensionModels.CompQusId;
+                    comp.SectionId = model.ComprehensionModels.SectionId;
+                    comp.TestId = model.ComprehensionModels.TestId;
+                    comp.ModifiedAt = DateTime.Now;
+                    _dBContext.Comprehensions.Update(comp);
+                }
+                else
+                {
+                     comp = new Comprehension
+                    {
+                        SectionId = model.ComprehensionModels.SectionId,
+                        CompQusId = model.ComprehensionModels.CompQusId,
+                        ModifiedAt = DateTime.Now,
+                        TestId = model.ComprehensionModels.TestId,
+                        QusId = question.QusID
+                    };
+                    _dBContext.Comprehensions.Add(comp);
+                }
+                _dBContext.SaveChanges();
             }
-            _dBContext.Options.AddRange(mcq);
-            await _dBContext.SaveChangesAsync();
+            //update/insert language variant
+         
+           
             return true;
         }
-        //case 2:
-        //    {
-        //        var gapfill = new List<GapFillingAnswer>();
-        //        foreach (var item in model.Options)
-        //        {
-        //            gapfill.Add(new GapFillingAnswer
-        //            {
-        //                Answer = item.Option,
-        //                QuestionId=question.QusID,
-        //                Position = item.Position,
-        //                IsCorrect=item.IsCorrect
-        //            });
-        //        }
-        //        _dBContext.GapFillingAnswers.AddRange(gapfill);
-        //        await _dBContext.SaveChangesAsync();
-        //        return true;
-        //    }
-        //case 3:
-        //    {
-        //        var match = new List<Matching>();
-        //        foreach (var item in model.Options)
-        //        {
-        //            match.Add(new Matching
-        //            {
-        //                CorrectAnswer = item.CorrectAnswer,
-        //                Position = item.Position,
-        //                Sentence = item.Option,
-        //            });
-
-        //        }
-        //        _dBContext.Matchings.AddRange(match);
-        //        await _dBContext.SaveChangesAsync();
-        //        return true;
-        //    }
-        //case 4:
-        //    {
-        //        var truefalse = new List<TrueOrFalse>();
-        //        foreach(var item in model.Options)
-        //        {
-        //            truefalse.Add(new TrueOrFalse
-        //            {
-        //                Options = item.Option,
-        //                QuestionId=question.QusID,
-        //                IsCorrect = item.IsCorrect,
-        //                Position = item.Position
-        //            });
-        //        }
-        //        _dBContext.TrueOrFalses.AddRange(truefalse);
-        //       await _dBContext.SaveChangesAsync();
-        //        return true;
-        //    }
-
-
-        //}
-        //}
 
         public List<Test> GetTests(int? testid)
         {
@@ -507,9 +483,9 @@ namespace Learning.Tutor.Repo
             return true;
         }
 
-        public async Task<bool> IsTestNameExists(string testname, int? id)
+        public async Task<bool> IsTestNameExists(string testname, int? id,string tutorId)
         {
-            return id == null ? await _dBContext.Tests.AnyAsync(p => p.Title == testname) : await _dBContext.Tests.AnyAsync(p => p.Title == testname & p.Id != id);
+            return id == null ? await _dBContext.Tests.AnyAsync(p => p.Title == testname && p.TutorId==tutorId) : await _dBContext.Tests.AnyAsync(p => p.Title == testname & p.Id != id&&p.TutorId==tutorId);
         }
         public async Task<bool> IsSectionExists(string sectionname, int? id)
         {
@@ -522,7 +498,9 @@ namespace Learning.Tutor.Repo
         }
         public bool DeleteQuestion(List<int> questionIds)
         {
-            _dBContext.Questions.RemoveRange(_dBContext.Questions.Where(m => questionIds.Contains(m.QusID)));
+            var question = _dBContext.Questions.Where(m => questionIds.Contains(m.QusID));
+            question.ToList().ForEach(qus => qus.Deleted = true);
+            _dBContext.Questions.UpdateRange(question);
             _dBContext.SaveChanges();
             return true;
         }
@@ -589,6 +567,17 @@ namespace Learning.Tutor.Repo
             };
             _dBContext.TrueOrFalses.Add(entity);
            return _dBContext.SaveChanges();
+        }   
+
+        public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD=0)
+        {
+            var query = _dBContext.Questions.Where(comp=>comp.QusType==9)
+                        .Select(comp=> new ComprehensionModel { SectionId = comp.SectionId,
+                            CompQusId = comp.QusID, QusId = comp.QusID, Question = comp.QuestionName, TestId = comp.TestId });
+            if (testiD > 0)
+                query = query.Where(t => t.TestId == testiD);
+            return query.ToList();
+                
         }
 
     }

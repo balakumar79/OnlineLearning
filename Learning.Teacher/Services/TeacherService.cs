@@ -15,6 +15,10 @@ namespace Learning.Teacher.Services
         {
             _teacherRepo = teacherRepo;
         }
+       public List<Entities.Teacher> GetTeacher(int? userId = null)
+        {
+           return _teacherRepo.GetTeacher(userId);
+        }
 
        public StudentInvitation StudentInvitationUpsert(StudentInvitation studentInvitation)
         {
@@ -30,9 +34,9 @@ namespace Learning.Teacher.Services
         {
             return _teacherRepo.GetStudentInvitations(Id, valueType);
         }
-        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string> district, List<string> instituion)
+        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string> district, List<string> instituion,int ?teacherId=null)
         {
-            return _teacherRepo.SearchStudent(fname, lname, userName, gender, gradeId, district, instituion);
+            return _teacherRepo.SearchStudent(fname, lname, userName, gender, gradeId, district, instituion,teacherId);
         }
     }
 }
