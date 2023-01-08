@@ -10,8 +10,4 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
-    <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />
-  </ItemGroup>
 </Project>

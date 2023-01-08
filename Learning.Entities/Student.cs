@@ -21,9 +21,14 @@ namespace Learning.Entities
         public string Institution { get; set; }
         public string StudentDistrict { get; set; }
         public int MotherTongue { get; set; }
-        public string Gender { get; set; }
+        public int GenderId { get; set; }
         public int RoleId { get; set; }
         public virtual Language LanguageNavigation { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool Deleted { get; set; }
+
+        private GenderEnum _gender;
+        public GenderEnum Gender { get=>_gender=(GenderEnum) GenderId; set=>_gender=value; }
 
     }
 }

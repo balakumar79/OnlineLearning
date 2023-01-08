@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using static Learning.ViewModel.Account.AuthorizationModel;
 using Learning.Entities;
 using Learning.ViewModel.Account;
+using Learning.ViewModel.Tutor;
 
 namespace TutorWebUI.Controllers
 {
@@ -34,9 +35,12 @@ namespace TutorWebUI.Controllers
 
         [Authenticate(Permissions.Tutor.DashBoardView)]
 
-        public IActionResult Dashboard()
+        public async Task<IActionResult> DashboardAsync()
         {
-            return View();
+            var model = new TutorDashboardViewModel();
+            if(int.TryParse(User.Identity.GetUserID(),out int uid))
+            model =await _tutorService.GetTutorDashboardModel(uid);
+            return View(model);
         }
         public IActionResult Partial_Exams()
         {
@@ -60,8 +64,7 @@ namespace TutorWebUI.Controllers
         public IActionResult CreateTest(int? Id)
         {
             TestViewModel model = null;
-            if (Id != null)
-                model = _tutorService.GetTestById(Id);
+                model = _tutorService.GetTestById(Id)??new TestViewModel();
             return View(model);
         }
         [HttpPost]
@@ -136,7 +139,7 @@ namespace TutorWebUI.Controllers
                 }).FirstOrDefault();
             return PartialView(model);
         }
-        [Authorize(Roles =(Permissions.Roles.Tutor))]
+        
         public IActionResult ManageSections()
         {
 
@@ -209,11 +212,9 @@ namespace TutorWebUI.Controllers
             return _tutorService.SetOnlineStatus(sectionid, status);
         }
         [Authenticate(Permissions.Tutor.CreateQuestion)]
-        public async Task<int> SetExamActiveAsync(int examid,bool isChecked)
+        public async Task<IActionResult> SetExamIsPublishedAsync(int examid,bool isChecked)
         {
-            var exam = _tutorService.GetTestById(examid);
-            exam.IsActive = isChecked;
-           return await _tutorService.TestUpsert(exam);
+            return Json(await _tutorService.SetTestIsPublished(examid, isChecked));
         }
         [Authenticate(Permissions.Tutor.CreateQuestion)]
 
@@ -305,6 +306,22 @@ namespace TutorWebUI.Controllers
             }
             TempData["msg"] = "Your password has been reset successfully !!!";
             return RedirectToAction(nameof(TutorProfile));
+        }
+
+        public IActionResult GetTopicsByTestId(int testid)
+        {
+            return Json(_tutorService.GetTopicsByTestId(testid));
+        }
+
+        public IActionResult GetSubTopic(int Id)
+        {
+          return Json(_tutorService.GetSubTopics(Id));
+        }
+
+        public IActionResult GetLanguagesForSubject(int subjectid)
+        {
+            var result = _tutorService.GetLanguagesForSubject(subjectid);
+            return Json(result.Select(d=>new {d.Id,d.Name }));
         }
 
     }

@@ -24,7 +24,7 @@ namespace Learning.API.Controllers
 
     [Authorize]
     [ApiController]
-    [Route("[controller]/[action]/{id?}")]
+    [Route("[controller]/[action]")]
 
     public class StudentTestController : ControllerBase
     {
@@ -136,14 +136,14 @@ namespace Learning.API.Controllers
 
         [HttpGet]
         [AllowAnonymous,Authorize]
-        public JsonResult GetTest(int? testid,bool isTutorviewOnly=false)
+        public JsonResult GetTest(int? testid=0,bool isTutorviewOnly=false)
         {
             if ((User.IsInRole(Utils.Enums.Roles.Tutor.ToString())||User.IsInRole(Utils.Enums.Roles.Teacher.ToString())) && isTutorviewOnly)
             {
                return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTutorId()) }));
             }
-            if (testid == null)
-                return new JsonResult(Ok(new { test = _studentService.GetAllTest().OrderByDescending(s => s.Modified).ToList() }));
+            if (testid == 0)
+                return new JsonResult(Ok(new { test = _studentService.GetAllTest().OrderByDescending(s => s.SubjectID==4).ThenBy(t=>t.Modified).ToList() }));
             else
                 return new JsonResult(Ok(new { test = _studentService.GetTestById(testid) }));
              
@@ -185,8 +185,8 @@ namespace Learning.API.Controllers
 
         }
 
-        [AllowAnonymous]
-        public JsonResult GetQuestionsByTestId(List<int> testIds, int? groupby)
+        [AllowAnonymous,HttpGet]
+        public JsonResult GetQuestionsByTestIds(List<int> testIds, int? groupby)
         {
             if (testIds.Any())
 
@@ -213,13 +213,16 @@ namespace Learning.API.Controllers
                 return new JsonResult(new { Questions = new QuestionViewModel() });
             }
         }
+        [HttpGet]
         public async Task<JsonResult> GetSubjects(int? subjectId)
         {
             var sub = await _tutorService.GetTestSubject();
             return new JsonResult(new { subject = subjectId == null ? sub : sub.Where(o => o.Id == subjectId) });
 
         }
+        [HttpGet]
         public async Task<JsonResult> GetTestSectionByTestId(int testid) => new JsonResult(Ok(new { sections = (await _tutorService.GetTestSectionByTestId(testid)) }));
+        [HttpGet]
         public JsonResult GetGradeLevels(int? gradeid)
         {
             return new JsonResult(Ok(new { grades = gradeid == null ? _tutorService.GetGradeLevels() : _tutorService.GetGradeLevels().Where(s => s.Id == gradeid) }));
@@ -246,7 +249,7 @@ namespace Learning.API.Controllers
         {
             return new JsonResult(_studentService.UpdateTestStatus(partialModels.ToList()));
         }
-        [AllowAnonymous]
+        [AllowAnonymous,HttpGet]
         public JsonResult GetLoggedInUser()
         {
             return new JsonResult(new ResponseFormat { Description = new { User.Identity, TokenBasedUser = HttpContext.Items["User"] }, Result = true });

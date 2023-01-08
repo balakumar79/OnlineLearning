@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = "Subject";
+    var returnUrl = Context.Request.Query["ReturnUrl"] == string.Empty ? "/admin/exams" : Context.Request.Query["ReturnUrl"].ToString();
+}
+@model Learning.ViewModel.Admin.SubjectViewModel
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Subject</h1>
+        <a class="text-white h6" href="@returnUrl"> <i class="fa fa-arrow-circle-left"></i> Back </a>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                @Html.HiddenFor(p => p.Id)
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" type="text" class="custom-input" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label asp-for="Language" class="control-label"></label>
+                        <select asp-for="LanguageIds" multiple class="custom-input" asp-items="@Model.Languages" id="selLanguage"></select>
+                        <span asp-validation-for="LanguageIds" class="text-danger"></span>
+                    </div>
+                </div>
+              
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-8">
+
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fa fa-save"></i>
+                            @(Model.Id==0? "Save" :"Update")
+                        </button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+

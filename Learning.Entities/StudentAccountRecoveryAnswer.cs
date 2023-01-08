@@ -11,6 +11,6 @@ namespace Learning.Entities
         public int QuestionId { get; set; }
         public string Answer { get; set; }
         public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTime ? Updated { get; set; }
     }
 }

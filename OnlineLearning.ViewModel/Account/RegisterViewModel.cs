@@ -1,5 +1,4 @@
-﻿using Learning.Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -41,7 +40,7 @@ namespace Learning.ViewModel.Account
         public string StudentFirstName { get; set; }
         public string StudentLastName { get; set; }
         [Required]
-        public string StudentGender { get; set; }
+        public int StudentGenderId { get; set; }
         [Required]
         public string StudentPassword { get; set; }
         [Required]
@@ -55,7 +54,7 @@ namespace Learning.ViewModel.Account
         public string LanguageKnown { get; set; }
         public int MotherTongue { get; set; }
         public bool IsRegisteredAsMajor { get; set; }
-        public List<StudentAccountRecoveryAnswer> StudentAccountRecoveryAnswers { get; set; }
+        public List<AccountRecoveryAnswerModel> StudentAccountRecoveryAnswerModel { get; set; }
 
         [Required]
         public int GradeLevels { get; set; }

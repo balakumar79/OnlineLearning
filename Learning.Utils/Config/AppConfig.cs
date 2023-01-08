@@ -37,4 +37,8 @@ namespace Learning.Utils.Config
     public class EncryptionKey {
         public string Key { get; set; }
     }
+    public class ConnectionString
+    {
+        public string ConnectionStr { get; set; }
+    }
 }

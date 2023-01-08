@@ -2,6 +2,7 @@
 using Learning.Tutor.Abstract;
 using Learning.Tutor.Repo;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Tutor;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Learning.Tutor.Service
         
         public Task<bool> CreateTestSection(TestSectionViewModel model) => _tutorRepo.CreateTestSection(model);
         public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.UpsertQuestion(model);
-        public List<TestViewModel> GetTestByUserID(string tutorid) => _tutorRepo.GetTestByUserID(tutorid);
+        public List<TestViewModel> GetTestByUserID(int tutorid) => _tutorRepo.GetTestByUserID(tutorid);
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
           return _tutorRepo.GetQuestionDetails(QuestionId);
@@ -46,7 +47,7 @@ namespace Learning.Tutor.Service
         {
             return await _tutorRepo.GetTestSectionByTestId(testid);
         }
-        public Task<bool> IsTestExists(string testname, int? id,string tutorId)
+        public Task<bool> IsTestExists(string testname, int? id,int tutorId)
         {
            return _tutorRepo.IsTestNameExists(testname,id,tutorId);
         }
@@ -112,6 +113,30 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.GetComprehensionQuestionModels(testiD);
         }
+        public List<SubjectTopic> SubjectTopics(int? id = 0)
+        {
+           return _tutorRepo.GetSubjectTopics(id);
+        }
+       public List<SubjectTopic> GetTopicsByTestId(int testid)
+        {
+            return _tutorRepo.GetTopicsByTestId(testid);
+        }
+       public List<SubjectSubTopic> GetSubTopics(int? topidId = null)
+        {
+            return _tutorRepo.GetSubTopics(topidId);
+        }
+        public List<Language> GetLanguagesForSubject(int subjectid)
+        {
+            return _tutorRepo.GetLanguagesForSubject(subjectid);
+        }
+        public Task<bool> SetTestIsPublished(int id, bool isChecked)
+        {
+            return _tutorRepo.SetTestIsPublished(id, isChecked);
+        }
 
+        public Task<TutorDashboardViewModel> GetTutorDashboardModel(int userid)
+        {
+            return _tutorRepo.GetTutorDashboardModel(userid);
+        }
     }
 }

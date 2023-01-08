@@ -9,6 +9,9 @@ namespace Learning.Entities
     {
         [Key]
         public int Id { get; set; }
+        public virtual ICollection<Test> Tests { get; set; }
         public string SubjectName { get; set; }
+        public bool Active { get; set; }
+        public virtual ICollection<SubjectLanguageVariant> SubjectLanguageVariants { get; set; }
     }
 }

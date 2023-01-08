@@ -12,11 +12,9 @@ namespace Learning.Utils
    public class EmailService:IEmailService
     {
         private readonly AppConfig appConfig;
-        private readonly LoggerRepo _logger;
-        public EmailService(AppConfig config,LoggerRepo logger)
+        public EmailService(AppConfig config)
         {
             appConfig = config;
-            _logger = logger;
 
         }
         public async Task SendEmailConfirmation(string emailId,string body)
@@ -78,7 +76,6 @@ namespace Learning.Utils
                 return true;
             }catch(Exception ex)
             {
-                _logger.InsertLogger(new Entities.Logger { Type = "Error", Message = "EmailService", Description = ex.ToString() });
                 throw new InvalidOperationException(ex.Message);
             }
         }

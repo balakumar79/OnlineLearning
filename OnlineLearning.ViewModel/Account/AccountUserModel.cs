@@ -1,5 +1,4 @@
-﻿using Learning.Entities;
-using Learning.ViewModel.Enums;
+﻿using Learning.ViewModel.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,8 +11,9 @@ namespace Learning.ViewModel.Account
         [Required]
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [Required]
         public string Gender { get; set; }
+        [Required]
+        public int GenderId { get; set; }
 
         [Required,DataType(DataType.EmailAddress)]
         [Remote(action: "IsEmailExists", controller: "Account")]

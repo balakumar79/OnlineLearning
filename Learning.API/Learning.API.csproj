@@ -12,6 +12,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
   </ItemGroup>
 
@@ -21,6 +22,8 @@
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
     <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
     <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
+    <ProjectReference Include="..\Logger\Learning.LogMe.csproj" />
+    <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

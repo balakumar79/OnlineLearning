@@ -125,13 +125,13 @@
                                                @foreach (var gender in genders)
                                                {
                                                    <div class="radiotextsty d-inline ml-lg-5">
-                                                   <input asp-for="Gender" type="radio" value="@gender.Value" />
+                                                   <input asp-for="GenderId" type="radio" value="@gender.Value" />
                                                  <label asp-for="Gender" >@gender.Key</label>
                                                      
                                                        </div>
                                                }
                                             </div>
-                                            <span asp-validation-for="Gender" class="text-danger small "></span>
+                                            <span asp-validation-for="GenderId" class="text-danger small "></span>
 
                                         </div>
                                     </div>

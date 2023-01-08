@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "Subject List";
+    int i = 1;
+}
+@model IEnumerable<Learning.ViewModel.Admin.SubjectViewModel>
+    <main class="page-content">
+        <div class="container-fluid tutor-orange-bg">
+            <h1>Manage Sections</h1>
+            <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+                <table class="display responsive nowrap" style="width:100%" id="examtable">
+                    <thead>
+                        <tr>
+                            <th>
+                                S.No
+                            </th>
+                            <th>
+                                SubjectId
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>Subject</th>
+                            <th>
+                                Active
+                            </th>
+
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@(i++)</span>
+                                </td>
+                                <td>
+                                    @item.Id
+                                </td>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>@item.Language</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Active)
+                                </td>
+
+
+                                <td>
+                                    <a href="/Subject/Subject?id=@item.Id">
+                                        <i class="fa fa-eye text-info"> </i>
+                                    </a> |
+                                    <a href="DeleteSubject?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                </div>
+</div>
+</main>

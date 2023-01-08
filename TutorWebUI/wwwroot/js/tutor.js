@@ -13,17 +13,28 @@
         //bind to section dropdown upon test select change
         $('.selTest').on('change', testF => {
             currenttestid = testF.target.value;
-            insertdata('/tutor/GetComprehensionQuestion', { testId: testF.target.value }).done(function (res) {
-                $('.comper-question .selCompQus').empty().append('<option value="0">--Select Question--</option>');
-                console.log(res)
-                res.forEach(el => {
-                    console.log(el)
-                    $('.comper-question .selCompQus').append(`<option value="${el.qusId}">${el.question}</option>`)
-                });
-                if (comprehensionQuestion?.compQusId > 0)
-                    $('.comper-question .selCompQus').val(comprehensionQuestion.compQusId);
-            });
-
+            //insertdata('/tutor/GetComprehensionQuestion', { testId: testF.target.value }).done(function (res) {
+            //    $('.comper-question .selCompQus').empty().append('<option value="0">--Select Question--</option>');
+            //    console.log(res)
+            //    res.forEach(el => {
+            //        console.log(el)
+            //        $('.comper-question .selCompQus').append(`<option value="${el.qusId}">${el.question}</option>`)
+            //    });
+            //    if (comprehensionQuestion?.compQusId > 0)
+            //        $('.comper-question .selCompQus').val(comprehensionQuestion.compQusId);
+            //});
+            if (currenttestid > 0)
+                getdata('/tutor/GetTopicsByTestId', { testid: currenttestid }).done(res => {
+                    console.log(res)
+                    let option = document.getElementById('selTopic');
+                    option.innerHTML = '';
+                    option.appendChild(new Option("Select Topic", '0', true));
+                    res.forEach(op => {
+                        option.appendChild(new Option(op.topic, op.id, false));
+                    })
+                    option.value = currenttopicId;
+                    option.onchange.apply();
+                })
             getdata('/tutor/GetTestSectionByTestId?testid=' + $('.selTest').val()).done(res => {
                 formatSection(res);
                 console.log('SelTest: ' + testF.target.value);
@@ -460,13 +471,8 @@
         $('#selSection').change(func => {
             currenctsectionid = func.target.value;
         })
-        //form validator
-        //$('select').on('change', fun => {
-        //    setTimeout(t => {
-        //        formvalidator();
+        $('#selSubTopic').val(currentsubtopicid).change();
 
-        //    }, 2000)
-        //});
     }
 });
 
@@ -479,6 +485,8 @@ let currenttestid = 0;
 let currentquestiontypeid = 0;
 let currenctsectionid = 0;
 let currentquestionId = 0;
+let currenttopicId = 0;
+let currentsubtopicid = 0;
 function deleteRow(cnt, selector) {
     if ($(selector).find('tr').length > 1) {
         $(cnt).closest('tr').remove();
@@ -513,7 +521,7 @@ function savequestion(cnt) {
                     IsCorrect: $(fun).find('input[type=checkbox]').is(':checked')
                 });
             });
-            if (answers.filter(fi => { return fi.IsCorrect }).length == 0 && $(cnt).data('save') === 3) {
+            if (answers.filter(fi => { return fi.IsCorrect }).length == 0 && $(cnt).data('save') === 2) {
                 notify('MCQ question must contain atleast one option to be correct.', 'warning', 4000);
                 return false;
             }
@@ -606,8 +614,11 @@ function savequestion(cnt) {
             });
             break;
     }
-
-    let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), $('#txtTopic').val(), $('#txtSubTopic').val(), questiontype, currenttestid, currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels
+    let topicid = $('#selTopic').val();
+    let subtopicid = $('#selSubTopic').val();
+    subtopicid = subtopicid == 0 || subtopicid == '' ? null : subtopicid;
+    topicid = topicid == 0 || topicid == '' ? null : topicid;
+    let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), topicid, subtopicid, questiontype, currenttestid, currenctsectionid == 0 || currenctsectionid == '' ? null : currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels
     );
     console.log(model, QusModel);
     initLoader();
@@ -703,7 +714,6 @@ function clearformvalues(form, clearDefaultSelection = true) {
 }
 
 function question_popup(cnt) {
-    //clearformvalues('#frmCreateExam');
 
     currentquestionId = parseInt($(cnt).data('questionid')) || 0;
     $('[name=QusID]').val(currentquestionId);
@@ -717,38 +727,19 @@ function question_popup(cnt) {
             questiontypeid = parseInt(res.questionTypeId);
             qusOptions = res.options;
             $('#txtMarks').val(res.mark);
-            $('#txtTopic').val(res.topic);
-            $('#txtSubTopic').val(res.subTopic);
+           
 
 
             comprehensionQuestion = res.comprehensionModels ??  new ComperhesionQustion();
           
             tinyMCE.editors.editor1.setContent(res.questionName);
             opts = []; correctopts = res.correctOption ?? '[]';
-            //if (questiontypeid == QuestionType["Match the following"]) {
-            //    correctopts = JSON.parse(correctopts)[0];
-            //} else {
-                correctopts = JSON.parse(correctopts);
+
+            correctopts = JSON.parse(correctopts);
                 res.options.forEach(op => {
                     opts.push(op.option);
                 });
-            //tinymce.editors.editor2.show('slow')
             
-
-            //}
-            //res.options.forEach(function (el, i) {
-
-            //    //format the matching type question options
-            //    if (questiontypeid == QuestionType["Match the following"]) {
-            //        opts.push(el.option);
-            //        correctopts.push(el);
-            //    }
-            //    else {
-            //        opts.push(el.option);
-            //    }
-            //    if (el.isCorrect)
-            //        correctopts.push(el.option);
-            //});
 
             currenttestid = res.testId;
             currentquestiontypeid = res.questionTypeId;
@@ -758,6 +749,8 @@ function question_popup(cnt) {
             $('#mcqoptions .ans select').select2({ data: opts }).val(correctopts).change();
 
             $('.selTest').val(testid.toString()).change();
+            currenttopicId = res.topic;
+            currentsubtopicid = res.subTopic;
         });
         removeLoader();
     }
@@ -829,4 +822,17 @@ function deleteConfirmation(url) {
         $('#modalConfirm #btnDelete').text('Processing...').attr('disabled', true)
         window.location.href = url;
     })
+}
+
+function getSubTopicByTopicId(cnt) {
+        console.log($(cnt))
+    getdata('/Tutor/GetSubTopic', { Id: $('#selTopic').val() }).done(res => {
+        let option = document.getElementById('selSubTopic');
+        option.innerHTML = '';
+        option.appendChild(new Option("Select Topic", '0', true));
+        res.forEach(op => {
+            option.appendChild(new Option(op.subTopic, op.id, false));
+        })
+        $('#selSubTopic').val(currentsubtopicid);
+    });
 }

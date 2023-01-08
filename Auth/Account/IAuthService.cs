@@ -32,7 +32,7 @@ namespace Auth.Account
         Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId);
         List<Student> GetAssociatedStudentsForTeacher(int teacherId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
-        int UpserStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
+        int UpserStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer);
         List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);
         int UpdateStudentPassword(int studentId, string password);
         Task LogOut();

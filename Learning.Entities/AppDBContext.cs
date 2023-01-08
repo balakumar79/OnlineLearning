@@ -49,6 +49,7 @@ namespace Learning.Entities
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<Options> Options { get; set; }
         public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions { get; set; }
+        public virtual DbSet<SubjectLanguageVariant> SubjectLanguageVariants { get; set; }
 
         public virtual DbSet<MCQAnswer> MCQAnswers { get; set; }
         //public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
@@ -56,12 +57,16 @@ namespace Learning.Entities
         //public virtual DbSet<Matching> Matchings{ get; set; }
         public virtual DbSet<TestStatus> TestStatuses { get; set; }
         public virtual DbSet<Comprehension> Comprehensions { get; set; }
+        public virtual DbSet<SubjectTopic> SubjectTopics { get; set; }
 
+        public virtual DbSet<SubjectSubTopic> SubjectSubTopics { get; set; }
 
         public virtual DbSet<UserScreenAccess> UserScreensAccess { get; set; }
         public virtual DbSet<ScreenAccess> ScreenAccesses { get; set; }
         public virtual DbSet<StudentAccountRecoveryAnswer> StudentAccountRecoveryAnswers { get; set; }
 
+        public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<Mail> Mails { get; set; }
 
         public virtual DbSet<Logger> Loggers { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -76,6 +81,9 @@ namespace Learning.Entities
             {
                 entity.ToTable(name: "Role");
             });
+            //builder.Entity<Question>().Property<int>("FK_Question_Test_TestID");
+
+            //builder.Entity<Question>().HasOne(t => t.Test).WithMany(t => t.Questions).HasForeignKey("FK_Question_Test_TestID");
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

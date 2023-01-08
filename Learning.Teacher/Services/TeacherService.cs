@@ -1,6 +1,7 @@
 ﻿using Learning.Entities;
 using Learning.Teacher.Repos;
 using Learning.TeacherServ.Viewmodel;
+using Learning.Tutor.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,6 +38,10 @@ namespace Learning.Teacher.Services
         public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string> district, List<string> instituion,int ?teacherId=null)
         {
             return _teacherRepo.SearchStudent(fname, lname, userName, gender, gradeId, district, instituion,teacherId);
+        }
+        public IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int gradeId,  int numberOfQuestions, int? difficultyLevel = 0)
+        {
+            return _teacherRepo.GenerateRandomQuestions(subjectId,gradeId, numberOfQuestions, difficultyLevel);
         }
     }
 }

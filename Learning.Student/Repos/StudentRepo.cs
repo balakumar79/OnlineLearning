@@ -6,7 +6,9 @@ using System.Text;
 using System.Linq;
 using Learning.Student.Abstract;
 using Learning.Utils.Enums;
+using Microsoft.EntityFrameworkCore;
 using Learning.Student.ViewModel;
+using Learning.ViewModel.Tutor;
 
 namespace Learning.Student.Repos
 {
@@ -24,21 +26,24 @@ namespace Learning.Student.Repos
         }
         #endregion
 
+        #region methods
+      
+
         public TestViewModel GetTestById(int? id)
         {
-            return _dBContext.Tests.Where(p => p.Id == id&&p.StatusID==3&&p.IsActive).Select(p => new TestViewModel
+            return _dBContext.Tests.Include(t=>t.TestSubject).Where(p => p.Id == id&&p.TestStatusId==3&&p.IsActive).Select(p => new TestViewModel
             {
                 Id = p.Id,
                 Created = p.Created,
                 StartDate = p.StartDate,
                 EndDate = p.EndDate,
-                StatusID = p.StatusID,
-                SubjectID = p.SubjectID,
+                StatusID = p.TestStatusId,
+                SubjectID = p.TestSubjectId,
                 //SubTopics = p.SubTopics,
                 Duration = p.Duration,
                 Description = p.TestDescription,
-                Language = p.Language,
-                GradeID = p.GradeID,
+                Language = p.LanguageId,
+                GradeID = p.GradeLevelsId,
                 Modified = p.Modified,
                 Title = p.Title,
                 TutorId = p.TutorId,
@@ -48,22 +53,23 @@ namespace Learning.Student.Repos
         public List<TestViewModel> GetAllTest()
         {
             return (from test in _dBContext.Tests
-                    join sub in _dBContext.TestSubjects on test.SubjectID equals sub.Id
-                    join teststatus in _dBContext.TestStatuses on test.StatusID equals teststatus.Id
-                    join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
-                    where test.StatusID == 3 &&test.IsActive
+                    join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+                    join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+                    where test.TestStatusId == 3 &&test.IsActive &&test.IsPublished
                     select new TestViewModel
                     {
                         Created = test.Created,
                         SubjectName = sub.SubjectName,
-                        StatusID = test.StatusID,
+                        SubjectID=sub.Id,
+                        StatusID = test.TestStatusId,
                         StatusName = teststatus.Status,
                         Duration = test.Duration,
                         StartDate = test.StartDate,
                         EndDate = test.EndDate,
-                        GradeID = test.GradeID,
+                        GradeID = test.GradeLevelsId,
                         GradeName = grade.Grade,
-                        Language = test.Language,
+                        Language = test.LanguageId,
                         Id = test.Id,
                         Modified = test.Modified,
                         Title = test.Title,
@@ -79,8 +85,8 @@ namespace Learning.Student.Repos
         {
             return (from test in _dBContext.Tests
                     join studentTest in _dBContext.StudentTests on test.Id equals studentTest.TestId
-                    join subject in _dBContext.TestSubjects on test.SubjectID equals subject.Id
-                    join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
+                    join subject in _dBContext.TestSubjects on test.TestSubjectId equals subject.Id
+                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
                     join student in _dBContext.Students on studentTest.StudentId equals student.Id
                     join g_studentstats in _dBContext.StudentTestStats on test.Id equals g_studentstats.Testid into grpstats
                     from  studentstats in grpstats.DefaultIfEmpty()
@@ -88,9 +94,9 @@ namespace Learning.Student.Repos
 
                     select new StudentTestViewModel
                     {
-                        StatusID = test.StatusID,
+                        StatusID = test.TestStatusId,
                         StartDate = studentTest.StartDate,
-                        SubjectID = test.SubjectID,
+                        SubjectID = test.TestSubjectId,
                         SubjectName = subject.SubjectName,
                         //SubTopics = test.SubTopics,
                         AssignedOn = studentTest.AssignedOn,
@@ -102,10 +108,10 @@ namespace Learning.Student.Repos
                         StatusName = ((StudentTestStatus)studentTest.StatusId).ToString(),
                         EndDate = studentTest.EndDate,
                         //Topics = test.Topics,
-                        TutorId = studentTest.Assigner.ToString(),
-                        GradeID = test.GradeID,
+                        TutorId = studentTest.Assigner,
+                        GradeID = test.GradeLevelsId,
                         Id = studentTest.Id,
-                        Language = test.Language,
+                        Language = test.LanguageId,
                         GradeName = grade.Grade,
                         Modified = test.Modified,
                         TestId = test.Id,
@@ -118,16 +124,16 @@ namespace Learning.Student.Repos
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => p.TestId == TestId)
-                         join status in _dBContext.TestStatuses on qus.StatusId equals status.Id
-                         join test in _dBContext.Tests on qus.TestId equals test.Id
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
-                         where (qus.StatusId==3||qus.StatusId==2) && test.StatusID==3
+                         join status in _dBContext.TestStatuses on qus.TestStatusId equals status.Id
+                         join test in _dBContext.Tests.Include(t=>t.Language) on qus.TestId equals test.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
+                         where (qus.TestStatusId==3||qus.TestStatusId==2) && test.TestStatusId==3&&!qus.Deleted
                          select new QuestionViewModel
                          {
                              TestSection = _dBContext.TestSections.Where(s => s.Id == qus.SectionId).Select(sec => new TestSectionViewModel
                              {
-                                 SectionName = sec.SectionName ?? "N/A",
-                                 SubTopic = qus.SubTopics ?? "N/A",
+                                 SectionName = sec.SectionName,
+                                 SubTopic = qus.SubTopicId,
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Created = sec.Created,
@@ -137,7 +143,7 @@ namespace Learning.Student.Repos
                                  IsOnline = sec.IsOnline,
                                  Modified = sec.Modified,
                                  TestName = test.Title,
-                                 Topic = qus.Topics,
+                                 Topic = qus.TopicId,
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
                              }).FirstOrDefault() ?? new TestSectionViewModel
@@ -150,14 +156,14 @@ namespace Learning.Student.Repos
                              Modified = qus.Modified,
                              QuestionName = qus.QuestionName,
                              QusID = qus.QusID,
-                             StatusId = qus.StatusId,
+                             StatusId = qus.TestStatusId,
                              Mark = qus.Mark,
                              TestName = test.Title,
-                             TestId = test.Id,Topic=qus.Topics,SubTopic=qus.SubTopics,
+                             TestId = test.Id,Topic=qus.TopicId,SubTopic=qus.SubTopicId,
                              QusType = qustype.QustionTypeName,
                              StatusName = status.Status,
                              CorrectOption = qus.CorrectOption,
-                             QuestionTypeId = qus.QusType,
+                             QuestionTypeId = qus.QuestionTypeId,
                              Options = _dBContext.Options.Where(p => p.QuestionId == qus.QusID).Select(p => new OptionsViewModel
                              {
                                  Id = p.Id,
@@ -165,30 +171,30 @@ namespace Learning.Student.Repos
                                  Option = p.Answer,
                                  Position = p.Position
                              }).ToList(),
-                             Language = test.Language
+                             Language = test.LanguageId
                          }).ToList();
             return model;
         }
         public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => TestId.Contains(p.TestId))
-                         join status in _dBContext.TestStatuses on qus.StatusId equals status.Id
-                         join test in _dBContext.Tests on qus.TestId equals test.Id
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
+                         join status in _dBContext.TestStatuses on qus.TestStatusId equals status.Id
+                         join test in _dBContext.Tests.Include(t=>t.LanguageId) on qus.TestId equals test.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
                          join gsec in _dBContext.TestSections on qus.SectionId equals gsec.Id into grp_sec
                          from sec in grp_sec.DefaultIfEmpty()
-                         where qus.StatusId==3&&test.StatusID==3 &&!qus.Deleted
+                         where qus.TestStatusId==3&&test.TestStatusId==3 &&!qus.Deleted
                          select new QuestionViewModel
                          {
                              TestSection = new TestSectionViewModel
                              {
-                                 SubTopic = qus.SubTopics,
+                                 SubTopic = qus.SubTopicId,
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Id = sec.Id,
                                  IsActive = sec.IsActive,
                                  IsOnline = sec.IsOnline,
-                                 Topic = qus.Topics,
+                                 Topic = qus.TopicId,
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
                              },
@@ -197,14 +203,14 @@ namespace Learning.Student.Repos
                              Modified = qus.Modified,
                              QuestionName = qus.QuestionName,
                              QusID = qus.QusID,
-                             StatusId = qus.StatusId,
+                             StatusId = qus.TestStatusId,
                              Mark = qus.Mark,
                              TestName = test.Title,
                              TestId = test.Id,
                              QusType = qustype.QustionTypeName,
                              StatusName = status.Status,
                              CorrectOption = qus.CorrectOption,
-                             QuestionTypeId = qus.QusType,
+                             QuestionTypeId = qus.QuestionTypeId,
                              Options = _dBContext.Options.Where(p => p.QuestionId == qus.QusID).Select(p => new OptionsViewModel
                              {
                                  Id = p.Id,
@@ -212,7 +218,7 @@ namespace Learning.Student.Repos
                                  Option = p.Answer,
                                  Position = p.Position
                              }).ToList(),
-                             Language = test.Language
+                             Language = test.LanguageId,
                          }).ToList();
             return model;
         }
@@ -220,13 +226,13 @@ namespace Learning.Student.Repos
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
             var qusDb = (from qus in _dBContext.Questions
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
-                         join test in _dBContext.Tests on qus.TestId equals test.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
+                         join test in _dBContext.Tests.Include(t=>t.TestSubject) on qus.TestId equals test.Id
                          join g_sec in _dBContext.TestSections on qus.SectionId equals g_sec.Id into grpsec
                          from sec in grpsec.DefaultIfEmpty()
                          join g_comp in _dBContext.Comprehensions on qus.QusID equals g_comp.QusId into gcomp
                          from comp in gcomp.DefaultIfEmpty()
-                         where qus.QusID == QuestionId &&(qus.StatusId==3||qus.StatusId==2)
+                         where qus.QusID == QuestionId &&(qus.TestStatusId==3||qus.TestStatusId==2)
                          select new { qus, qustype, sec,test,comp }
                        );
             var options = _dBContext.Options.Where(p => p.QuestionId == QuestionId);
@@ -237,32 +243,32 @@ namespace Learning.Student.Repos
             {
                 TestSection = new TestSectionViewModel
                 {
-                    SubTopic = ques?.qus?.SubTopics ?? "N/A",
+                    SubTopic = ques.qus.SubTopicId,
                     AddedQuestions = ques?.sec?.AddedQuestions ?? 0,
                     AdditionalInstruction = ques?.sec?.AdditionalInstruction,
                     Id = ques?.sec?.Id ?? 0,
                     IsActive = ques?.sec?.IsActive ?? false,
                     IsOnline = ques?.sec?.IsOnline ?? false,
                     SectionName = ques?.sec?.SectionName ?? "No section",
-                    Topic = ques.qus?.Topics ?? "N/A",
+                    Topic = ques.qus.TopicId,
                     TotalMarks = ques?.sec?.TotalMarks ?? 0,
                     TotalQuestions = ques?.sec?.TotalQuestions ?? 0
                 },
                 Created = ques.qus.Created,
                 QusID = ques.qus.QusID,
                 Mark = ques.qus.Mark,
-                QuestionTypeId = ques.qus.QusType,
+                QuestionTypeId = ques.qus.QuestionTypeId,
                 QuestionName = ques.qus.QuestionName,
                 TestId = ques.qus.TestId,
                 QusType = ques.qustype.QustionTypeName,
                 CorrectOption = ques.qus.CorrectOption,
                 Modified = ques.qus.Modified,
-                StatusId = ques.qus.StatusId,
+                StatusId = ques.qus.TestStatusId,
                 SectionId = ques.qus.SectionId,
-                Topic = ques.qus.Topics,
-                SubTopic = ques.qus.SubTopics,
+                Topic = ques.qus.TopicId,
+                SubTopic = ques.qus.SubTopicId,
                 SectionName = ques?.sec?.SectionName,
-                Language = ques.test.Language,
+                Language = ques.test.LanguageId,
                 ComprehensionModels = new ComprehensionModel
                 {
                     QusId = ques.qus.QusID,
@@ -305,13 +311,13 @@ namespace Learning.Student.Repos
 
             return (from test in _dBContext.Tests
                     join studentTest in _dBContext.StudentTests on test.Id equals studentTest.TestId
-                    join subject in _dBContext.TestSubjects on test.SubjectID equals subject.Id
-                    join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
+                    join subject in _dBContext.TestSubjects.Include(p=>p.SubjectLanguageVariants) on test.TestSubjectId equals subject.Id
+                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
                     select new StudentTestViewModel
                     {
-                        StatusID = test.StatusID,
+                        StatusID = test.TestStatusId,
                         StartDate = test.StartDate,
-                        SubjectID = test.SubjectID,
+                        SubjectID = test.TestSubjectId,
                         SubjectName = subject.SubjectName,
                         //SubTopics = test.SubTopics,
                         AssignedOn = studentTest.AssignedOn,
@@ -320,9 +326,9 @@ namespace Learning.Student.Repos
                         Description = test.TestDescription,
                         Duration = test.Duration,
                         EndDate = test.EndDate,
-                        GradeID = test.GradeID,
+                        GradeID = test.GradeLevelsId,
                         Id = studentTest.Id,
-                        Language = test.Language,
+                        Language = test.LanguageId,
                         GradeName = grade.Grade,
                         Modified = test.Modified,
                         TestId = test.Id,
@@ -423,25 +429,28 @@ namespace Learning.Student.Repos
         public List<Languages> GetTestSubjectViewModels(List<int> gradeIds = null)
         {
             List<Languages> languages = new List<Languages>();
-            var langs = _dBContext.Languages.Where(l =>_dBContext.Tests.Select(lang=>lang.Language).Contains(l.Id)).ToList();
+
+            #region oldlogic
+            var langs = _dBContext.Languages.Where(l => _dBContext.Tests.Select(lang => lang.LanguageId).Contains(l.Id)).ToList();
             langs.ForEach(lang =>
             {
                 var grads = new List<Grades>();
-                var grades = _dBContext.GradeLevels.Where(g => _dBContext.Tests.Where(s => s.Language == lang.Id)
-                 .Select(s => s.GradeID).Distinct().Contains(g.Id)).ToList();
+                var grades = _dBContext.GradeLevels.Where(g => _dBContext.Tests.Where(s => s.LanguageId == lang.Id)
+                 .Select(s => s.GradeLevelsId).Distinct().Contains(g.Id)).ToList();
                 if (gradeIds.Count > 0)
                     grades = grades.Where(g => gradeIds.Contains(g.Id)).ToList();
-                
+
                 grades.ForEach(grade =>
                 {
 
-                    grads.Add( new Grades
-                    {      Grade=grade.Grade,
-                    GradeID=grade.Id,
-                        TestSubjects = _dBContext.TestSubjects.Where(s =>
-                    _dBContext.Tests.Where(g => g.GradeID == grade.Id).Distinct().Select(s => s.SubjectID).Contains(s.Id)).Select(sub => new TestSubject
+                    grads.Add(new Grades
                     {
-                        SubjectName = sub.SubjectName, 
+                        Grade = grade.Grade,
+                        GradeID = grade.Id,
+                        TestSubjects = _dBContext.TestSubjects.Where(s =>
+                    _dBContext.Tests.Where(g => g.GradeLevelsId == grade.Id).Distinct().Select(s => s.TestSubjectId).Contains(s.Id)).Select(sub => new TestSubject
+                    {
+                        SubjectName = sub.SubjectName,
                         Id = sub.Id
                     }).ToList()
 
@@ -449,24 +458,12 @@ namespace Learning.Student.Repos
 
                 });
                 if (grads != null)
-                    languages.Add(new Languages { Grades = grads ,LangId=lang.Id,Language=lang.Name });
+                    languages.Add(new Languages { Grades = grads, LangId = lang.Id, Language = lang.Name });
             });
-
-            //gradeIds = gradeIds ?? new List<int>();
-            //var model = new List<TestSubjectViewModel>();
+            #endregion
 
 
-            //var subjects = _dBContext.TestSubjects.ToList();
-            //if (gradeIds.Any())
-            //    subjects = subjects.Where(g => gradeIds.Contains(g.Id)).ToList();
-            //subjects.ToList().ForEach(subj =>
-            // {
-            //     var test = _dBContext.Tests.Where(p => p.SubjectID == subj.Id&&p.StatusID==3);
-            //     var grades = test.Select(g => g.GradeID).ToList();
-            //     model.Add(new TestSubjectViewModel { GradeLevels = _dBContext.GradeLevels.Where(g => grades.Contains(g.Id)).ToList(), SubjectId = subj.Id, SubjectName = subj.SubjectName });
 
-            // });
-       
             return languages;
 
         }
@@ -477,10 +474,10 @@ namespace Learning.Student.Repos
             var grades = _dBContext.GradeLevels.ToList();
             grades.ForEach(grade =>
             {
-                var test = _dBContext.Tests.Where(t => t.GradeID == grade.Id&&t.StatusID==3);
+                var test = _dBContext.Tests.Where(t => t.GradeLevelsId == grade.Id&&t.TestStatusId==3);
                 if (subject.Any())
                     test = test.Where(s => subject.Contains(s.Id));
-                var subjectIds = test.Select(t => t.SubjectID).Distinct();
+                var subjectIds = test.Select(t => t.TestSubjectId).Distinct();
                 model.Add(new TestGradeViewModel
                 {
                     GradeId = grade.Id,
@@ -521,8 +518,8 @@ namespace Learning.Student.Repos
 
         }
 
-       
+        #endregion
 
-       
+
     }
 }

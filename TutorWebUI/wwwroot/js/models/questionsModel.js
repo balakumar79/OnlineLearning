@@ -5,7 +5,7 @@
         this.QusId = QusId ?? 0;
         this.QuestionName = QuestionName;
         this.QuestionTypeId = QuestionTypeId ?? currentquestiontypeid;
-        this.SectionId = SectionId ?? currenctsectionid;
+        this.SectionId = SectionId;
         this.TestId = TestId ?? currenttestid;
         this.CorrectOption = JSON.stringify(CorrectOption);
         this.Mark = Mark;

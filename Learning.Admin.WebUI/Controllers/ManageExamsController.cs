@@ -36,7 +36,6 @@ namespace Learning.Admin.WebUI.Controllers
 
         public IActionResult Partial_Exams()
         {
-            var userid = User.Identity.GetTutorId();
             var model = _tutorService.GetAllTest();
             return PartialView(model);
         }

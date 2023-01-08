@@ -37,9 +37,10 @@ namespace Learning.API.Controllers
             })
             .ToArray();
         }
+        [HttpGet]
         public IActionResult Index()
         {
-            return new JsonResult(new { Message = "Welcome to Do Mock Exam API" });
+            return Redirect("/swagger/index.html");
         }
     }
 }

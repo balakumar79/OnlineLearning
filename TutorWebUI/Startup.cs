@@ -8,55 +8,38 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using static Learning.ViewModel.Account.AuthorizationModel;
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
+using Learning.Utils.Config;
 
 namespace TutorWebUI
 {
     public class Startup
     {
         //test function not for internal use
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration,IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
-          
+            _hostEnvironment = hostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
-
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-            services.ConfigureApplicationCookie(op =>
-            {
-                op.Cookie.Name = ".AspNet.SharedCookie";
-                op.ExpireTimeSpan = TimeSpan.FromDays(4);
-                op.Cookie.HttpOnly = false;
-                op.Cookie.IsEssential = true;
-                op.Cookie.MaxAge = TimeSpan.FromDays(4);
-                op.SlidingExpiration = true;
-                op.Cookie.SameSite = SameSiteMode.None; 
-                op.Cookie.Path = "/";
-                op.AccessDeniedPath = "/Account/AccessDenied";
-            });
-            //AuthenticationConfig.LearningAuthentication(services);
-            services.AddIdentity<AppUser, AppRole>(op=>
+            services.AddIdentity<AppUser, AppRole>(op =>
             {
                
-            })
-  .AddEntityFrameworkStores<AppDBContext>() .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
-  .AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<AppDBContext>()
+            .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+.AddDefaultTokenProviders();
 
-            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration);
+            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration,_hostEnvironment);
 
+            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
             Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
-
 
             //services.ConfigureApplicationCookie(op =>
             //{
@@ -66,44 +49,48 @@ namespace TutorWebUI
             //    op.Cookie.IsEssential = true;
             //    op.Cookie.MaxAge = TimeSpan.FromDays(4);
             //    op.SlidingExpiration = true;
-            //    op.Cookie.Domain = "localhost";
+            //    op.Cookie.Domain = "tutor.domockexam.com";
             //    op.Cookie.SameSite = SameSiteMode.Lax;
             //});
-            //AuthenticationConfig.LearningAuthentication(services);
+            AuthenticationConfig.LearningAuthentication(services);
 
 
 
-            //services.AddAuthorization(option =>
-            //{
-            //    foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
-            //    {
+            services.AddAuthorization(option =>
+            {
 
-            //        option.AddPolicy(item.ToString(), authbuilder =>
-            //        {
-            //            authbuilder.RequireRole(item.ToString());
-            //        });
+                foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
+                {
 
-            //    }
-            //});
-            services.AddSession
-            (op => { op.IdleTimeout = TimeSpan.FromDays(20);
-               
+                    option.AddPolicy(item.ToString(), authbuilder =>
+                    {
+                        authbuilder.RequireRole(item.ToString());
+                    });
+
+                }
+                option.DefaultPolicy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(IdentityApplicationDefault).RequireAuthenticatedUser().Build();
             });
-
-            services.AddControllersWithViews();
-            //services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
+            services.AddSession
+            (op =>
+            {
+                op.IdleTimeout = TimeSpan.FromDays(20); 
+            });
+           
+          
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+           
             services.AddRazorPages();
             services.AddScoped<UserManager<AppUser>>();
-
+         
             
         }
 
-
+        private IHostEnvironment _hostEnvironment;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

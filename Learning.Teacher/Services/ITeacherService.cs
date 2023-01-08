@@ -1,5 +1,6 @@
 ﻿using Learning.Entities;
 using Learning.TeacherServ.Viewmodel;
+using Learning.Tutor.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,5 +19,6 @@ namespace Learning.Teacher.Services
         /// <returns></returns>
         IList<StudentInvitation> GetStudentInvitations(List<int> Id, int valueType);
         List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string>? instituion,int?teacherid=null);
+        IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int gradeId, int numberOfQuestions, int? difficultyLevel = 0);
     }
 }

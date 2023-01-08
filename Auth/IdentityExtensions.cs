@@ -19,10 +19,11 @@ namespace Learning.Auth
             var claim = ((ClaimsIdentity)identity).FindFirst(ClaimTypes.NameIdentifier);
             return (claim != null) ? claim.Value : string.Empty;
         }
-        public static string GetTutorId(this IIdentity identity)
+        public static int GetTutorId(this IIdentity identity)
         {                                             
             var claim = ((ClaimsIdentity)identity).FindFirst(CustomClaimTypes.TutorID);
-            return (claim != null) ? claim.Value : string.Empty;
+            int.TryParse(claim.Value, out int tid);
+            return tid;
         }
 
         /// <summary>

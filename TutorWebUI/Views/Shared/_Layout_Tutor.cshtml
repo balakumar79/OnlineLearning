@@ -402,15 +402,6 @@
                                                 </select>
                                                 <span class="validator"></span>
 
-
-
-
-                                                <!--<button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">Submit</button>
-            <div class="dropdown-menu">
-                <a  class="dropdown-item btn btn-link" data-save="false" onclick="savequestion(this)">Save and don't publish</a>
-                <a  class="dropdown-item btn btn-link" data-save="true" onclick="savequestion(this)">Save and publish</a>
-            </div>*-->
-
                                                 <button type="button" class="btn-pink text-white" data-save="5" onclick="savequestion(this)">Save as draft</button>
                                                 <button type="button" class="btn-dark" data-save="2" onclick="savequestion(this)">Save and publish</button>
                                                 <button type="button" class="btnShowMore btn-light" onclick="$('#pnlShowMore').toggle('slow');">More >></button>
@@ -455,13 +446,17 @@
                                             <div class="form-topics">
                                                 <label class="text-warning">Topics</label>
 
-                                                <input class="input-sm-xl" placeholder="Enter Topic Name" id="txtTopic" />
+                                                <select onchange="getSubTopicByTopicId(this)" class="custom-select-sm" id="selTopic" >
+                                                                            <option value="0">--Select Topic</option>
+                                                </select>
 
                                             </div>
                                             <div class="form-topics">
                                                 <label class="text-warning text-sm-center">Sub Topics</label>
 
-                                                <input class="input-sm-xl" placeholder="Enter Subtopic Name" id="txtSubTopic" />
+                                                <select class="custom-select-sm" placeholder="Enter Subtopic Name" id="selSubTopic" >
+                                                    <option value="0">--Sub Topic</option>
+                                                </select>
 
 
                                             </div>

@@ -22,6 +22,7 @@ namespace Learning.API.Controllers
             _studentService = studentTestService;
 
         }
+        [HttpGet]
        public object GetStudentTestReport(int ? filterId=0, int? filterValue=0,DateTime ? fromDate=null,DateTime ? toDate=null)
         {
 
@@ -60,7 +61,7 @@ namespace Learning.API.Controllers
            
             return new JsonResult(Ok(new { report =reports.OrderByDescending(s=>s.Modified)  }));
         }
-
+        [HttpGet]
         public object GetCalculatedResults(int ? filterId=0,int ? filterValue = 0)
         {
             var studentid = User.Identity.GetStudentId();

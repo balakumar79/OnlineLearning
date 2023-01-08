@@ -1,6 +1,7 @@
 ﻿using Auth.Account;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.LogMe;
 using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
 using Learning.Utils;
@@ -36,12 +37,12 @@ namespace Learning.API.Controllers
         readonly Utils.Config.SecretKey _secretkey;
         readonly ISecurePassword _securePassword;
         readonly ITeacherService _teacherService;
-        readonly LoggerRepo _logger;
+        readonly ILoggerRepo _logger;
         #endregion
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-           ISecurePassword securePassword, Utils.Config.SecretKey appSet,ITeacherService teacherService, LoggerRepo logger)
+           ISecurePassword securePassword, Utils.Config.SecretKey appSet,ITeacherService teacherService, ILoggerRepo logger)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
@@ -144,7 +145,7 @@ namespace Learning.API.Controllers
                         if (roles.Contains(Roles.Major.ToString()))
                             if (user == null)
                             {
-                                _logger.InsertLogger(new Logger { Message = "No first user account found for the user" + user?.UserName + ".  Student: " + student?.UserName, CreatedAt = DateTime.Now, Type = "Warning" });
+                                _logger.InsertLogger("Warning", "No first user account found for the user" + user?.UserName + ".  Student: " + student?.UserName, "User can't login.", "/Account/Login");
                                 return new JsonResult(new { result = false, message = "This student account needs a first user account.  Please recreate your account in Account/Register link." });
 
                             }
@@ -190,7 +191,7 @@ namespace Learning.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.InsertLogger(new Logger { Message = ex.Message, Description = ex.ToString(), Type = "Error" });
+                    _logger.InsertLogger(message: ex.Message,description: ex.ToString(), type: "Error",link:"/Account/Login");
                     return new JsonResult(new { result = false, error = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
                 }
             }
@@ -224,7 +225,7 @@ namespace Learning.API.Controllers
                         LastName = registerViewModel.LastName,
                         Email = registerViewModel.Email,
                         PhoneNumber = registerViewModel.PhoneNumber,
-                        Gender = registerViewModel.Gender,
+                        Gender = registerViewModel.GenderId,
                         UserName = registerViewModel.UserName,
                         District = registerViewModel.District
                     };
@@ -282,7 +283,7 @@ namespace Learning.API.Controllers
                     Grade = registerViewModel.GradeLevels,
                     UserID = registerViewModel.UserId,
                     Password = _securePassword.Secure(_secretkey.StudentSaltKey, registerViewModel.StudentPassword),
-                    Gender = registerViewModel.StudentGender,
+                    GenderId = registerViewModel.StudentGenderId,
                     MotherTongue = registerViewModel.MotherTongue,
                     UserName = registerViewModel.StudentUserName,
                     Institution = registerViewModel.Institution,
@@ -292,16 +293,16 @@ namespace Learning.API.Controllers
                 };
 
                 var res = await authService.AddStudent(student);
-                if (registerViewModel.StudentAccountRecoveryAnswers.Any())
+                if (registerViewModel.StudentAccountRecoveryAnswerModel.Any())
                 {
-                    registerViewModel.StudentAccountRecoveryAnswers.ForEach(ans =>
+                    registerViewModel.StudentAccountRecoveryAnswerModel.ForEach(ans =>
                     {
                         ans.StudentId = res.Id;
                         if (ans.Id == 0)
                             ans.Created = DateTime.Now;
                         ans.Updated = DateTime.Now;
                     });
-                    authService.UpserStudentSecretAnswer(registerViewModel.StudentAccountRecoveryAnswers);
+                    authService.UpserStudentSecretAnswer(registerViewModel.StudentAccountRecoveryAnswerModel);
                 }
                 if (res == null)
                     return new ResponseFormat { Result = false, Message = "Sorry !!! Student registration failed." };
@@ -322,7 +323,7 @@ namespace Learning.API.Controllers
             return new JsonResult(new { result = await authService.EmailConfirmation(token, email) });
         }
 
-        [AllowAnonymous]
+        [AllowAnonymous,HttpGet]
         public async Task<object> ForgotPassword(string Email)
         {
             if (string.IsNullOrEmpty(Email))
@@ -345,6 +346,7 @@ namespace Learning.API.Controllers
         //        return false;
         //    }
         //}
+        [HttpGet]
         public object ResetStudentPasswordByStudent(ResetStudentPasswordModel model)
         {
             if (ModelState.IsValid)
@@ -374,7 +376,7 @@ namespace Learning.API.Controllers
         }
 
         [HttpPost]
-        public int SaveStudentSecretAnswers(List<StudentAccountRecoveryAnswer> studentAccounts)
+        public int SaveStudentSecretAnswers(List<AccountRecoveryAnswerModel> studentAccounts)
         {
             studentAccounts.ForEach(student =>
             {
@@ -385,6 +387,7 @@ namespace Learning.API.Controllers
             return authService.UpserStudentSecretAnswer(studentAccounts);
         }
 
+        [HttpGet]
         public IActionResult IsStudentUserNameExists(string username, int id)
         {
             var isexists = authService.IsStudentUserNameExists(username, id);

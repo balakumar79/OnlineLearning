@@ -6,105 +6,137 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Learning.Tutor.Abstract;
+
 using Microsoft.EntityFrameworkCore;
+using Learning.ViewModel.Tutor;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using Dapper;
+using Learning.Utils.Config;
 
 namespace Learning.Tutor.Repo
 {
     public class TutorRepo : ITutorRepo
     {
         private readonly AppDBContext _dBContext;
-        public TutorRepo(AppDBContext dBContext)
+        private ConnectionString  _connectionString;
+        public TutorRepo(AppDBContext dBContext, ConnectionString connectionString)
         {
             this._dBContext = dBContext;
+            _connectionString = connectionString;
         }
 
-        public List<TestViewModel> GetTestByUserID(string tutorid)
+        public async Task<TutorDashboardViewModel> GetTutorDashboardModel(int userid)
+        {
+            var dashboard = new TutorDashboardViewModel();
+            using (IDbConnection db = new SqlConnection(_connectionString.ConnectionStr))
+            {
+                db.Open();
+                var reader=await db.QueryMultipleAsync("sp_GetTutorDashBoard",new {@UserId=userid }, commandType: CommandType.StoredProcedure);
+                dashboard = reader.Read<TutorDashboardViewModel>().FirstOrDefault();
+                //dashboard.NotificationPartialModels = reader.Read<NotificationPartialModel>().ToList();
+                db.Close();
+                return dashboard;
+            }
+        }
+        public List<TestViewModel> GetTestByUserID(int tutorid)
         {
             return (from test in _dBContext.Tests
-                    join sub in _dBContext.TestSubjects on test.SubjectID equals sub.Id
-                    join teststatus in _dBContext.TestStatuses on test.StatusID equals teststatus.Id
-                    join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
-                    where test.TutorId == tutorid
+                    join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+                    join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+                    where test.TutorId == tutorid && test.IsActive
                     select new TestViewModel
                     {
                         Created = test.Created,
                         SubjectName = sub.SubjectName,
-                        StatusID = test.StatusID,
+                        StatusID = test.TestStatusId,
                         StatusName = teststatus.Status,
                         Duration = test.Duration,
                         StartDate = test.StartDate,
                         EndDate = test.EndDate,
-                        GradeID = test.GradeID,
+                        GradeID = test.GradeLevelsId,
                         GradeName = grade.Grade,
                         Id = test.Id,
                         Modified = test.Modified,
                         Title = test.Title,
-                        IsActive=test.IsActive,
+                        IsActive = test.IsActive,
+                        IsPublished = test.IsPublished,
                         TutorId = test.TutorId
                     }).ToList();
         }
         public TestViewModel GetTestById(int? id)
         {
-            return _dBContext.Tests.Where(p => p.Id == id).Select(p => new TestViewModel
+            var t = _dBContext.Tests.Include(t => t.TestSubject).Include(t => t.TestSubject.SubjectLanguageVariants);
+            return t.Where(p => p.Id == id).Select(p => new TestViewModel
             {
                 Id = p.Id,
                 Created = p.Created,
                 StartDate = p.StartDate,
                 EndDate = p.EndDate,
-                StatusID = p.StatusID,
-                SubjectID = p.SubjectID,
-               
+                StatusID = p.TestStatusId,
+                SubjectID = p.TestSubjectId,
+
                 Duration = p.Duration,
                 Description = p.TestDescription,
-                Language = p.Language,
-                GradeID = p.GradeID,
+                GradeID = p.GradeLevelsId,
                 Modified = p.Modified,
                 Title = p.Title,
                 TutorId = p.TutorId,
-                IsActive=p.IsActive
-               
+                IsActive = p.IsActive,
+                IsPublished = p.IsPublished,
+                Language = p.LanguageId,
+                LanguageVariants = p.TestSubject.SubjectLanguageVariants.Count > 0 ? p.TestSubject.SubjectLanguageVariants.Select(l => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = l.Language.Name,
+                    Value = l.LanguageId.ToString()
+                }).ToList() :
+                _dBContext.Languages.Select(lang => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Text = lang.Name, Value = lang.Id.ToString() }).ToList()
+
             }).FirstOrDefault();
         }
         public List<TestViewModel> GetAllTest()
         {
             return (from test in _dBContext.Tests
-                    join sub in _dBContext.TestSubjects on test.SubjectID equals sub.Id
-                    join teststatus in _dBContext.TestStatuses on test.StatusID equals teststatus.Id
-                    join grade in _dBContext.GradeLevels on test.GradeID equals grade.Id
-                    join tutor in _dBContext.Tutors on test.TutorId equals tutor.TutorId.ToString()
+                    join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+                    join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+                    join tutor in _dBContext.Tutors on test.TutorId equals tutor.TutorId
 
 
                     select new TestViewModel
                     {
                         Created = test.Created,
                         SubjectName = sub.SubjectName,
-                        StatusID = test.StatusID,
+                        StatusID = test.TestStatusId,
                         StatusName = teststatus.Status,
                         Duration = test.Duration,
                         StartDate = test.StartDate,
                         EndDate = test.EndDate,
-                        GradeID = test.GradeID,
+                        GradeID = test.GradeLevelsId,
                         GradeName = grade.Grade,
                         Id = test.Id,
+                        IsPublished = test.IsPublished,
+                        IsActive = test.IsActive,
                         Modified = test.Modified,
                         Title = test.Title,
                         TutorId = test.TutorId,
-                        TutorUserName=tutor.UserName
+                        TutorUserName = tutor.UserName
                     }).ToList();
         }
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => p.TestId == TestId)
-                         join status in _dBContext.TestStatuses on qus.StatusId equals status.Id
-                         join test in _dBContext.Tests on qus.TestId equals test.Id
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
-                          where !qus.Deleted
+                         join status in _dBContext.TestStatuses on qus.TestStatusId equals status.Id
+                         join test in _dBContext.Tests.Include(t => t.TestSubject.SubjectLanguageVariants) on qus.TestId equals test.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
+                         where !qus.Deleted && test.IsActive
                          select new QuestionViewModel
                          {
-                             TestSection =_dBContext.TestSections.Where(s=>s.Id==qus.SectionId).Select(sec=> new TestSectionViewModel
+                             TestSection = _dBContext.TestSections.Where(s => s.Id == qus.SectionId).Select(sec => new TestSectionViewModel
                              {
-                                 SectionName = sec.SectionName ?? "N/A",
-                                 SubTopic = qus.SubTopics ?? "N/A",
+                                 SectionName = sec.SectionName,
+                                 SubTopic = qus.SubTopicId,
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Created = sec.Created,
@@ -114,27 +146,27 @@ namespace Learning.Tutor.Repo
                                  IsOnline = sec.IsOnline,
                                  Modified = sec.Modified,
                                  TestName = test.Title,
-                                 Topic = qus.Topics??"N/A",
+                                 Topic = qus.TopicId,
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
-                             }).FirstOrDefault()??new TestSectionViewModel
+                             }).FirstOrDefault() ?? new TestSectionViewModel
                              {
-                                SectionName="No section",
-                                Id=0,
+                                 SectionName = "No section",
+                                 Id = 0,
                              },
-                               SectionId=qus.SectionId,
+                             SectionId = qus.SectionId,
                              Created = qus.Created,
                              Modified = qus.Modified,
                              QuestionName = qus.QuestionName,
                              QusID = qus.QusID,
-                             StatusId = qus.StatusId,
+                             StatusId = qus.TestStatusId,
                              Mark = qus.Mark,
                              TestName = test.Title,
                              TestId = test.Id,
                              QusType = qustype.QustionTypeName,
                              StatusName = status.Status,
-                             CorrectOption =qus.CorrectOption,
-                             QuestionTypeId = qus.QusType,
+                             CorrectOption = qus.CorrectOption,
+                             QuestionTypeId = qus.QuestionTypeId,
                              Options = _dBContext.Options.Where(p => p.QuestionId == qus.QusID).Select(p => new OptionsViewModel
                              {
                                  Id = p.Id,
@@ -142,29 +174,29 @@ namespace Learning.Tutor.Repo
                                  Option = p.Answer,
                                  Position = p.Position
                              }).ToList(),
-                             Language = test.Language
+                             Language = test.LanguageId
                          }).ToList();
             return model;
         }
         public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => TestId.Contains(p.TestId))
-                         join status in _dBContext.TestStatuses on qus.StatusId equals status.Id
-                         join test in _dBContext.Tests on qus.TestId equals test.Id
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
+                         join status in _dBContext.TestStatuses on qus.TestStatusId equals status.Id
+                         join test in _dBContext.Tests.Include(sub => sub.TestSubject) on qus.TestId equals test.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
                          join gsec in _dBContext.TestSections on qus.SectionId equals gsec.Id into grp_sec
                          from sec in grp_sec.DefaultIfEmpty()
                          select new QuestionViewModel
                          {
                              TestSection = new TestSectionViewModel
                              {
-                                 SubTopic = qus.SubTopics,
+                                 SubTopic = qus.SubTopicId,
                                  AddedQuestions = sec.AddedQuestions,
                                  AdditionalInstruction = sec.AdditionalInstruction,
                                  Id = sec.Id,
                                  IsActive = sec.IsActive,
                                  IsOnline = sec.IsOnline,
-                                 Topic = qus.Topics,
+                                 Topic = qus.TopicId,
                                  TotalMarks = sec.TotalMarks,
                                  TotalQuestions = sec.TotalQuestions
                              },
@@ -173,14 +205,14 @@ namespace Learning.Tutor.Repo
                              Modified = qus.Modified,
                              QuestionName = qus.QuestionName,
                              QusID = qus.QusID,
-                             StatusId = qus.StatusId,
+                             StatusId = qus.TestStatusId,
                              Mark = qus.Mark,
                              TestName = test.Title,
                              TestId = test.Id,
                              QusType = qustype.QustionTypeName,
                              StatusName = status.Status,
                              CorrectOption = qus.CorrectOption,
-                             QuestionTypeId = qus.QusType,
+                             QuestionTypeId = qus.QuestionTypeId,
                              Options = _dBContext.Options.Where(p => p.QuestionId == qus.QusID).Select(p => new OptionsViewModel
                              {
                                  Id = p.Id,
@@ -188,18 +220,18 @@ namespace Learning.Tutor.Repo
                                  Option = p.Answer,
                                  Position = p.Position
                              }).ToList(),
-                             Language = test.Language
+                             Language = test.LanguageId
                          }).ToList();
             return model;
         }
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
             var qusDb = (from qus in _dBContext.Questions
-                         join qustype in _dBContext.QuestionTypes on qus.QusType equals qustype.Id
+                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
                          join g_sec in _dBContext.TestSections on qus.SectionId equals g_sec.Id into grpsec
                          from sec in grpsec.DefaultIfEmpty()
                          where qus.QusID == QuestionId
-                         select new { qus, qustype,sec }
+                         select new { qus, qustype, sec }
                        );
             var options = _dBContext.Options.Where(p => p.QuestionId == QuestionId);
             if (!qusDb.Any())
@@ -223,28 +255,32 @@ namespace Learning.Tutor.Repo
                 ComprehensionModels = _dBContext.Comprehensions.Where(c =>
                 c.QusId == ques.qus.QusID).Select(q => new ComprehensionModel
                 {
-                    SectionId = q.SectionId, CompQusId = q.CompQusId, Id = q.Id, QusId = q.QusId, TestId = q.TestId
+                    SectionId = q.SectionId,
+                    CompQusId = q.CompQusId,
+                    Id = q.Id,
+                    QusId = q.QusId,
+                    TestId = q.TestId
                 }).FirstOrDefault(),
                 Created = ques.qus.Created,
                 QusID = ques.qus.QusID,
                 Mark = ques.qus.Mark,
-                QuestionTypeId = ques.qus.QusType,
+                QuestionTypeId = ques.qus.QuestionTypeId,
                 QuestionName = ques.qus.QuestionName,
                 TestId = ques.qus.TestId,
-                Topic=ques.qus.Topics,
-                SubTopic=ques.qus.SubTopics,
-                SectionId=ques.qus.SectionId,
-                StatusId=ques.qus.StatusId,
-                Modified=ques.qus.Modified,
+                Topic = ques.qus.TopicId,
+                SubTopic = ques.qus.SubTopicId,
+                SectionId = ques.qus.SectionId,
+                StatusId = ques.qus.TestStatusId,
+                Modified = ques.qus.Modified,
                 QusType = ques.qustype.QustionTypeName,
-                CorrectOption=ques.qus.CorrectOption,
+                CorrectOption = ques.qus.CorrectOption,
                 Options = options.Select(l => new OptionsViewModel
                 {
                     IsCorrect = l.IsCorrect,
                     Option = l.Answer,
                     Id = l.Id,
                     Position = l.Position
-                }).OrderBy(p=>p.Position).ToList()
+                }).OrderBy(p => p.Position).ToList()
             };
 
             return model;
@@ -293,24 +329,33 @@ namespace Learning.Tutor.Repo
             else
                 _dBContext.Tests.Attach(test);
             test.Created = DateTime.Now;
-            test.StatusID = 1;
-            test.SubjectID = model.SubjectID;
+            test.TestStatusId = 1;
+            test.IsPublished = model.IsPublished;
+            test.TestSubjectId = model.SubjectID;
             test.TestDescription = model.Description;
-            //test.Topics = model.Topics;
-            //test.SubTopics = model.SubTopics;
+            test.IsActive = true;
             test.Duration = model.Duration;
             test.StartDate = model.StartDate;
             test.EndDate = model.EndDate;
-            test.GradeID = model.GradeID;
+            test.GradeLevelsId = model.GradeID;
             test.Modified = DateTime.Now;
             test.Title = model.Title;
-            test.Language = model.Language;
+            test.LanguageId = model.Language;
             test.TutorId = model.TutorId;
-            test.IsActive = model.IsActive;
             if (model.Id == 0)
                 _dBContext.Tests.Add(test);
             await _dBContext.SaveChangesAsync();
             return test.Id;
+        }
+
+        public async Task<bool> SetTestIsPublished(int id, bool isChecked)
+        {
+            var entity = _dBContext.Tests.Find(id);
+            if (entity == null)
+                return false;
+            entity.IsPublished = isChecked;
+            _dBContext.Tests.Update(entity);
+            return await _dBContext.SaveChangesAsync() > 0;
         }
 
         public async Task<int> TestUpsert(IList<Test> entity)
@@ -318,7 +363,7 @@ namespace Learning.Tutor.Repo
             if (entity == null)
                 throw new Exception(nameof(Test));
             _dBContext.Tests.UpdateRange(entity);
-           return await _dBContext.SaveChangesAsync();
+            return await _dBContext.SaveChangesAsync();
         }
         public async Task<bool> CreateTestSection(TestSectionViewModel model)
         {
@@ -344,7 +389,7 @@ namespace Learning.Tutor.Repo
         {
             if (model == null)
                 throw new Exception("Model cannot be null.");
-            if (model.Options == null&&model.QuestionTypeId!=9&&model.QuestionTypeId!=8)
+            if (model.Options == null && model.QuestionTypeId != 9 && model.QuestionTypeId != 8)
                 throw new Exception("Options cannot be null.");
             model.Options = model.Options ?? new List<OptionsViewModel>();
 
@@ -353,15 +398,15 @@ namespace Learning.Tutor.Repo
             {
                 question = _dBContext.Questions.FirstOrDefault(m => m.QusID == model.QusID);
                 question.SectionId = model.SectionId;
-                question.QusType = model.QuestionTypeId;
+                question.QuestionTypeId = model.QuestionTypeId;
                 question.TestId = model.TestId;
                 question.Modified = DateTime.Now;
                 question.Mark = model.Mark;
                 question.QuestionName = model.QuestionName;
-                question.StatusId = model.StatusId;
+                question.TestStatusId = model.StatusId;
                 question.CorrectOption = model.CorrectOption;
-                question.Topics = model.Topic;
-                question.SubTopics = model.SubTopic;
+                question.TopicId = model.Topic;
+                question.SubTopicId = model.SubTopic;
                 _dBContext.Questions.Update(question);
 
                 //delete options by question id for update
@@ -392,17 +437,17 @@ namespace Learning.Tutor.Repo
                 {
                     SectionId = model.SectionId,
                     Created = DateTime.Now,
-                    StatusId = model.StatusId,
+                    TestStatusId = model.StatusId,
                     Modified = DateTime.Now,
                     QuestionName = model.QuestionName,
-                    QusType = model.QuestionTypeId,
+                    QuestionTypeId = model.QuestionTypeId,
                     TestId = model.TestId,
-                    CorrectOption=model.CorrectOption,
+                    CorrectOption = model.CorrectOption,
                     Mark = model.Mark,
-                    Topics=model.Topic,
-                    SubTopics=model.SubTopic
+                    TopicId = model.Topic,
+                    SubTopicId = model.SubTopic
                 };
-            _dBContext.Questions.Add(question);
+                _dBContext.Questions.Add(question);
                 _dBContext.SaveChanges();
                 var mcq = new List<Options>();
                 foreach (var item in model?.Options)
@@ -419,7 +464,7 @@ namespace Learning.Tutor.Repo
                 _dBContext.Options.AddRange(mcq);
                 await _dBContext.SaveChangesAsync();
             }
-           
+
             await _dBContext.SaveChangesAsync();
 
             //UPDATE ADDED QUESTIONS COUNT IN SECTIONS
@@ -428,12 +473,12 @@ namespace Learning.Tutor.Repo
                 var section = _dBContext.TestSections.FirstOrDefault(p => p.Id == model.SectionId);
                 section.AddedQuestions += 1;
                 _dBContext.TestSections.Update(section);
-             await _dBContext.SaveChangesAsync();
+                await _dBContext.SaveChangesAsync();
             }
 
-            if (model.ComprehensionModels != null&&model.QuestionTypeId==8)
+            if (model.ComprehensionModels != null && model.QuestionTypeId == 8)
             {
-            var comp = _dBContext.Comprehensions.FirstOrDefault(com => com.QusId == model.ComprehensionModels.QusId);
+                var comp = _dBContext.Comprehensions.FirstOrDefault(com => com.QusId == model.ComprehensionModels.QusId);
                 if (comp != null)
                 {
                     comp.CompQusId = model.ComprehensionModels.CompQusId;
@@ -444,7 +489,7 @@ namespace Learning.Tutor.Repo
                 }
                 else
                 {
-                     comp = new Comprehension
+                    comp = new Comprehension
                     {
                         SectionId = model.ComprehensionModels.SectionId,
                         CompQusId = model.ComprehensionModels.CompQusId,
@@ -457,8 +502,8 @@ namespace Learning.Tutor.Repo
                 _dBContext.SaveChanges();
             }
             //update/insert language variant
-         
-           
+
+
             return true;
         }
 
@@ -483,9 +528,9 @@ namespace Learning.Tutor.Repo
             return true;
         }
 
-        public async Task<bool> IsTestNameExists(string testname, int? id,string tutorId)
+        public async Task<bool> IsTestNameExists(string testname, int? id, int tutorId)
         {
-            return id == null ? await _dBContext.Tests.AnyAsync(p => p.Title == testname && p.TutorId==tutorId) : await _dBContext.Tests.AnyAsync(p => p.Title == testname & p.Id != id&&p.TutorId==tutorId);
+            return id == null ? await _dBContext.Tests.AnyAsync(p => p.Title == testname && p.TutorId == tutorId) : await _dBContext.Tests.AnyAsync(p => p.Title == testname & p.Id != id && p.TutorId == tutorId);
         }
         public async Task<bool> IsSectionExists(string sectionname, int? id)
         {
@@ -493,7 +538,9 @@ namespace Learning.Tutor.Repo
         }
         public async Task<int> DeleteTest(int id)
         {
-            _dBContext.Tests.Remove(_dBContext.Tests.FirstOrDefault(p => p.Id == id));
+            var test = _dBContext.Tests.FirstOrDefault(p => p.Id == id);
+            test.IsActive = false;
+            _dBContext.Tests.Update(test);
             return await _dBContext.SaveChangesAsync();
         }
         public bool DeleteQuestion(List<int> questionIds)
@@ -507,15 +554,17 @@ namespace Learning.Tutor.Repo
 
         public int DeleteSection(List<int> sectionid)
         {
+
             var db = _dBContext.TestSections.Where(s => sectionid.Contains(s.Id));
-            _dBContext.TestSections.RemoveRange(db);
+            db.ToList().ForEach(sec => sec.IsActive = false);
+            _dBContext.TestSections.UpdateRange(db);
             return _dBContext.SaveChanges();
         }
 
         public int SetQuestionStatus(int questionid, int status)
         {
             var question = _dBContext.Questions.FirstOrDefault(k => k.QusID == questionid);
-            question.StatusId = status;
+            question.TestStatusId = status;
             _dBContext.Questions.Update(question);
             return _dBContext.SaveChanges();
         }
@@ -542,7 +591,7 @@ namespace Learning.Tutor.Repo
         public List<GradeLevels> GetGradeLevels() => _dBContext.GradeLevels.ToList();
         public async Task<List<TestSubject>> GetTestSubject()
         {
-          var subject=await _dBContext.TestSubjects.OrderBy(p => p.SubjectName).ToListAsync();
+            var subject = await _dBContext.TestSubjects.OrderBy(p => p.SubjectName).ToListAsync();
             if (subject.Any(sub => sub.SubjectName.ToLower() == "other"))
             {
                 var item = subject.Remove(subject.FirstOrDefault(p => p.SubjectName.ToLower() == "other"));
@@ -551,11 +600,11 @@ namespace Learning.Tutor.Repo
             return subject;
 
         }
-        public async Task<List<TestSection>> GetTestSectionByTestId(int testid) =>  await _dBContext.TestSections.Where(l => l.TestId == testid).OrderBy(p=>p.SectionName).ToListAsync();
-        
-        public async Task<List<QuestionType>> GetTestType() =>await _dBContext.QuestionTypes.OrderBy(s=>s.QustionTypeName).ToListAsync();
-        
-//DB test function not for internal use
+        public async Task<List<TestSection>> GetTestSectionByTestId(int testid) => await _dBContext.TestSections.Where(l => l.TestId == testid && l.IsActive).OrderBy(p => p.SectionName).ToListAsync();
+
+        public async Task<List<QuestionType>> GetTestType() => await _dBContext.QuestionTypes.OrderBy(s => s.QustionTypeName).ToListAsync();
+
+        //DB test function not for internal use
         public int savetrueorfalse()
         {
             var entity = new TrueOrFalse
@@ -566,19 +615,61 @@ namespace Learning.Tutor.Repo
                 Options = DateTime.Now.ToString()
             };
             _dBContext.TrueOrFalses.Add(entity);
-           return _dBContext.SaveChanges();
-        }   
+            return _dBContext.SaveChanges();
+        }
 
-        public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD=0)
+        public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0)
         {
-            var query = _dBContext.Questions.Where(comp=>comp.QusType==9)
-                        .Select(comp=> new ComprehensionModel { SectionId = comp.SectionId,
-                            CompQusId = comp.QusID, QusId = comp.QusID, Question = comp.QuestionName, TestId = comp.TestId });
+            var query = _dBContext.Questions.Where(comp => comp.QuestionTypeId == 9)
+                        .Select(comp => new ComprehensionModel
+                        {
+                            SectionId = comp.SectionId,
+                            CompQusId = comp.QusID,
+                            QusId = comp.QusID,
+                            Question = comp.QuestionName,
+                            TestId = comp.TestId
+                        });
             if (testiD > 0)
                 query = query.Where(t => t.TestId == testiD);
             return query.ToList();
-                
+
         }
+
+        public List<SubjectTopic> GetSubjectTopics(int? id = 0)
+        {
+            if (id > 0)
+                return _dBContext.SubjectTopics.Where(t => t.Id == id && !t.IsDeleted).ToList();
+            else
+                return _dBContext.SubjectTopics.Where(l => !l.IsDeleted).ToList();
+        }
+
+        public List<SubjectTopic> GetTopicsByTestId(int testid)
+        {
+            if (testid > 0)
+            {
+                var subjectid = _dBContext.Tests.FirstOrDefault(t => t.Id == testid);
+                return _dBContext.SubjectTopics.Where(t => t.TestSubjectId == subjectid.TestSubjectId && !t.IsDeleted).ToList();
+            }
+            else
+            {
+                return new List<SubjectTopic>();
+            }
+        }
+        public List<SubjectSubTopic> GetSubTopics(int? topidId = null)
+        {
+            if (topidId > 0)
+            {
+                return _dBContext.SubjectSubTopics.Where(s => s.SubjectTopicId == topidId).ToList();
+            }
+            return _dBContext.SubjectSubTopics.ToList();
+        }
+
+        public List<Language> GetLanguagesForSubject(int subjectid)
+        {
+            var db = _dBContext.TestSubjects.Include(sub => sub.SubjectLanguageVariants).ThenInclude(l => l.Language);
+            return db.FirstOrDefault(s => s.Id == subjectid)?.SubjectLanguageVariants.Select(s => s.Language).ToList();
+        }
+
 
     }
 }

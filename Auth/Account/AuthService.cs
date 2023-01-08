@@ -100,7 +100,7 @@ namespace Auth.Account
         {
             return _authRepo.AddStudent(student);
         }
-        public int AddStudentAccountRecoveryQuestions(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        public int AddStudentAccountRecoveryQuestions(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
             return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
@@ -205,7 +205,7 @@ namespace Auth.Account
         {
            return _authRepo.AddTutor(entity);
         }
-       public int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+       public int UpsertStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
             return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
@@ -219,7 +219,7 @@ namespace Auth.Account
             return _authRepo.AddTeacher(teacher);
         }
 
-        public int UpserStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        public int UpserStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
            return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }

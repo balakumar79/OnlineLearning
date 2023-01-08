@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Learning.Entities.Migrations
 {
-    public partial class test : Migration
+    public partial class Modified_Student_Histories : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

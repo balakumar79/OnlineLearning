@@ -43,6 +43,7 @@ namespace Auth.Account
        
         public async Task<Student> AddStudent(Student student)
         {
+            student.CreatedOn = DateTime.Now;
             dBContext.Students.Add(student);
            await dBContext.SaveChangesAsync();
             return student;
@@ -52,13 +53,25 @@ namespace Auth.Account
             dBContext.Teachers.Add(teacher);
             return dBContext.SaveChangesAsync();
         }
-        public int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer)
+        public int UpsertStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
+            var entity = recoveryAnswer.Select(ans => new StudentAccountRecoveryAnswer
+            {
+                Answer = ans.Answer,
+                Id = ans.Id,
+                QuestionId = ans.QuestionId,
+                StudentId = ans.StudentId,
+            });
             if (recoveryAnswer.Where(p => p.Id > 0).Any())
             {
-                dBContext.StudentAccountRecoveryAnswers.UpdateRange(recoveryAnswer.Where(s => s.Id > 0));
-            } else
-                dBContext.StudentAccountRecoveryAnswers.AddRange(recoveryAnswer.Where(s => s.Id == 0));
+                entity.ToList().ForEach(item => item.Updated = DateTime.Now);
+                dBContext.StudentAccountRecoveryAnswers.UpdateRange(entity.Where(s => s.Id > 0));
+            }
+            else
+            {
+                entity.ToList().ForEach(item => item.Created = DateTime.Now);
+                dBContext.StudentAccountRecoveryAnswers.AddRange(entity.Where(s => s.Id == 0));
+            }
             return dBContext.SaveChanges();
         }
         public List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid)

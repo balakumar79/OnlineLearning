@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Auth.Account
         Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId);
         Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null);
         Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username);
-        int UpsertStudentSecretAnswer(List<StudentAccountRecoveryAnswer> recoveryAnswer);
+        int UpsertStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer);
         List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid);
         int UpdateStudentPassword(int studentId, string password);
         List<Student> GetAssociatedStudentsForTeacher(int teacherId);

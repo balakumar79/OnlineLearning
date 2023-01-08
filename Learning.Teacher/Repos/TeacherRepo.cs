@@ -1,6 +1,8 @@
 ﻿using Learning.Entities;
 using Learning.Student.Abstract;
 using Learning.TeacherServ.Viewmodel;
+using Learning.Tutor.ViewModel;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +83,7 @@ namespace Learning.Teacher.Repos
                 query = query.Where(s => gradeId.Contains(s.Grade));
             }
             if (!string.IsNullOrEmpty(gender))
-                query = query.Where(s => s.Gender.ToLower().Equals(gender.ToLower()));
+                query = query.Where(s => s.Gender.ToString().ToLower().Equals(gender.ToLower()));
             if (instituion.Any())
                 query = query.Where(s => instituion.Contains(s.Institution));
            return query.Join(_dBContext.GradeLevels, x => x.Grade, y => y.Id, (x, y) => new { x, y }).Select(s => new StudentModel
@@ -89,7 +91,7 @@ namespace Learning.Teacher.Repos
                 StudentFirstName=s.x.FirstName,
                 StudentLastName=s.x.LastName,
                 StudentDistrict=s.x.StudentDistrict,
-                StudentGender=s.x.Gender,
+                StudentGender=s.x.Gender.ToString(),
                 StudentUserName=s.x.UserName,
                 Grade=s.y.Grade,
                 Institution=s.x.Institution,
@@ -98,6 +100,32 @@ namespace Learning.Teacher.Repos
                 StudentId=s.x.Id,
                 UserId=s.x.UserID
             }).ToList();
+        }
+
+        public IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int gradeId, int numberOfQuestions, int? difficultyLevel = 0)
+        {
+            var model = _dBContext.Questions.Include(t => t.Test).Include(t => t.Test.Language).Include(t => t.Test.TestSubject).Include(t => t.Options).Where(q=>q.Test.TestSubjectId==subjectId&&q.Test.GradeLevelsId==gradeId).Select(q => new QuestionViewModel
+            {
+                SectionId = q.SectionId,
+                SectionName = q.TestSection.SectionName,
+                StatusId = q.TestStatusId,
+                StatusName = q.TestStatus.Status,
+                SubTopic = q.SubTopicId,
+                CorrectOption = q.CorrectOption,
+                Language = q.Test.LanguageId,
+                QusID = q.QusID,
+                QuestionTypeId = q.QuestionTypeId,
+                Mark = q.Mark,
+                Options = (List<OptionsViewModel>)q.Options,
+                TestId = q.TestId,
+                QusType = q.QuestionType.QustionTypeName,
+                QuestionName = q.QuestionName,
+                TestName = q.Test.Title,
+                Topic = q.TopicId
+
+            }).Skip(new Random().Next()).Take(numberOfQuestions).AsEnumerable();
+
+            return model;
         }
     }
 }

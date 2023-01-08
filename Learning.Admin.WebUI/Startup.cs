@@ -22,11 +22,12 @@ namespace Learning.Admin.WebUI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration,IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
+            _hostEnvironment = hostEnvironment;
         }
-
+        private IHostEnvironment _hostEnvironment;
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -57,6 +58,8 @@ namespace Learning.Admin.WebUI
           
             services.AddScoped<IManageExamService, ManageExamService>();
             services.AddScoped<IManageExamRepo, ManageExamRepo>();
+            services.AddScoped<IManageSubjectRepo, ManageSubjectRepo>();
+            services.AddScoped<IManageSubjectService, ManageSubjectService>();
             services.ConfigureApplicationCookie(op =>
             {
                 op.Cookie.Name = ".AspNet.SharedCookie";
@@ -70,7 +73,7 @@ namespace Learning.Admin.WebUI
                 //op.LoginPath = "/tutor.domockexam.com/account/login";
             });
 
-            Infrastructure.Infrastructure.AddDataBase(services, Configuration);
+            Infrastructure.Infrastructure.AddDataBase(services, Configuration,_hostEnvironment);
 
             Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
 

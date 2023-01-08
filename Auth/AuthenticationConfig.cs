@@ -1,9 +1,4 @@
-﻿using Auth;
-using Learning.Entities;
-
-using Microsoft.AspNetCore.Authorization.Policy;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +8,6 @@ using System.Threading.Tasks;
 
 using static Learning.ViewModel.Account.AuthorizationModel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Learning.Utils.Config;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,19 +21,20 @@ namespace Learning.Auth
        public AppConfig _appConfig { get; set; }
         public static void LearningAuthentication(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+            services.AddAuthentication(IdentityApplicationDefault).AddCookie(op=> { op.ExpireTimeSpan = TimeSpan.FromDays(5);op.Cookie.Expiration = TimeSpan.FromDays(8); });
         }
 
         public static void LearningAuthorization(IServiceCollection services)
         {
-            services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
+            services.AddAuthorization(option =>
             {
-                foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
-                {
+                //foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
+                //{
 
-                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); authbuilder.AuthenticationSchemes.Add(IdentityConstants.ApplicationScheme); });
-                }
-            }));
+                //    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString());
+                //        authbuilder.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme); });
+                //}
+            });
         }
 
                      /// <summary>
@@ -74,8 +69,9 @@ namespace Learning.Auth
             {
                 IsPersistent = isPersist,
                 RedirectUri = "/account/login",
-                AllowRefresh = false,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1)
+                AllowRefresh = false, 
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1), 
+                
             };
             //context.Session.SetObjectAsJson("UserObj", sessionObject);
             var claimIdentity = new ClaimsIdentity(IdentityApplicationDefault);

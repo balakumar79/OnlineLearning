@@ -8,6 +8,11 @@ namespace Learning.Tutor.ViewModel
 {
    public class TestSectionViewModel
     {
+        public TestSectionViewModel()
+        {
+            Topic = Topic ?? 0;
+            SubTopic = SubTopic ?? 0;
+        }
         public int Id { get; set; }
         [Required]
         [Display(Name ="Test")]
@@ -17,8 +22,8 @@ namespace Learning.Tutor.ViewModel
         [Remote(controller:"Tutor",action:"IsSectionExists",AdditionalFields ="Id")]
         public string SectionName { get; set; }
         [Required]
-        public string Topic { get; set; }
-        public string SubTopic { get; set; }
+        public int ?Topic { get; set; }
+        public int ?SubTopic { get; set; }
         [Required]
         public int TotalMarks { get; set; }
         [Required]

@@ -1,9 +1,11 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
+using Learning.LogMe;
 using Learning.Student.Abstract;
 using Learning.Teacher.Services;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.Abstract;
+using Learning.Tutor.ViewModel;
 using Learning.Utils;
 using Learning.Utils.Config;
 using Microsoft.AspNetCore.Authorization;
@@ -28,10 +30,11 @@ namespace Learning.API.Controllers
         readonly UserManager<AppUser> _userManager;
         readonly IEmailService _emailService;
         readonly EncryptionKey  _encryptionKey;
-        readonly LoggerRepo _logger;
+        readonly ILoggerRepo _logger;
+        readonly IResponseFormatter _formatter;
 
         readonly ITutorService _tutorService;
-        public TeacherController(IStudentService studentTestService,ITutorService tutorService,IEmailService emailService,LoggerRepo logger,UserManager<AppUser> userManager,ITeacherService teacherService,EncryptionKey encryptionKey)
+        public TeacherController(IStudentService studentTestService,ITutorService tutorService,IEmailService emailService,ILoggerRepo logger,UserManager<AppUser> userManager,ITeacherService teacherService,EncryptionKey encryptionKey,IResponseFormatter formatter)
         {
             _studentService = studentTestService;
             _teacherService = teacherService;
@@ -40,6 +43,7 @@ namespace Learning.API.Controllers
             _userManager = userManager;
             _encryptionKey = encryptionKey;
             _logger = logger;
+            _formatter = formatter;
         }
              [AcceptVerbs("Post","GET")]
         public JsonResult SearchStudent(StudentSearchRequest searchRequest)
@@ -51,6 +55,7 @@ namespace Learning.API.Controllers
             });
         }
 
+        [HttpGet]
         public async Task<JsonResult> SendStudentInvitationAsync(int studentId,int TeacherId)
         {
             try
@@ -96,7 +101,7 @@ namespace Learning.API.Controllers
                 return new JsonResult(new ResponseFormat { Result = false, Message = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
             }
         }
-              [AllowAnonymous]
+              [AllowAnonymous,HttpGet]
         public JsonResult StudentInvitationResponse([FromQuery] string id, int res)
         {
             var idInBytes = WebEncoders.Base64UrlDecode(id);
@@ -117,5 +122,10 @@ namespace Learning.API.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult GenerateRandomQuestions(int subjectid,int gradeId,int randomNumber)
+        {
+            return _formatter.JsonResult(response: _teacherService.GenerateRandomQuestions(subjectid, gradeId, randomNumber).ToList());
+        }
     }
 }

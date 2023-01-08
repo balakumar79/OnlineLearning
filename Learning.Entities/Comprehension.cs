@@ -12,7 +12,7 @@ namespace Learning.Entities
         public int QusId { get; set; }
         public virtual Question  Question { get; set; }
         public int CompQusId { get; set; }
-        public int SectionId { get; set; }
+        public int ? SectionId { get; set; }
         public virtual TestSection TestSection { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

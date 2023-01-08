@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Learning.Auth;
 using Learning.Teacher.Repos;
 using Learning.Teacher.Services;
+using Microsoft.Extensions.Hosting;
+using System.Linq;
 
 namespace Learning.Infrastructure
 {
@@ -28,8 +30,14 @@ namespace Learning.Infrastructure
     {
 
 
-        public static void AddDataBase(IServiceCollection services, IConfiguration configuration)
+        public static void AddDataBase(IServiceCollection services, IConfiguration configuration,IHostEnvironment hostEnvironment)
         {
+            //if (hostEnvironment.IsDevelopment())
+            //{
+            //    var conn = configuration.GetConnectionString("TestDBContext");
+            //    services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(conn));
+            //}
+
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(configuration.GetConnectionString("DBContext")));
         }
 
@@ -38,8 +46,9 @@ namespace Learning.Infrastructure
             // Add a DbContext to store your Database Keys
             services.AddDbContext<LearningKeyContext>(options =>
                 options.UseSqlServer(
-                    configuration.GetConnectionString("DBContext")),ServiceLifetime.Singleton);
-            services.AddDataProtection()
+                    configuration.GetConnectionString("DBContext")));
+
+            services.AddDataProtection().SetDefaultKeyLifetime(TimeSpan.FromDays(11))
 .PersistKeysToDbContext<LearningKeyContext>().SetApplicationName("LearningCommon");
         }
         public static void AddServices(IServiceCollection services, IConfiguration configuration)
@@ -54,6 +63,11 @@ namespace Learning.Infrastructure
             var encryptionKey = new EncryptionKey();
             configuration.Bind("EncryptionKey", encryptionKey);
             services.AddSingleton(encryptionKey);
+            var conStr = new ConnectionString();
+            conStr.ConnectionStr = configuration.GetConnectionString("DBContext").ToString();
+            configuration.Bind(conStr);
+            services.AddSingleton(conStr);
+
 
             services.AddScoped<ISecurePassword, SecurePassword>();
             //services.AddTransient(_ => new MySqlConnection(configuration.GetConnectionString("DBContext")));
@@ -74,7 +88,6 @@ namespace Learning.Infrastructure
             services.AddTransient<IManageTutorRepo, ManageTutorRepo>();
             services.AddTransient<IManageTutorService, ManageTutorService>();
 
-            services.AddTransient<LoggerRepo>();
         }
     }
 }

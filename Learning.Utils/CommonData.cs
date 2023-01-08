@@ -1,6 +1,4 @@
-using Learning.Entities;
 using Learning.Utils.Config;
-using Learning.ViewModel.Account;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -36,19 +34,7 @@ namespace Learning.Utils
             }
         }
 
-        public static void SeedRoles(Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager)
-        {
-            foreach (var role in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
-            {
-                if (!roleManager.RoleExistsAsync(role.ToString()).Result)
-                {
-
-                    AppRole appRole = new AppRole();
-                    appRole.Name = role.ToString();
-                    Microsoft.AspNetCore.Identity.IdentityResult result = roleManager.CreateAsync(appRole).Result;
-                }
-            }
-        }
+        
         public static string EncryptString(string plainText, string key)
         {
             byte[] iv = new byte[16];

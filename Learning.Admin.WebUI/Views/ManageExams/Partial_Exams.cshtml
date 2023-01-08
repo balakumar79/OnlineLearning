@@ -9,7 +9,7 @@
             <th>
                 TestId
             </th>
-            <th>
+            <th width="70">
                 Title
             </th>
             <th>
@@ -21,12 +21,9 @@
             <th>
                 Dur.
             </th>
+
             <th>
                 Tutor Username
-            </th>
-            <th>
-
-                EndDate
             </th>
             <th>
                 Status
@@ -34,52 +31,52 @@
             <th>
                 Created
             </th>
+             <td></td>
 
 
-            <th></th>
+
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                   <span>@item.Id</span>
-                </td>
-                <td>
-                    <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@item.Title</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GradeName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SubjectName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Duration)
-                </td>
-                <td>
-                    @Html.DisplayFor(m=>item.TutorUserName)
-                </td>
-                <td>
-                    @Html.Label(item.EndDate.Date.ToShortDateString())
-                </td>
-                <td>
-                    @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
-                    @Html.DropDownListFor(m=>item.StatusID,statuslist,new { @onchange= "changeteststatus(this)",@data_id=item.Id })
-                </td>
-                <td>
-                    @Html.Label(item.Created.ToShortDateString())
-                </td>
+        <tr>
+            <td>
+                <span>@item.Id</span>
+            </td>
+            <td>
+                <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@(item.Title.Length>18?item.Title.Substring(0,17)+"...":item.Title)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GradeName)
+            </td>
+            <td>
+                @(item.SubjectName.Length>18?item.SubjectName.Substring(0,17)+"...":item.SubjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+
+            <td>
+                @(item.TutorUserName.Length>18?item.TutorUserName.Substring(0,17)+"...":item.TutorUserName)
+            </td>
+
+            <td>
+                @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
+                @Html.DropDownListFor(m => item.StatusID, statuslist, new { @onchange = "changeteststatus(this)", @data_id = item.Id, @class = "form-control-sm" })
+            </td>
+            <td>
+                @Html.Label(item.Created.ToShortDateString())
+            </td>
+            <td>
+                <a href="CreateTest?id=@item.Id">
+                    <i class="fa fa-eye text-info"> </i>
+                </a> |
+                <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+            </td>
 
 
-                <td>
-                    <a href="CreateTest?id=@item.Id">
-                        <i class="fa fa-eye text-info"> </i>
-                    </a> |
-                    <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
-                </td>
-            </tr>
+        </tr>
         }
     </tbody>
 </table>

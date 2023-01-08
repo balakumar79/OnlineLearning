@@ -1,5 +1,6 @@
 ﻿using Learning.Entities;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Tutor;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,16 +10,17 @@ namespace Learning.Tutor.Abstract
 {
     public interface ITutorService
     {
+        Task<TutorDashboardViewModel> GetTutorDashboardModel(int userid);
         TutorViewModel GetTutorProfile(int id);
         Task<int> TestUpsert(TestViewModel model);
         Task<int> TestUpsert(List<Test> entity);
         Task<bool> CreateTestSection(TestSectionViewModel model);
         Task<bool> CreateQuestion(QuestionViewModel model);
-        List<TestViewModel> GetTestByUserID(string tutorid);
+        List<TestViewModel> GetTestByUserID(int tutorid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();
         List<TestSection> GetTestSections(int sectionid);
-        Task<bool> IsTestExists(string testname, int? id, string tutorId);
+        Task<bool> IsTestExists(string testname, int? id, int tutorId);
         Task<bool> IsSectionExists(string sectionname, int? id);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int QuestionId);
@@ -37,5 +39,10 @@ namespace Learning.Tutor.Abstract
 
         int savetrueorfalse();
         List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0);
+        List<SubjectTopic> SubjectTopics(int? id = 0);
+        List<SubjectTopic> GetTopicsByTestId(int testid);
+        List<SubjectSubTopic> GetSubTopics(int? topidId = null);
+        List<Language> GetLanguagesForSubject(int subjectid);
+        Task<bool> SetTestIsPublished(int id, bool isChecked);
     }
 }

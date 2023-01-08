@@ -75,8 +75,11 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenderEnum")
+                        .HasColumnType("int");
 
                     b.Property<bool>("HasUserAccess")
                         .HasColumnType("bit");
@@ -190,7 +193,7 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("QusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SectionId")
+                    b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
                     b.Property<int>("TestId")
@@ -231,6 +234,12 @@ namespace Learning.Entities.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -311,6 +320,81 @@ namespace Learning.Entities.Migrations
                     b.ToTable("MCQAnswers");
                 });
 
+            modelBuilder.Entity("Learning.Entities.Mail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Attachement")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReadOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SenderAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SentOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Mails");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ReadOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Learning.Entities.Options", b =>
                 {
                     b.Property<int>("Id")
@@ -365,25 +449,37 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("QuestionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("QusType")
+                    b.Property<int>("QuestionTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SectionId")
+                    b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int?>("SubTopicId")
                         .HasColumnType("int");
-
-                    b.Property<string>("SubTopics")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Topics")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TestStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TopicId")
+                        .HasColumnType("int");
 
                     b.HasKey("QusID");
+
+                    b.HasIndex("QuestionTypeId");
+
+                    b.HasIndex("SectionId");
+
+                    b.HasIndex("SubTopicId");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("TestStatusId");
+
+                    b.HasIndex("TopicId");
 
                     b.ToTable("Questions");
                 });
@@ -428,11 +524,20 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Grade")
                         .HasColumnType("int");
@@ -679,6 +784,71 @@ namespace Learning.Entities.Migrations
                     b.ToTable("StudentTestStats");
                 });
 
+            modelBuilder.Entity("Learning.Entities.SubjectLanguageVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("SubjectLanguageVariants");
+                });
+
+            modelBuilder.Entity("Learning.Entities.SubjectSubTopic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("SubTopic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubjectTopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectTopicId");
+
+                    b.ToTable("SubjectSubTopics");
+                });
+
+            modelBuilder.Entity("Learning.Entities.SubjectTopic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TestSubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Topic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestSubjectId");
+
+                    b.ToTable("SubjectTopics");
+                });
+
             modelBuilder.Entity("Learning.Entities.Teacher", b =>
                 {
                     b.Property<int>("TeacherId")
@@ -715,13 +885,16 @@ namespace Learning.Entities.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GradeID")
+                    b.Property<int>("GradeLevelsId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Language")
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LanguageId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Modified")
@@ -733,22 +906,30 @@ namespace Learning.Entities.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("StatusID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubjectID")
-                        .HasColumnType("int");
-
                     b.Property<string>("TestDescription")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TestStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestSubjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TutorId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TutorId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("TestStatusId");
+
+                    b.HasIndex("TestSubjectId");
+
+                    b.HasIndex("TutorId");
 
                     b.ToTable("Tests");
                 });
@@ -816,6 +997,9 @@ namespace Learning.Entities.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SubjectName")
                         .HasColumnType("nvarchar(max)");
@@ -1144,12 +1328,57 @@ namespace Learning.Entities.Migrations
             modelBuilder.Entity("Learning.Entities.Options", b =>
                 {
                     b.HasOne("Learning.Entities.Question", "Question")
-                        .WithMany()
+                        .WithMany("Options")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Question", b =>
+                {
+                    b.HasOne("Learning.Entities.QuestionType", "QuestionType")
+                        .WithMany()
+                        .HasForeignKey("QuestionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestSection", "TestSection")
+                        .WithMany()
+                        .HasForeignKey("SectionId");
+
+                    b.HasOne("Learning.Entities.SubjectSubTopic", "SubjectSubTopic")
+                        .WithMany()
+                        .HasForeignKey("SubTopicId");
+
+                    b.HasOne("Learning.Entities.Test", "Test")
+                        .WithMany("Questions")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestStatus", "TestStatus")
+                        .WithMany()
+                        .HasForeignKey("TestStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.SubjectTopic", "SubjectTopic")
+                        .WithMany()
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("QuestionType");
+
+                    b.Navigation("SubjectSubTopic");
+
+                    b.Navigation("SubjectTopic");
+
+                    b.Navigation("Test");
+
+                    b.Navigation("TestSection");
+
+                    b.Navigation("TestStatus");
                 });
 
             modelBuilder.Entity("Learning.Entities.Student", b =>
@@ -1207,6 +1436,47 @@ namespace Learning.Entities.Migrations
                     b.Navigation("Test");
                 });
 
+            modelBuilder.Entity("Learning.Entities.SubjectLanguageVariant", b =>
+                {
+                    b.HasOne("Learning.Entities.Language", "Language")
+                        .WithMany("SubjectLanguageVariants")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestSubject", "TestSubject")
+                        .WithMany("SubjectLanguageVariants")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+
+                    b.Navigation("TestSubject");
+                });
+
+            modelBuilder.Entity("Learning.Entities.SubjectSubTopic", b =>
+                {
+                    b.HasOne("Learning.Entities.SubjectTopic", "SubjectTopic")
+                        .WithMany("SubjectSubTopics")
+                        .HasForeignKey("SubjectTopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubjectTopic");
+                });
+
+            modelBuilder.Entity("Learning.Entities.SubjectTopic", b =>
+                {
+                    b.HasOne("Learning.Entities.TestSubject", "TestSubject")
+                        .WithMany()
+                        .HasForeignKey("TestSubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestSubject");
+                });
+
             modelBuilder.Entity("Learning.Entities.Teacher", b =>
                 {
                     b.HasOne("Learning.Entities.AppUser", "Id")
@@ -1214,6 +1484,41 @@ namespace Learning.Entities.Migrations
                         .HasForeignKey("Id1");
 
                     b.Navigation("Id");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Test", b =>
+                {
+                    b.HasOne("Learning.Entities.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestStatus", "TestStatus")
+                        .WithMany()
+                        .HasForeignKey("TestStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.TestSubject", "TestSubject")
+                        .WithMany("Tests")
+                        .HasForeignKey("TestSubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.Tutor", "Tutor")
+                        .WithMany()
+                        .HasForeignKey("TutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+
+                    b.Navigation("TestStatus");
+
+                    b.Navigation("TestSubject");
+
+                    b.Navigation("Tutor");
                 });
 
             modelBuilder.Entity("Learning.Entities.UserScreenAccess", b =>
@@ -1274,6 +1579,33 @@ namespace Learning.Entities.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Learning.Entities.Language", b =>
+                {
+                    b.Navigation("SubjectLanguageVariants");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Question", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("Learning.Entities.SubjectTopic", b =>
+                {
+                    b.Navigation("SubjectSubTopics");
+                });
+
+            modelBuilder.Entity("Learning.Entities.Test", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("Learning.Entities.TestSubject", b =>
+                {
+                    b.Navigation("SubjectLanguageVariants");
+
+                    b.Navigation("Tests");
                 });
 #pragma warning restore 612, 618
         }

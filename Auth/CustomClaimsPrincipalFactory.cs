@@ -14,13 +14,13 @@ using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace Learning.Auth
 {
-   public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<Entities.AppUser> 
+   public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<AppUser> 
     {
         readonly IHttpContextAccessor _httpContext;
         readonly IAuthRepo _authService;
         readonly ITutorService _tutorService;
 
-        public CustomClaimsPrincipalFactory(UserManager<Entities.AppUser> userManager, IHttpContextAccessor contextAccessor,
+        public CustomClaimsPrincipalFactory(UserManager<AppUser> userManager, IHttpContextAccessor contextAccessor,
         IOptions<IdentityOptions> optionsAccessor, ITutorService tutorService,IAuthRepo authRepo )
             : base(userManager, optionsAccessor)
         {

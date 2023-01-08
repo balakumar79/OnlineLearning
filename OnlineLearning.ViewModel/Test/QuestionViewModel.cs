@@ -7,6 +7,10 @@ namespace Learning.Tutor.ViewModel
 {
     public class QuestionViewModel
     {
+        public QuestionViewModel()
+        {
+            Options = Options ?? new List<OptionsViewModel>();
+        }
         public int QusID { get; set; }
         [Required]
 
@@ -20,14 +24,14 @@ namespace Learning.Tutor.ViewModel
         public int QuestionTypeId { get; set; }
         [Required]
         public int TestId { get; set; }
-        public int SectionId { get; set; }
+        public int ? SectionId { get; set; }
         public string TestName { get; set; }
         public int Language { get; set; }
         public TestSectionViewModel TestSection { get; set; }
         [Display(Name = "Sec. Name")]
         public string SectionName { get; set; }
-        public string Topic { get; set; }
-        public string SubTopic { get; set; }
+        public int ? Topic { get; set; }
+        public int? SubTopic { get; set; }
         public List<OptionsViewModel> Options { get; set; }
         public int Mark { get; set; }
         [Display(Name = "Active")]
@@ -55,7 +59,7 @@ namespace Learning.Tutor.ViewModel
         public string Question { get; set; }
         public int CompQusId { get; set; }
         public string Answer { get; set; }
-        public int SectionId { get; set; }
+        public int? SectionId { get; set; }
         public int TestId { get; set; }
     }
 

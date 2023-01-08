@@ -9,6 +9,10 @@ namespace Learning.Tutor.ViewModel
 {
    public class TestViewModel
     {
+        public TestViewModel()
+        {
+            LanguageVariants = LanguageVariants ?? new List<SelectListItem>();
+        }
         public int Id { get; set; }
 
         [Required]
@@ -32,15 +36,16 @@ namespace Learning.Tutor.ViewModel
         public DateTime EndDate { get; set; }
         [Required]
         public int Language { get; set; }
-        public List<int> LanguageVariants { get; set; }
+        public List<SelectListItem> LanguageVariants { get; set; }
         public int StatusID { get; set; }
         public string StatusName { get; set; }
         public DateTime Created { get; set; }
         public DateTime Modified { get; set; }
-        public string TutorId { get; set; }
+        public int TutorId { get; set; }
         public string TutorUserName { get; set; }
         [Display(Name ="Active")]
         public bool IsActive { get; set; }
+        public bool IsPublished { get; set; }
 
         public decimal MaximumMarkScored { get; set; }
         public decimal MinimumMarkScored { get; set; }

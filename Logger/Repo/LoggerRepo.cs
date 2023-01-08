@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Learning.Utils
+namespace Learning.LogMe.Repo
 {
-   public class LoggerRepo
+   public class LoggerRepo:ILoggerRepo
     {
         readonly AppDBContext _dBContext;
         public LoggerRepo(AppDBContext dBContext)
@@ -14,8 +14,8 @@ namespace Learning.Utils
         }
         public void InsertLogger(Exception ex)
         {
-            
-            var logger = new Logger
+
+            var logger = new Entities.Logger
             {
                 Link = ex.StackTrace,
                 Type = ex.GetType().Name,
@@ -27,8 +27,15 @@ namespace Learning.Utils
             _dBContext.Loggers.Add(logger);
             _dBContext.SaveChanges();
         }
-        public void InsertLogger(Logger logger)
+        public void InsertLogger(string type,string message,string description,string ? link=null)
         {
+            var logger = new Entities.Logger
+            {
+                Type = type,
+                Message = message,
+                Description = description,
+                Link = link
+            };
             logger.CreatedAt = DateTime.Now;
             _dBContext.Loggers.Add(logger);
             _dBContext.SaveChanges();

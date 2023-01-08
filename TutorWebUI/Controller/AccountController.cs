@@ -34,10 +34,12 @@ namespace TutorWebUI.Controllers
         }
         public IActionResult Login(string ReturnUrl)
         {
+            
             TempData["rurl"] = ReturnUrl;
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             
@@ -94,7 +96,7 @@ namespace TutorWebUI.Controllers
                     LastName = registerViewModel.LastName,
                     Email = registerViewModel.Email,
                     PhoneNumber = registerViewModel.PhoneNumber,
-                    Gender = registerViewModel.Gender,
+                    Gender = registerViewModel.GenderId,
                     UserName = registerViewModel.UserName,
                     
                 };
