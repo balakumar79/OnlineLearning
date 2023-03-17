@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Learning.Tutor.ViewModel
 {
-   public class TestViewModel
+    public class TestViewModel
     {
         public TestViewModel()
         {
@@ -16,14 +15,14 @@ namespace Learning.Tutor.ViewModel
         public int Id { get; set; }
 
         [Required]
-        [Remote(controller:"Tutor",action:"IsTestExists",AdditionalFields ="Id,TutorId")]
+        [Remote(controller: "Tutor", action: "IsTestExists", AdditionalFields = "Id,TutorId")]
         public string Title { get; set; }
         [Required]
-        [Display(Name ="Grade")]
+        [Display(Name = "Grade")]
         public int GradeID { get; set; }
         public string GradeName { get; set; }
         [Required]
-        [Display(Name ="Subject")]
+        [Display(Name = "Subject")]
         public int SubjectID { get; set; }
         public string SubjectName { get; set; }
 
@@ -43,7 +42,7 @@ namespace Learning.Tutor.ViewModel
         public DateTime Modified { get; set; }
         public int TutorId { get; set; }
         public string TutorUserName { get; set; }
-        [Display(Name ="Active")]
+        [Display(Name = "Active")]
         public bool IsActive { get; set; }
         public bool IsPublished { get; set; }
 

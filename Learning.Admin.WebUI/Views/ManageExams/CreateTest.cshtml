@@ -1,0 +1,141 @@
+﻿@model Learning.Tutor.ViewModel.TestViewModel
+
+@{
+    ViewData["Title"] = "Create Test";
+    var returnUrl= Context.Request.Query["ReturnUrl"].ToString()==string.Empty? "/ManageExams":Context.Request.Query["ReturnUrl"].ToString();
+}
+
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Create Test</h1>
+          <a class="text-white h6" href="@returnUrl"> <i class="fa fa-arrow-circle-left"></i> Back | </a> 
+        <a class="text-white h6" href="/tutor/createtest">Create a Test</a>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+
+            <form asp-action="CreateTest">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                @Html.HiddenFor(p => p.Id)
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="Title" class="control-label"></label>
+                        <input asp-for="Title" type="text" class="custom-input" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label asp-for="GradeID" class="control-label"></label>
+                        <select asp-for="GradeID" class="custom-input" id="selGrade"></select>
+                        <span asp-validation-for="GradeID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-4">
+                        <label asp-for="SubjectID" class="control-label"></label>
+                        <select asp-for="SubjectID" onchange="getlanguage(this)" class="custom-input"></select>
+                        <span asp-validation-for="SubjectID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="Language" class="control-label"></label>
+                        <select asp-for="Language" asp-items="@Model.LanguageVariants" class="custom-input"></select>
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </div>
+                </div>
+                <div id="pnlSubjectName" class="row justify-content-center">
+                    <div class="form-group col-md-8">
+                        <input asp-for="SubjectName" placeholder="Enter Subject Name" class="custom-input" />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                </div>
+                    <div class="row justify-content-center">
+
+
+                        <div class="form-group col-md-4">
+                            <label asp-for="StartDate" class="control-label"></label>
+                            <input asp-for="StartDate" class="custom-input" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label asp-for="EndDate" class="control-label"></label>
+                            <input asp-for="EndDate" class="custom-input" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-4">
+                            <label asp-for="Duration" class="control-label"></label> (Mins)
+                            <input asp-for="Duration" class="custom-input" />
+                            <span asp-validation-for="Duration" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="custom-input"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-8">
+
+
+                            <button type="submit" class="btn-submit">
+                                <i class="fa fa-save"></i>
+                                @(Model==null? "Save" :"Update")
+                            </button>
+
+                        </div>
+                    </div>
+
+            </form>
+            </div>
+        </div>
+   
+            
+</main>
+    @section Scripts{
+        <script>
+            $(document).ready(function () {
+                bindGradeLevels('#selGrade', '@Model?.GradeID');
+                bindSubject('#@Html.IdFor(s=>s.SubjectID)', '@Model?.SubjectID').select2();
+                $('[name=StartDate],[name=EndDate]')
+                    .attr('min', moment().format('YYYY-MM-DDTkk:mm'));
+                $('[name=StartDate]').val(moment().format('YYYY-MM-DDTkk:mm'))
+                $('#@Html.IdFor(s=>s.SubjectID)').change(function (e) {
+
+                   
+                    $('#@Html.IdFor(lang=>lang.Language)').empty();
+                    console.log("subjectid:", $('#SubjectID').val(), 'languageId:', $('#@Html.IdFor(lang=>lang.Language)').val(), '@Model.Language')
+                    getdata('GetLanguagesForSubject', { subjectid: $('#SubjectID').val() ?? '@Model.SubjectID' }).done(res => {
+                    console.log(res);
+                        if (res == null||res?.length==0) {
+                            bindLanguage('#Language', '@Model?.Language');
+                        }
+                        else {
+                            res.forEach(el => {
+                                $('#@Html.IdFor(lang=>lang.Language)').append('<option value="' + el.id + '">' + el.name + '</option>')
+                            })
+
+                        }
+                        togglesubject();
+                        
+                });
+
+                });
+                //document.getElementById('@Html.IdFor(p=>p.SubjectID)').dispatchEvent(new window.event('change', { 'bubbles': true }));
+                togglesubject();
+
+            });
+            function togglesubject() {
+                if ($('#@Html.IdFor(l=>l.SubjectID) option:selected').text().toLowerCase() == 'other') {
+                    $('#pnlSubjectName').show('slow');
+                }
+                else {
+                    $('#pnlSubjectName').hide('slow');
+                }
+            }
+        </script>
+    }
+
+

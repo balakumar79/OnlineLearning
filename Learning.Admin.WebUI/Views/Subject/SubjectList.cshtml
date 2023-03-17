@@ -6,9 +6,9 @@
 @model IEnumerable<Learning.ViewModel.Admin.SubjectViewModel>
     <main class="page-content">
         <div class="container-fluid tutor-orange-bg">
-            <h1>Manage Sections</h1>
+            <h1>Manage Subjects</h1>
             <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
-                <table class="display responsive nowrap" style="width:100%" id="examtable">
+                <table class="display responsive nowrap dataTable" style="width:100%" id="subjecttable">
                     <thead>
                         <tr>
                             <th>
@@ -48,10 +48,10 @@
 
 
                                 <td>
-                                    <a href="/Subject/Subject?id=@item.Id">
-                                        <i class="fa fa-eye text-info"> </i>
+                                    <a href="/Subject/Subject?id=@item.Id&ReturnUrl=/Subject">
+                                        <i class="fa fa-pencil-square fa-2x text-info"> </i>
                                     </a> |
-                                    <a href="DeleteSubject?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+                                    <a href="/Subject/DeleteSubject?id=@item.Id&ReturnUrl=/Subject/"> <i class="fa fa-times-circle text-danger"></i></a>
                                 </td>
                             </tr>
                         }
@@ -60,3 +60,9 @@
                 </div>
 </div>
 </main>
+
+                                    @section Scripts{
+                                        <script>
+$('#subjecttable').DataTable();
+                                        </script>
+                                    }

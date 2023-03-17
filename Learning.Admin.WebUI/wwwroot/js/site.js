@@ -56,7 +56,7 @@ function getdata(url, data, datatype = 'json') {
     })
 }
 function bindLanguage(cnt, languageselected = null) {
-	getdata('/tutor/GetLanguage').done(res => {
+	getdata('/manageexams/GetLanguage').done(res => {
 		$(cnt).empty().append($('<option/>').text('--Select Language--').val(''));
 		res.forEach(el => {
 			$(cnt).append($('<option/>').text(el.name).val(el.id));
@@ -68,7 +68,7 @@ function bindLanguage(cnt, languageselected = null) {
 }
 
 function bindGradeLevels(cnt, gradeid = undefined) {
-	getdata('/tutor/GetGradeLevels').done(res => {
+	getdata('/manageexams/GetGradeLevels').done(res => {
 		$(cnt).append($('<option/>').text('--Select Grade--').val(''));
 		res.forEach(el => {
 			$(cnt).append($('<option/>').text(el.grade).val(el.id));
@@ -79,7 +79,7 @@ function bindGradeLevels(cnt, gradeid = undefined) {
 }
 
 function bindSubject(cnt, subjectid) {
-	getdata('/Tutor/GetSubject').done(res => {
+	getdata('/manageexams/GetSubject').done(res => {
 		$(cnt).append($('<option/>').text('--Select Subject--').val(''));
 		res.forEach(el => {
 			$(cnt).append($('<option/>').text(el.subjectName).val(el.id));
@@ -89,7 +89,7 @@ function bindSubject(cnt, subjectid) {
 	})
 }
 function bindTest(cnt,testid) {
-	getdata('/tutor/GetTest').done(res => {
+	getdata('/manageexams/GetTest').done(res => {
 		$(cnt).empty();
 		$(cnt).append($('<option/>').text('--Select Test--').val(''));
 		res.forEach(el => {
@@ -105,7 +105,7 @@ function bindTest(cnt,testid) {
 function bindTestSection(cnt, testid) {
 	if (testid !== undefined) {
 		alert('section changed');
-		getdata('/tutor/GetTestSectionByTestId', testid).done(res => {
+		getdata('/manageexams/GetTestSectionByTestId', testid).done(res => {
 			console.log(res)
 			$(cnt).empty().append($('<option/>').text('--Select Section--').val('0'));
 			res.forEach(el => {
@@ -120,7 +120,7 @@ function bindTestSection(cnt, testid) {
 	}
 }
 function bindQuestionType(cnt) {
-	getdata('/tutor/GetQuestionType').done(res => {
+	getdata('/manageexams/GetQuestionType').done(res => {
 		$(cnt).empty();
 		$(cnt).append($('<option/>').text('--Select Qus Type--').val(''));
 			res.forEach(el => {

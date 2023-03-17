@@ -4,22 +4,16 @@ using Learning.Entities;
 using Learning.LogMe;
 using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
-using Learning.Utils;
 using Learning.Utils.Enums;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.API.Controllers
@@ -42,7 +36,7 @@ namespace Learning.API.Controllers
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-           ISecurePassword securePassword, Utils.Config.SecretKey appSet,ITeacherService teacherService, ILoggerRepo logger)
+           ISecurePassword securePassword, Utils.Config.SecretKey appSet, ITeacherService teacherService, ILoggerRepo logger)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
@@ -114,7 +108,7 @@ namespace Learning.API.Controllers
                     {
                         var screens = await authService.GetScreenAccessPrivilage(roleId: roles, userID: user.Id);
                         var teacher = _teacherService.GetTeacher(user.Id).FirstOrDefault();
-                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = authService.GetAssociatedStudentsForTeacher(user.Id), TeacherId =teacher?.TeacherId };
+                        var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Tutor = _tutorService.GetTutorProfile(user.Id), Childs = authService.GetAssociatedStudentsForTeacher(user.Id), TeacherId = teacher?.TeacherId };
                         //await HttpContext.RefreshLoginAsync();
                         var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
 
@@ -138,10 +132,10 @@ namespace Learning.API.Controllers
                     {
 
                         if (student == null)
-                           return new JsonResult(new { status = false, message = "Sorry. No student account found !!!" });
+                            return new JsonResult(new { status = false, message = "Sorry. No student account found !!!" });
                         user = await _userManager.FindByIdAsync(student.UserID.ToString());
                         if (!user.EmailConfirmed)
-                           return new JsonResult(new { status = false, message = "Sorry.  Your account is not enabled to login.  Please confirm your email to activate your student account." });
+                            return new JsonResult(new { status = false, message = "Sorry.  Your account is not enabled to login.  Please confirm your email to activate your student account." });
                         if (roles.Contains(Roles.Major.ToString()))
                             if (user == null)
                             {
@@ -191,7 +185,7 @@ namespace Learning.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.InsertLogger(message: ex.Message,description: ex.ToString(), type: "Error",link:"/Account/Login");
+                    _logger.InsertLogger(message: ex.Message, description: ex.ToString(), type: "Error", link: "/Account/Login");
                     return new JsonResult(new { result = false, error = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
                 }
             }
@@ -213,9 +207,9 @@ namespace Learning.API.Controllers
                 var availableRolesId = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
                 if (!availableRolesId.Contains((Roles)registerViewModel.Role))
                     return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid user role id." });
-                if(registerViewModel.StudentModel!=null)
-                if (!availableRolesId.Contains((Roles)(registerViewModel.StudentModel?.RoleRequested??0)))
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid student role id." });
+                if (registerViewModel.StudentModel != null)
+                    if (!availableRolesId.Contains((Roles)(registerViewModel.StudentModel?.RoleRequested ?? 0)))
+                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid student role id." });
                 if (ModelState.IsValid)
                 {
                     var roleRequested = (Roles)registerViewModel.Role;
@@ -242,7 +236,7 @@ namespace Learning.API.Controllers
                     if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel?.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Student)
                     {
                         registerViewModel.StudentModel.UserId = user == null ? 0 : user.Id;
-                        return new JsonResult( await RegisterStudent(registerViewModel.StudentModel));
+                        return new JsonResult(await RegisterStudent(registerViewModel.StudentModel));
 
                     }
                     else if (registerViewModel.Role == (int)Roles.Teacher)
@@ -251,7 +245,7 @@ namespace Learning.API.Controllers
                         {
                             UserId = user.Id,
                         };
-                        return new JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher),Message="Your teacher account has been created successfully.  Please confirm your email to activate your account." });
+                        return new JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher), Message = "Your teacher account has been created successfully.  Please confirm your email to activate your account." });
                     }
                     else
                     {
@@ -307,10 +301,10 @@ namespace Learning.API.Controllers
                 if (res == null)
                     return new ResponseFormat { Result = false, Message = "Sorry !!! Student registration failed." };
                 else
-                    return new ResponseFormat { Result = true, Message = "Student account has been created successfully.  ",Description=res };
+                    return new ResponseFormat { Result = true, Message = "Student account has been created successfully.  ", Description = res };
             }
             else
-                return new ResponseFormat{Result = false, Message = "Student username already taken." };
+                return new ResponseFormat { Result = false, Message = "Student username already taken." };
         }
 
 
@@ -323,12 +317,12 @@ namespace Learning.API.Controllers
             return new JsonResult(new { result = await authService.EmailConfirmation(token, email) });
         }
 
-        [AllowAnonymous,HttpGet]
+        [AllowAnonymous, HttpGet]
         public async Task<object> ForgotPassword(string Email)
         {
             if (string.IsNullOrEmpty(Email))
                 return new JsonResult(new ResponseFormat { Message = "Email cannot be blank !!!", Result = false });
-            var result =await authService.ForgotPassword(Email);
+            var result = await authService.ForgotPassword(Email);
             return new JsonResult(new { result = result });
 
         }

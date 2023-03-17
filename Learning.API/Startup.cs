@@ -1,34 +1,23 @@
 using Learning.Auth;
 using Learning.Entities;
-using Learning.Utils.Config;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Learning.API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration,IHostEnvironment hostEnvironment )
+        public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
             _hostEnvironment = hostEnvironment;
@@ -43,7 +32,7 @@ namespace Learning.API
             {
                 op.RespectBrowserAcceptHeader = true;
             });
-            Infrastructure.Infrastructure.AddDataBase(services, Configuration,_hostEnvironment);
+            Infrastructure.Infrastructure.AddDataBase(services, Configuration, _hostEnvironment);
 
             //services.AddScoped<UserManager<AppUser>>();
 
@@ -60,7 +49,7 @@ namespace Learning.API
             //});
 
             services.AddCors();
-            Infrastructure.Infrastructure.AddKeyContext(services,Configuration);
+            Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
 
             services.AddIdentity<AppUser, AppRole>(op =>
             {
@@ -81,12 +70,12 @@ namespace Learning.API
                 op.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = false,
-                    ValidateAudience=false,
+                    ValidateAudience = false,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey:SecretKeyValue"]))
 
                 };
             });
-            services.AddSwaggerGen(setup=>
+            services.AddSwaggerGen(setup =>
             {
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
@@ -128,9 +117,9 @@ namespace Learning.API
             //services.AddControllersWithViews();
             //services.AddRazorPages();
             Infrastructure.Infrastructure.AddServices(services, Configuration);
-            
+            services.AddTransient<IResponseFormatter, ResponseFormat>();
         }
-        private  IHostEnvironment _hostEnvironment;
+        private IHostEnvironment _hostEnvironment;
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -151,13 +140,13 @@ namespace Learning.API
 
             app.UseAuthorization();
             app.UseSession();
-            var cookoption = new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax,CheckConsentNeeded=context=>true };
+            var cookoption = new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax, CheckConsentNeeded = context => true };
             app.UseSwagger();
-            app.UseSwaggerUI(c=>c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1"));
             //app.UseMvc();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(name:"default",pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
         public void SeedRoles(RoleManager<AppRole> roleManager)

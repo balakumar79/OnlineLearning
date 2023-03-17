@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Learning.Entities
 {
-   public class Test
+    public class Test
     {
         [Key]
         public int Id { get; set; }
         public string Title { get; set; }
         public string TestDescription { get; set; }
         public int GradeLevelsId { get; set; }
-        //public virtual GradeLevels GradeLevels { get; set; }
+        public virtual GradeLevels GradeLevels { get; set; }
         public int TestSubjectId { get; set; }
         public virtual TestSubject TestSubject { get; set; }
 

@@ -7,11 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.16" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Admin\Learning.Admin.csproj" />
     <ProjectReference Include="..\Learning.Entities\Learning.Entities.csproj" />
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
     <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
     <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+    <ProjectReference Include="..\Logger\Learning.LogMe.csproj" />
   </ItemGroup>
 </Project>

@@ -1,28 +1,27 @@
-﻿using Learning.Entities;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Auth.Account;
-using Learning.Utils;
-using Learning.Utils.Config;
-using Learning.Tutor.Abstract;
-using Learning.Tutor.Service;
-using Learning.Tutor.Repo;
+﻿using Auth.Account;
 using Learning.Admin.Abstract;
 using Learning.Admin.Repo;
 using Learning.Admin.Service;
-using System;
-using Microsoft.AspNetCore.Http;
+using Learning.Auth;
+using Learning.Entities;
+using Learning.LogMe;
+using Learning.LogMe.Repo;
 using Learning.Student.Abstract;
 using Learning.Student.Repos;
 using Learning.Student.Services;
-using Microsoft.AspNetCore.DataProtection;
-using Learning.Auth;
 using Learning.Teacher.Repos;
 using Learning.Teacher.Services;
+using Learning.Tutor.Abstract;
+using Learning.Tutor.Repo;
+using Learning.Tutor.Service;
+using Learning.Utils;
+using Learning.Utils.Config;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
+using System;
 
 namespace Learning.Infrastructure
 {
@@ -30,7 +29,7 @@ namespace Learning.Infrastructure
     {
 
 
-        public static void AddDataBase(IServiceCollection services, IConfiguration configuration,IHostEnvironment hostEnvironment)
+        public static void AddDataBase(IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             //if (hostEnvironment.IsDevelopment())
             //{
@@ -41,7 +40,7 @@ namespace Learning.Infrastructure
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(configuration.GetConnectionString("DBContext")));
         }
 
-        public static void AddKeyContext(IServiceCollection services,IConfiguration configuration)
+        public static void AddKeyContext(IServiceCollection services, IConfiguration configuration)
         {
             // Add a DbContext to store your Database Keys
             services.AddDbContext<LearningKeyContext>(options =>
@@ -81,12 +80,15 @@ namespace Learning.Infrastructure
 
             services.AddTransient<ITeacherRepo, TeacherRepo>();
             services.AddTransient<ITeacherService, TeacherService>();
-            
+
             services.AddTransient<ITutorRepo, TutorRepo>();
             services.AddTransient<ITutorService, TutorService>();
 
             services.AddTransient<IManageTutorRepo, ManageTutorRepo>();
             services.AddTransient<IManageTutorService, ManageTutorService>();
+
+            services.AddTransient<ILoggerRepo, LoggerRepo>();
+
 
         }
     }

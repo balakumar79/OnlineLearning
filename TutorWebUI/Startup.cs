@@ -1,6 +1,7 @@
 using Learning.Auth;
 using Learning.Entities;
 using Learning.Middleware;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,18 +9,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static Learning.ViewModel.Account.AuthorizationModel;
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Authorization;
-using Learning.Utils.Config;
+using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace TutorWebUI
 {
     public class Startup
     {
         //test function not for internal use
-        public Startup(IConfiguration configuration,IHostEnvironment hostEnvironment)
+        public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
             _hostEnvironment = hostEnvironment;
@@ -29,32 +28,13 @@ namespace TutorWebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration, _hostEnvironment);
             services.AddIdentity<AppUser, AppRole>(op =>
             {
-               
+
             }).AddEntityFrameworkStores<AppDBContext>()
             .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
 .AddDefaultTokenProviders();
-
-            Learning.Infrastructure.Infrastructure.AddDataBase(services, Configuration,_hostEnvironment);
-
-            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
-            Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
-
-            //services.ConfigureApplicationCookie(op =>
-            //{
-            //    op.Cookie.Name = ".AspNet.SharedCookie";
-            //    op.ExpireTimeSpan = TimeSpan.FromDays(4);
-            //    op.Cookie.HttpOnly = false;
-            //    op.Cookie.IsEssential = true;
-            //    op.Cookie.MaxAge = TimeSpan.FromDays(4);
-            //    op.SlidingExpiration = true;
-            //    op.Cookie.Domain = "tutor.domockexam.com";
-            //    op.Cookie.SameSite = SameSiteMode.Lax;
-            //});
-            AuthenticationConfig.LearningAuthentication(services);
-
-
 
             services.AddAuthorization(option =>
             {
@@ -70,19 +50,39 @@ namespace TutorWebUI
                 }
                 option.DefaultPolicy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(IdentityApplicationDefault).RequireAuthenticatedUser().Build();
             });
-            services.AddSession
-            (op =>
+            AuthenticationConfig.LearningAuthentication(services);
+
+            services.ConfigureApplicationCookie(op =>
             {
-                op.IdleTimeout = TimeSpan.FromDays(20); 
+                op.Cookie.Name = ".AspNet.SharedCookie";
+                op.ExpireTimeSpan = TimeSpan.FromDays(4);
+                op.Cookie.HttpOnly = false;
+                op.Cookie.IsEssential = true;
+                op.Cookie.MaxAge = TimeSpan.FromDays(4);
+                op.SlidingExpiration = true;
+                op.Cookie.Domain = "api.domockexam.com";
+                op.Cookie.SameSite = SameSiteMode.Lax;
             });
-           
-          
+            services.AddSession
+           (op =>
+           {
+               op.IdleTimeout = TimeSpan.FromDays(20);
+           });
+
+            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
+            Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
+
+
+
+
+
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-           
+
             services.AddRazorPages();
             services.AddScoped<UserManager<AppUser>>();
-         
-            
+
+
         }
 
         private IHostEnvironment _hostEnvironment;
@@ -110,7 +110,7 @@ namespace TutorWebUI
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

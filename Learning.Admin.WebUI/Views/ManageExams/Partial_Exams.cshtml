@@ -69,7 +69,7 @@
                 @Html.Label(item.Created.ToShortDateString())
             </td>
             <td>
-                <a href="CreateTest?id=@item.Id">
+                <a href="/manageexams/CreateTest?id=@item.Id&ReturnUrl=/manageexams">
                     <i class="fa fa-eye text-info"> </i>
                 </a> |
                 <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
