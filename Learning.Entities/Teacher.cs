@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Learning.Entities
 {
-   public class Teacher
+    public class Teacher
     {
         [Key]
         public int TeacherId { get; set; }
         public int UserId { get; set; }
-        public AppUser Id { get; set; }
+        [ForeignKey("UserId")]
+        public AppUser AppUser { get; set; }
     }
 }

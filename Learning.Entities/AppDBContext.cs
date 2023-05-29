@@ -1,10 +1,7 @@
-﻿using Learning.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace Learning.Entities
@@ -50,6 +47,8 @@ namespace Learning.Entities
         public virtual DbSet<Options> Options { get; set; }
         public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions { get; set; }
         public virtual DbSet<SubjectLanguageVariant> SubjectLanguageVariants { get; set; }
+        public virtual DbSet<RandomQuestion> RandomQuestions { get; set; }
+
 
         public virtual DbSet<MCQAnswer> MCQAnswers { get; set; }
         //public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
@@ -71,7 +70,7 @@ namespace Learning.Entities
         public virtual DbSet<Logger> Loggers { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.HasDefaultSchema("identity");
+            builder.HasDefaultSchema("bala");
             base.OnModelCreating(builder);
             builder.Entity<AppUser>(entity =>
             {

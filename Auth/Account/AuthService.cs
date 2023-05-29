@@ -4,7 +4,6 @@ using Learning.Tutor.Abstract;
 using Learning.Utils;
 using Learning.Utils.Config;
 using Learning.ViewModel.Account;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -13,12 +12,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using static Learning.ViewModel.Account.AuthorizationModel;
 
 namespace Auth.Account
 {
-   public class AuthService:IAuthService
+    public class AuthService : IAuthService
     {
         #region variables
         readonly IAuthRepo _authRepo;
@@ -32,8 +30,8 @@ namespace Auth.Account
         #endregion
 
         #region constructor
-        public AuthService(IAuthRepo authRepo,IHttpContextAccessor httpContextAccessor,UserManager<AppUser> userManager,
-            IEmailService _email,SignInManager<AppUser> signInManager,ISecurePassword securePassword,AppConfig appConfig, ITutorService tutorService)
+        public AuthService(IAuthRepo authRepo, IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager,
+            IEmailService _email, SignInManager<AppUser> signInManager, ISecurePassword securePassword, AppConfig appConfig, ITutorService tutorService)
         {
             _signInManager = signInManager;
             httpContext = httpContextAccessor;
@@ -55,7 +53,8 @@ namespace Auth.Account
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, viewModel.Password, viewModel.RememberMe, false);
                 if (result.Succeeded)
                 {
-                   
+                    user.LastAccessedOn = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
                     return user;
                 }
             }
@@ -68,13 +67,13 @@ namespace Auth.Account
             var passwordHash = _securePassword.Secure(_appConfig.SecretKey.StudentSaltKey, viewModel.Password);
             var user = await _authRepo.GetStudentAsync(viewModel.UserName, passwordHash);
             return user;
-        } 
+        }
 
         public async Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId)
         {
-           return await _authRepo.GetAssociatedStudentsForParent(parentUserId);
+            return await _authRepo.GetAssociatedStudentsForParent(parentUserId);
         }
-               public List<Student> GetAssociatedStudentsForTeacher(int teacherId)
+        public List<Student> GetAssociatedStudentsForTeacher(int teacherId)
         {
             return _authRepo.GetAssociatedStudentsForTeacher(teacherId);
         }
@@ -82,7 +81,7 @@ namespace Auth.Account
         {
             return await _userManager.FindByIdAsync(userid);
         }
-        public async Task<IdentityResult> AddUser(AppUser appUser, string password,AppRole role)
+        public async Task<IdentityResult> AddUser(AppUser appUser, string password, AppRole role)
         {
             var errors = await _authRepo.AddUser(appUser, password, role);
             if (errors.Succeeded)
@@ -96,7 +95,7 @@ namespace Auth.Account
         {
             return await _userManager.UpdateAsync(app);
         }
-        public Task<Student> AddStudent(Student student)
+        public Task<StudentModel> AddStudent(Student student)
         {
             return _authRepo.AddStudent(student);
         }
@@ -104,16 +103,16 @@ namespace Auth.Account
         {
             return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
-       public List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid)
+        public List<StudentAccountRecoveryAnswer> GetStudentAccountRecoveryAnswers(int userid)
         {
             return _authRepo.GetStudentAccountRecoveryAnswers(userid);
         }
         public async Task<string> EmailConfirmation(string token, string email)
         {
-            var user =await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
             var decodebytes = WebEncoders.Base64UrlDecode(token);
             var decodedtoken = Encoding.UTF8.GetString(decodebytes);
-            var auth = await _userManager.ConfirmEmailAsync(user,decodedtoken);
+            var auth = await _userManager.ConfirmEmailAsync(user, decodedtoken);
             if (auth.Succeeded)
                 return "Success";
             else
@@ -137,7 +136,7 @@ namespace Auth.Account
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return string.Empty;
-            var tokenByte =Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user));
+            var tokenByte = Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenByte);
             string link;
             if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
@@ -146,9 +145,9 @@ namespace Auth.Account
             }
             else
                 link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host.Value}/Account/ResetPassword?Token={tokenEncoded}&&Email={email}";
-            
+
             var emailbody = await emailService.GetEmailTemplateContent(EmailTemplate.ResetPassword);
-           emailbody= emailbody.Replace("{link}", link);
+            emailbody = emailbody.Replace("{link}", link);
             return emailbody;
         }
         public async Task<IdentityResult> ResetPassword(ForgotPasswordViewModel model)
@@ -159,53 +158,54 @@ namespace Auth.Account
             //var student = await _authRepo.GetAssociatedStudents(user.Id);
             //if (student.Any())
             //    _authRepo.UpdateStudentPassword(student.FirstOrDefault().Id, model.Password);
-            return await _userManager.ResetPasswordAsync(user,decodedToken, model.Password);
+            return await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
         }
         public async Task<string> GetEmailConfirmationBody(AppUser user)
         {
-            var emailBody =await emailService.GetEmailTemplateContent(EmailTemplate.ConfirmEmail);
+            var emailBody = await emailService.GetEmailTemplateContent(EmailTemplate.ConfirmEmail);
             var tokenBytes = Encoding.UTF8.GetBytes(await _userManager.GenerateEmailConfirmationTokenAsync(user));
             var tokenEncoded = WebEncoders.Base64UrlEncode(tokenBytes);
             string link = "";
             if (httpContext.HttpContext.Request.Host.Value == "api.domockexam.com")
             {
                 link = $"https://domockexam.com/#/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
-            }else
-            link = $"{ httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
+            }
+            else
+                link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
             emailBody = emailBody.Replace("{link}", link);
             return emailBody;
         }
         public async Task<bool> IsEmailExists(string email, int? id)
         {
-           return await _authRepo.IsEmailExists(email,id);
+            return await _authRepo.IsEmailExists(email, id);
         }
         public async Task<bool> IsUserNameExists(string username, int? id)
         {
             return await _authRepo.IsUserNameExists(username, id);
 
         }
-       
+
         public async Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username)
         {
             return await _authRepo.GetScreenAccessByUserName(username);
         }
 
-       
+
         public async Task LogOut() => await _signInManager.SignOutAsync();
 
-       public Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId=null)
+        public Task<List<ScreenFormeter>> GetScreenAccessPrivilage(int? userID, IList<string> roleId = null)
         {
             return _authRepo.GetScreenAccessPrivilage(userID, roleId);
         }
-        public bool IsStudentUserNameExists(string username, int? id=0)
+        public bool IsStudentUserNameExists(string username, int? id = 0)
         {
             return _authRepo.IsStudentUserNameExists(username, id);
         }
         public Task<int> AddTutor(Tutor entity)
         {
-           return _authRepo.AddTutor(entity);
+            return _authRepo.AddTutor(entity);
         }
-       public int UpsertStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
+        public int UpsertStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
             return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
@@ -221,7 +221,7 @@ namespace Auth.Account
 
         public int UpserStudentSecretAnswer(List<AccountRecoveryAnswerModel> recoveryAnswer)
         {
-           return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
+            return _authRepo.UpsertStudentSecretAnswer(recoveryAnswer);
         }
 
         #endregion

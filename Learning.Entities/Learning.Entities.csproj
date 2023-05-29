@@ -9,23 +9,70 @@
   <ItemGroup>
     <Compile Remove="Migrations\20210822063325_local.cs" />
     <Compile Remove="Migrations\20210822063325_local.Designer.cs" />
+    <Compile Remove="Migrations\20230430103939_add-randomquestions.cs" />
+    <Compile Remove="Migrations\20230430103939_add-randomquestions.Designer.cs" />
+    <Compile Remove="Migrations\20230430104201_add-randomquestions.cs" />
+    <Compile Remove="Migrations\20230430104201_add-randomquestions.Designer.cs" />
+    <Compile Remove="Migrations\20230430104807_add-randomquestions.cs" />
+    <Compile Remove="Migrations\20230430104807_add-randomquestions.Designer.cs" />
+    <Compile Remove="Migrations\20230430115413_added-roleid.cs" />
+    <Compile Remove="Migrations\20230430115413_added-roleid.Designer.cs" />
+    <Compile Remove="Migrations\20230430115554_added-roleid.cs" />
+    <Compile Remove="Migrations\20230430115554_added-roleid.Designer.cs" />
+    <Compile Remove="Migrations\20230501005300_renamed-tutorid-createdby-test.cs" />
+    <Compile Remove="Migrations\20230501005300_renamed-tutorid-createdby-test.Designer.cs" />
+    <Compile Remove="Migrations\20230517072650_fk_user_student.cs" />
+    <Compile Remove="Migrations\20230517072650_fk_user_student.Designer.cs" />
+    <Compile Remove="Migrations\20230517073227_fk_user_student.cs" />
+    <Compile Remove="Migrations\20230517073227_fk_user_student.Designer.cs" />
+    <Compile Remove="Migrations\20230517073357_fk_user_student.cs" />
+    <Compile Remove="Migrations\20230517073357_fk_user_student.Designer.cs" />
+    <Compile Remove="Migrations\20230517074845_fk_user_student.cs" />
+    <Compile Remove="Migrations\20230517074845_fk_user_student.Designer.cs" />
+    <Compile Remove="Migrations\20230517075326_fk_user_student.cs" />
+    <Compile Remove="Migrations\20230517075326_fk_user_student.Designer.cs" />
+    <Compile Remove="Migrations\20230518032523_removed-genderenum-user.cs" />
+    <Compile Remove="Migrations\20230518032523_removed-genderenum-user.Designer.cs" />
+    <Compile Remove="Migrations\20230518032640_removed-genderenum-user.cs" />
+    <Compile Remove="Migrations\20230518032640_removed-genderenum-user.Designer.cs" />
+    <Compile Remove="Migrations\20230518040216_removed-genderenum-user.cs" />
+    <Compile Remove="Migrations\20230518040216_removed-genderenum-user.Designer.cs" />
+    <Compile Remove="Migrations\20230522030435_added_shuffletype_questio-and-answerexplantion_question.cs" />
+    <Compile Remove="Migrations\20230522030435_added_shuffletype_questio-and-answerexplantion_question.Designer.cs" />
+    <Compile Remove="Migrations\20230522030753_added_shuffletype_questio-and-answerexplantion_question.cs" />
+    <Compile Remove="Migrations\20230522030753_added_shuffletype_questio-and-answerexplantion_question.Designer.cs" />
+    <Compile Remove="Migrations\20230522031648_renamed-identity-schema-name.cs" />
+    <Compile Remove="Migrations\20230522031648_renamed-identity-schema-name.Designer.cs" />
+    <Compile Remove="Migrations\20230522131906_renamed-schema-name.cs" />
+    <Compile Remove="Migrations\20230522131906_renamed-schema-name.Designer.cs" />
+    <Compile Remove="Migrations\20230523112802_added-usersreenaccess.cs" />
+    <Compile Remove="Migrations\20230523112802_added-usersreenaccess.Designer.cs" />
+    <Compile Remove="Migrations\20230523114827_creating-schema.cs" />
+    <Compile Remove="Migrations\20230523114827_creating-schema.Designer.cs" />
+    <Compile Remove="Migrations\20230524132828_add-fk-tutor-user.cs" />
+    <Compile Remove="Migrations\20230524132828_add-fk-tutor-user.Designer.cs" />
+    <Compile Remove="Migrations\20230524132953_add-fk-tutor-user.cs" />
+    <Compile Remove="Migrations\20230524132953_add-fk-tutor-user.Designer.cs" />
+    <Compile Remove="Migrations\20230524133056_add-fk-tutor-user.cs" />
+    <Compile Remove="Migrations\20230524133056_add-fk-tutor-user.Designer.cs" />
+    <Compile Remove="Migrations\20230524133205_add-fk-tutor-user.cs" />
+    <Compile Remove="Migrations\20230524133205_add-fk-tutor-user.Designer.cs" />
+    <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.cs" />
+    <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.16" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.30">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
   </ItemGroup>
 </Project>

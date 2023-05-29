@@ -1,6 +1,6 @@
 ﻿class QuestionModel {
     constructor(QusId, QuestionName, StatusId,
-        Topic = null, SubTopic = null, QuestionTypeId = null, TestId = null, SectionId = null, CorrectOption = [], Mark = 1, Options = [], ComprehensionModels = null
+        Topic = null, SubTopic = null, QuestionTypeId = null, TestId = null, SectionId = null, CorrectOption = [], Mark = 1, Options = [], ComprehensionModels = null,AnswerExplanation=''
     ) {
         this.QusId = QusId ?? 0;
         this.QuestionName = QuestionName;
@@ -14,6 +14,7 @@
         this.StatusId = StatusId;
         this.Options = Options;
         this.ComprehensionModels = ComprehensionModels;
+        this.AnswerExplanation = AnswerExplanation;
     }
 }
 class ComperhesionQustion {

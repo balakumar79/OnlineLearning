@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Learning.Entities
 {
@@ -14,6 +10,8 @@ namespace Learning.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int UserID { get; set; }
+        [ForeignKey("UserID")]
+        public virtual AppUser AppUser { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public string LanguagesKnown { get; set; }
@@ -28,7 +26,7 @@ namespace Learning.Entities
         public bool Deleted { get; set; }
 
         private GenderEnum _gender;
-        public GenderEnum Gender { get=>_gender=(GenderEnum) GenderId; set=>_gender=value; }
+        public GenderEnum Gender { get => _gender = (GenderEnum)GenderId; set => _gender = value; }
 
     }
 }

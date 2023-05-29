@@ -1,5 +1,4 @@
-﻿using Learning.ViewModel.Enums;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 
@@ -15,12 +14,12 @@ namespace Learning.ViewModel.Account
         [Required]
         public int GenderId { get; set; }
 
-        [Required,DataType(DataType.EmailAddress)]
+        [Required, DataType(DataType.EmailAddress)]
         [Remote(action: "IsEmailExists", controller: "Account")]
         public string Email { get; set; }
-        [Required,DataType(DataType.Password)]
+        [Required, DataType(DataType.Password)]
         public string Password { get; set; }
-        [Required,DataType(DataType.Password),Compare("Password")]
+        [Required, DataType(DataType.Password), Compare("Password")]
         public string ConfirmPassword { get; set; }
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }

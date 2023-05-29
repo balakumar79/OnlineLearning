@@ -6,7 +6,10 @@
     var roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
     var permissions = typeof(Learning.ViewModel.Account.AuthorizationModel).GetProperties();
 }
-<h1>Manage Roles</h1>
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Manage Tutor</h1>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
 <div class="accordion" id="tblUser">
        <table class="table-responsive" width="100%">
            <thead>
@@ -43,6 +46,9 @@
            </tbody>
        </table>
 </div>
+</div>
+</div>
+</main>
 @section Scripts{ 
 <script>
     $('#tblUser').DataTable();

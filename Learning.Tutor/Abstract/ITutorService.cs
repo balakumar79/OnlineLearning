@@ -1,9 +1,8 @@
 ﻿using Learning.Entities;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Tutor.Abstract
@@ -16,7 +15,7 @@ namespace Learning.Tutor.Abstract
         Task<int> TestUpsert(List<Test> entity);
         Task<bool> CreateTestSection(TestSectionViewModel model);
         Task<bool> CreateQuestion(QuestionViewModel model);
-        List<TestViewModel> GetTestByUserID(int tutorid);
+        IEnumerable<TestViewModel> GetTestByUserID(int tutorid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();
         List<TestSection> GetTestSections(int sectionid);
@@ -25,14 +24,14 @@ namespace Learning.Tutor.Abstract
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int QuestionId);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> QuestionIds);
-         List<GradeLevels> GetGradeLevels();
+        List<GradeLevels> GetGradeLevels();
         List<Language> GetLanguages();
         Task<List<TestSubject>> GetTestSubject();
         Task<List<TestSection>> GetTestSectionByTestId(int testid);
         Task<int> DeleteTest(int id);
         int DeleteSection(List<int> sectionid);
         int SetQuestionStatus(int questionid, int status);
-       int SetOnlineStatus(int sectionid, bool status);
+        int SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         Task<List<QuestionType>> GetTestType();
         public List<TestViewModel> GetAllTest();
@@ -44,5 +43,8 @@ namespace Learning.Tutor.Abstract
         List<SubjectSubTopic> GetSubTopics(int? topidId = null);
         List<Language> GetLanguagesForSubject(int subjectid);
         Task<bool> SetTestIsPublished(int id, bool isChecked);
+        IEnumerable<GradeLevelModel> GetGradeLevelsByLanguages(int[] Languages);
+        IEnumerable<SubjectModel> GetSubjectsByGrades(int[] Grades);
+
     }
 }

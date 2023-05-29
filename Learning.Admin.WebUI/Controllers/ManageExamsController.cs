@@ -50,7 +50,7 @@ namespace Learning.Admin.WebUI.Controllers
 
         public async Task<IActionResult> CreateTest(TestViewModel model)
         {
-            model.TutorId = User.Identity.GetTutorId();
+            model.CreatedBy = User.Identity.GetTutorId();
             var restul = await _tutorService.TestUpsert(model);
             if (restul > 0)
                 return RedirectToAction(nameof(Index));

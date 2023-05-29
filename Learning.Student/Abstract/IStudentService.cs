@@ -1,9 +1,7 @@
 ﻿using Learning.Entities;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Student.Abstract
@@ -11,13 +9,13 @@ namespace Learning.Student.Abstract
     public interface IStudentService
     {
         public TestViewModel GetTestById(int? id);
-        List<TestViewModel> GetAllTest();
+        IEnumerable<TestViewModel> GetAllTest(int? studentId = 0);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<StudentTestViewModel> GetStudentTestByStudentIDs(List<int> studentid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         int InsertStudentTest(StudentTest studentTest);
-       List<int> InsertStudentTest(List<StudentTest> studentTests);
+        List<int> InsertStudentTest(List<StudentTest> studentTests);
         int InsertStudentAnswerLog(StudentAnswerLog log);
         int InsertStudentTestResult(StudentTestHistory studentTestHistory);
         int InsertCalculatedResults(CalculatedResult result);
@@ -34,7 +32,7 @@ namespace Learning.Student.Abstract
         public List<Languages> GetTestSubjectViewModels(List<int> gradeIds = null);
         public List<TestGradeViewModel> TestGradeViewModels(List<int> subject);
         public int UpdateTestStatus(List<StudentTestStatusPartialModel> statusPartialModels);
-        Task<bool> SendEmailAsync(string toEmail, string subject, string body, List<string>? cc=null, System.IO.Stream? stream=null, string filename = null);
+        Task<bool> SendEmailAsync(string toEmail, string subject, string body, List<string>? cc = null, System.IO.Stream? stream = null, string filename = null);
         Entities.Student GetStudentByStudentId(int studentId);
         AppUser GetParentByStudentId(int studentId);
     }

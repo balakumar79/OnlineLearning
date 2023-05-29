@@ -45,7 +45,7 @@
                 <span>@item.Id</span>
             </td>
             <td>
-                <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@(item.Title.Length>18?item.Title.Substring(0,17)+"...":item.Title)</a>
+                <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@(item?.Title.Length>18?item?.Title.Substring(0,17)+"...":item?.Title)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.GradeName)

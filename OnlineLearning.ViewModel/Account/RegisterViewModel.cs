@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Learning.Utils.Enums;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Learning.ViewModel.Account
 {
-    public class RegisterViewModel:AccountUserModel
+    public class RegisterViewModel : AccountUserModel
     {
         public int Role { get; set; }
         //[Required]
@@ -34,18 +35,21 @@ namespace Learning.ViewModel.Account
 
 
     }
-    public  class StudentModel
+    public class StudentModel
     {
+        public int Id { get; set; }
         [Required]
         public string StudentFirstName { get; set; }
         public string StudentLastName { get; set; }
         [Required]
         public int StudentGenderId { get; set; }
+        private int _studentGenderId;
+        public Genders StudentGender { get => (Genders)_studentGenderId; set => _studentGenderId = StudentGenderId; }
         [Required]
         public string StudentPassword { get; set; }
         [Required]
         public string StudentConfirmPassword { get; set; }
-        [Required,Remote(controller:"Account",action: "IsStudentUserNameExists")]
+        [Required, Remote(controller: "Account", action: "IsStudentUserNameExists")]
         public string StudentUserName { get; set; }
         public int UserId { get; set; }
 
@@ -54,16 +58,21 @@ namespace Learning.ViewModel.Account
         public string LanguageKnown { get; set; }
         public int MotherTongue { get; set; }
         public bool IsRegisteredAsMajor { get; set; }
+        [JsonPropertyName("StudentAccountRecoveryAnswers")]
         public List<AccountRecoveryAnswerModel> StudentAccountRecoveryAnswerModel { get; set; }
 
         [Required]
         public int GradeLevels { get; set; }
-        public int RoleRequested { get; set; }
+        private int _roleRequestes;
+        public int RoleRequested { get => _roleRequestes; set => _roleRequestes = value; }
+        public Roles Roles { get => (Roles)_roleRequestes; }
+        public AccountUserModel AccountUserModel { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
-    public  class TeacherModel
+    public class TeacherModel
     {
         public int TeacherId { get; set; }
         public int UserId { get; set; }
     }
-   
+
 }

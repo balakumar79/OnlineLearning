@@ -8,6 +8,7 @@ using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
 using Learning.Utils;
 using Learning.Utils.Config;
+using Learning.Utils.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,21 +21,21 @@ using System.Threading.Tasks;
 
 namespace Learning.API.Controllers
 {
-    [Authorize(Roles = "Admin,Teacher,Tutor")]
+    [Authorize(Roles = "Admin,Teacher,Tutor,Major")]
     [ApiController]
-    [Route("[controller]/[action]/{id?}")]
+    [Route("[controller]/[action]")]
     public class TeacherController : ControllerBase
     {
         readonly IStudentService _studentService;
         readonly ITeacherService _teacherService;
         readonly UserManager<AppUser> _userManager;
         readonly IEmailService _emailService;
-        readonly EncryptionKey  _encryptionKey;
+        readonly EncryptionKey _encryptionKey;
         readonly ILoggerRepo _logger;
-        readonly IResponseFormatter _formatter;
+
 
         readonly ITutorService _tutorService;
-        public TeacherController(IStudentService studentTestService,ITutorService tutorService,IEmailService emailService,ILoggerRepo logger,UserManager<AppUser> userManager,ITeacherService teacherService,EncryptionKey encryptionKey,IResponseFormatter formatter)
+        public TeacherController(IStudentService studentTestService, ITutorService tutorService, IEmailService emailService, ILoggerRepo logger, UserManager<AppUser> userManager, ITeacherService teacherService, EncryptionKey encryptionKey)
         {
             _studentService = studentTestService;
             _teacherService = teacherService;
@@ -43,9 +44,8 @@ namespace Learning.API.Controllers
             _userManager = userManager;
             _encryptionKey = encryptionKey;
             _logger = logger;
-            _formatter = formatter;
         }
-             [AcceptVerbs("Post","GET")]
+        [AcceptVerbs("Post", "GET")]
         public JsonResult SearchStudent(StudentSearchRequest searchRequest)
         {
             return new JsonResult(new
@@ -56,19 +56,19 @@ namespace Learning.API.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> SendStudentInvitationAsync(int studentId,int TeacherId)
+        public async Task<JsonResult> SendStudentInvitationAsync(int studentId, int TeacherId)
         {
             try
             {
                 var student = _studentService.GetStudentByStudentId(studentId);
                 if (student == null)
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "No student found." });
-                var appUser= await _userManager.FindByIdAsync(student.UserID.ToString());
-                if (appUser == null&&student.RoleId!=(int)Utils.Enums.Roles.Major)
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "No parent account found !!!" });
-                var existinginvite = _teacherService.GetStudentInvitations(new List<int> { studentId }, 2).Where(s=>s.TeacherId==TeacherId);
+                    return ResponseFormat.JsonResult("No student found.", false);
+                var appUser = await _userManager.FindByIdAsync(student.UserID.ToString());
+                if (appUser == null && student.RoleId != (int)Utils.Enums.Roles.Major)
+                    return ResponseFormat.JsonResult("No parent account found !!!", false);
+                var existinginvite = _teacherService.GetStudentInvitations(new List<int> { studentId }, 2).Where(s => s.TeacherId == TeacherId);
                 if (existinginvite.Any())
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "Invite already sent !!!" });
+                    return ResponseFormat.JsonResult("Invite already sent !!!", false);
 
                 var body = await _emailService.GetEmailTemplateContent(Utils.Config.EmailTemplate.SendStudentInvitationLinkByTeacher);
                 var invite = _teacherService.StudentInvitationUpsert(new StudentInvitation
@@ -77,7 +77,7 @@ namespace Learning.API.Controllers
                     TeacherId = TeacherId,
                     StudentId = studentId,
                     SentOn = DateTime.Now,
-                    AcceptedOn=null,
+                    AcceptedOn = null,
                     Response = 0
                 });
                 var idInBytes = Encoding.UTF8.GetBytes(CommonData.EncryptString(invite.Id.ToString(), _encryptionKey.Key));
@@ -85,47 +85,70 @@ namespace Learning.API.Controllers
                 body = body.Replace("$Teacher", User.Identity.Name)
                     .Replace("$ParentFirstName", appUser.FirstName)
                     .Replace("$ParentLastName", appUser.LastName)
-                    .Replace("$StudentId",studentId.ToString())
-                    .Replace("$StudentId",studentId.ToString())
-                      .Replace("$Id",idEncoded)
-                      .Replace("$Id",idEncoded)
+                    .Replace("$StudentId", studentId.ToString())
+                    .Replace("$StudentId", studentId.ToString())
+                      .Replace("$Id", idEncoded)
+                      .Replace("$Id", idEncoded)
                     .Replace("$Link", "https://domockexam.com/#/studentinvitationresponse")
                     .Replace("$Link", "https://domockexam.com/#/studentinvitationresponse");
-                var email = appUser?.Email ?? student.UserName;  
+                var email = appUser?.Email ?? student.UserName;
                 await _emailService.SendStudentInvitationLink(email, body);
-                return new JsonResult(new ResponseFormat { Result = true, Message = "Invitation send successfully !!!" });
+                return ResponseFormat.JsonResult(response: "Invitation send successfully !!!");
             }
             catch (Exception ex)
             {
-                _logger.InsertLogger(ex);                                                                                                                                          
-                return new JsonResult(new ResponseFormat { Result = false, Message = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
+                _logger.InsertLogger(ex);
+                return ResponseFormat.JsonResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message, false);
             }
         }
-              [AllowAnonymous,HttpGet]
+        [AllowAnonymous, HttpGet]
         public JsonResult StudentInvitationResponse([FromQuery] string id, int res)
         {
             var idInBytes = WebEncoders.Base64UrlDecode(id);
             var idDecoded = Encoding.UTF8.GetString(idInBytes);
-            if (int.TryParse(CommonData.DecryptString(idDecoded,_encryptionKey.Key), out int idValue))
+            if (int.TryParse(CommonData.DecryptString(idDecoded, _encryptionKey.Key), out int idValue))
             {
                 var invite = _teacherService.GetStudentInvitations(new List<int> { idValue }, 4).FirstOrDefault();
                 if (invite == null)
-                    return new JsonResult(new ResponseFormat { Message = "No invitation found !!!", Result = false });
-                
+                    return ResponseFormat.JsonResult("No invitation found !!!", false);
+
                 invite.Response = res;
                 invite.AcceptedOn = DateTime.Now;
                 _teacherService.StudentInvitationUpsert(invite);
-                return new JsonResult(new ResponseFormat { Message = "Response saved successfully.", Result = true });
+                return ResponseFormat.JsonResult("Response saved successfully.", true);
             }
             else
-                return new JsonResult(new ResponseFormat { Message = "No invite found.", Result = true });
+                return ResponseFormat.JsonResult("No invite found.", false);
 
         }
 
-        [HttpGet]
-        public IActionResult GenerateRandomQuestions(int subjectid,int gradeId,int randomNumber)
+        [HttpPost]
+        public JsonResult SaveRandomTest(TestViewModel model)
         {
-            return _formatter.JsonResult(response: _teacherService.GenerateRandomQuestions(subjectid, gradeId, randomNumber).ToList());
+            var userid = 0;
+            if (User.IsInRole(Roles.Teacher.ToString()))
+            {
+                if (User.Identity.GetTeacherId() > 0)
+                    userid = User.Identity.GetTeacherId();
+            }
+            else if (User.IsInRole(Roles.Parent.ToString()) && userid == 0)
+                userid = Convert.ToInt32(User.Identity.GetUserID());
+            else if (User.IsInRole(Roles.Tutor.ToString()) && userid == 0)
+                userid = User.Identity.GetTutorId();
+            var result = _teacherService.RandomTestUpsert(userid, model.Title, model.SubjectID, model.RoleId, model.GradeID, model.Language, model.StartDate, model.EndDate, model.Duration, model.PassingMark,
+                model.Description, model.Id);
+            return ResponseFormat.JsonResult(
+
+                result: result > 0,
+                message: result == -1 ? "Test name already exists !!!" : null,
+                description: result
+            );
+        }
+
+        [HttpGet]
+        public IActionResult GenerateRandomQuestions(int testid, int randomNumber)
+        {
+            return ResponseFormat.JsonResult(_teacherService.GenerateRandomQuestions(testid, randomNumber).ToList());
         }
     }
 }

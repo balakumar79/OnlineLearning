@@ -28,24 +28,26 @@ namespace Learning.Infrastructure
     public class Infrastructure
     {
 
-
+        private static string conn = "";
         public static void AddDataBase(IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
-            //if (hostEnvironment.IsDevelopment())
-            //{
-            //    var conn = configuration.GetConnectionString("TestDBContext");
-            //    services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(conn));
-            //}
-
-            services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(configuration.GetConnectionString("DBContext")));
+            if (hostEnvironment.IsDevelopment())
+            {
+                conn = configuration.GetConnectionString("TestDBContext");
+                services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(conn));
+            }
+            else
+            {
+                conn = configuration.GetConnectionString("DBContext");
+                services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(conn));
+            }
         }
 
         public static void AddKeyContext(IServiceCollection services, IConfiguration configuration)
         {
             // Add a DbContext to store your Database Keys
             services.AddDbContext<LearningKeyContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DBContext")));
+                options.UseSqlServer(conn));
 
             services.AddDataProtection().SetDefaultKeyLifetime(TimeSpan.FromDays(11))
 .PersistKeysToDbContext<LearningKeyContext>().SetApplicationName("LearningCommon");
@@ -63,8 +65,8 @@ namespace Learning.Infrastructure
             configuration.Bind("EncryptionKey", encryptionKey);
             services.AddSingleton(encryptionKey);
             var conStr = new ConnectionString();
-            conStr.ConnectionStr = configuration.GetConnectionString("DBContext").ToString();
-            configuration.Bind(conStr);
+            conStr.ConnectionStr = conn;
+            //configuration.Bind(conStr);
             services.AddSingleton(conStr);
 
 

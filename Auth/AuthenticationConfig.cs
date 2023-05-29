@@ -1,27 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Learning.Utils.Config;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
 using static Learning.ViewModel.Account.AuthorizationModel;
-using Microsoft.AspNetCore.Authentication;
-using Learning.Utils.Config;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace Learning.Auth
 {
     public class AuthenticationConfig
     {
-       public AppConfig _appConfig { get; set; }
+        public AppConfig _appConfig { get; set; }
         public static void LearningAuthentication(IServiceCollection services)
         {
-            services.AddAuthentication(IdentityApplicationDefault).AddCookie(op=> { op.ExpireTimeSpan = TimeSpan.FromDays(5);op.Cookie.Expiration = TimeSpan.FromDays(8); });
+            services.AddAuthentication(IdentityApplicationDefault).AddCookie(op => { op.ExpireTimeSpan = TimeSpan.FromDays(5); op.Cookie.Expiration = TimeSpan.FromDays(8); });
+
         }
 
         public static void LearningAuthorization(IServiceCollection services)
@@ -37,15 +37,15 @@ namespace Learning.Auth
             });
         }
 
-                     /// <summary>
-                     /// validate using identity
-                     /// </summary>
-                     /// <param name="context"></param>
-                     /// <param name="screenFormeters"></param>
-                     /// <param name="sessionObject"></param>
-                     /// <param name="isPersist"></param>
-                     /// <returns></returns>
-        public async static Task DoLogin(HttpContext context, List<ScreenFormeter> screenFormeters, SessionObject sessionObject,bool isPersist)
+        /// <summary>
+        /// validate using identity
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="screenFormeters"></param>
+        /// <param name="sessionObject"></param>
+        /// <param name="isPersist"></param>
+        /// <returns></returns>
+        public async static Task DoLogin(HttpContext context, List<ScreenFormeter> screenFormeters, SessionObject sessionObject, bool isPersist)
         {
 
             var claims = new List<Claim>();
@@ -53,7 +53,7 @@ namespace Learning.Auth
             if (screenFormeters != null)
             {
                 foreach (var screen in screenFormeters)
-                    claims.Add(new Claim(CustomClaimTypes.Permission,value: screen.ScreenName));
+                    claims.Add(new Claim(CustomClaimTypes.Permission, value: screen.ScreenName));
             }
             foreach (var role in sessionObject.RoleID)
             {
@@ -69,9 +69,9 @@ namespace Learning.Auth
             {
                 IsPersistent = isPersist,
                 RedirectUri = "/account/login",
-                AllowRefresh = false, 
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1), 
-                
+                AllowRefresh = false,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMonths(1),
+
             };
             //context.Session.SetObjectAsJson("UserObj", sessionObject);
             var claimIdentity = new ClaimsIdentity(IdentityApplicationDefault);
@@ -87,7 +87,7 @@ namespace Learning.Auth
         /// <param name="sessionObject"></param>
         /// <param name="key">JWT secret key</param>
         /// <returns></returns>
-        public static JsonResult DoLogin(SessionObject sessionObject,string key, List<ScreenFormeter> screenFormeters = null)
+        public static JsonResult DoLogin(SessionObject sessionObject, string key, List<ScreenFormeter> screenFormeters = null)
         {
 
             var claims = new List<Claim>();
@@ -109,12 +109,12 @@ namespace Learning.Auth
             claims.Add(new Claim(ClaimTypes.Name, sessionObject.User.FirstName + " " + sessionObject.User.LastName));
             if (sessionObject.Student != null)
                 claims.Add(new Claim(CustomClaimTypes.StudentId, sessionObject.Student.Id.ToString()));
-            if (sessionObject.Childs!=null)
+            if (sessionObject.Childs != null)
             {
-                var studentids =string.Join(",", sessionObject.Childs.Select(p => p.Id));
+                var studentids = string.Join(",", sessionObject.Childs.Select(p => p.Id));
                 claims.Add(new Claim(CustomClaimTypes.ChildIds, studentids));
             }
-            if(sessionObject.Tutor!=null)
+            if (sessionObject.Tutor != null)
                 claims.Add(new Claim(CustomClaimTypes.TutorID, sessionObject?.Tutor.TutorID.ToString()));
             if (sessionObject.TeacherId > 0)
             {
@@ -144,6 +144,8 @@ namespace Learning.Auth
                 claims: claims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
+            //var userManager = context.RequestServices.GetRequiredService<UserManager<AppUser>>();
+            //userManager.UpdateAsync(userManager.id)
 
             return new JsonResult(new
             {

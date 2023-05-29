@@ -1,10 +1,9 @@
+
 using Learning.Utils.Config;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -18,7 +17,7 @@ namespace Learning.Utils
         private static AppConfig _appConfig;
         private static EncryptionKey _encryptionKey;
 
-        public CommonData(ILogger<CommonData> logger,AppConfig appConfig,EncryptionKey encryptionKey)
+        public CommonData(ILogger<CommonData> logger, AppConfig appConfig, EncryptionKey encryptionKey)
         {
             _logger = logger;
             _appConfig = appConfig;
@@ -34,7 +33,6 @@ namespace Learning.Utils
             }
         }
 
-        
         public static string EncryptString(string plainText, string key)
         {
             byte[] iv = new byte[16];
@@ -92,6 +90,8 @@ namespace Learning.Utils
             }
         }
     }
+
+
 }
 
 

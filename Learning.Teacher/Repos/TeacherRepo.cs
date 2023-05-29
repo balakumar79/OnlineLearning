@@ -2,29 +2,29 @@
 using Learning.Student.Abstract;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.ViewModel;
+using Learning.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Learning.Teacher.Repos
 {
-   public class TeacherRepo :ITeacherRepo
+    public class TeacherRepo : ITeacherRepo
     {
         private readonly AppDBContext _dBContext;
         private readonly IStudentService _studentService;
-        public TeacherRepo(AppDBContext dBContext,IStudentService studentService)
+        public TeacherRepo(AppDBContext dBContext, IStudentService studentService)
         {
             _dBContext = dBContext;
             _studentService = studentService;
         }
-        public List<Entities.Teacher> GetTeacher(int? userId=null)
+        public List<Entities.Teacher> GetTeacher(int? userId = null)
         {
             if (userId > 0)
                 return _dBContext.Teachers.Where(t => t.UserId == userId).ToList();
             else
-              return  _dBContext.Teachers.ToList();
+                return _dBContext.Teachers.ToList();
         }
         public StudentInvitation StudentInvitationUpsert(StudentInvitation studentInvitation)
         {
@@ -43,7 +43,7 @@ namespace Learning.Teacher.Repos
         /// <param name="Id">Column Id</param>
         /// <param name="valueType">Column Name</param>
         /// <returns></returns>
-        public IList<StudentInvitation> GetStudentInvitations(List<int> Id,int valueType)
+        public IList<StudentInvitation> GetStudentInvitations(List<int> Id, int valueType)
         {
             switch (valueType)
             {
@@ -60,9 +60,9 @@ namespace Learning.Teacher.Repos
             }
         }
 
-        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string> ?instituion,int?teacherId)
+        public List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string>? instituion, int? teacherId)
         {
-           district= district ?? new List<string>();
+            district = district ?? new List<string>();
             gradeId = gradeId ?? new List<int>();
             instituion = instituion ?? new List<string>();
             var query = _dBContext.Students.AsQueryable();
@@ -75,9 +75,9 @@ namespace Learning.Teacher.Repos
             if (!string.IsNullOrEmpty(lname))
                 query = query.Where(s => s.LastName.ToLower().Contains(lname.ToLower()));
             if (!string.IsNullOrEmpty(userName))
-                query = query.Where(s =>s.UserName.ToLower().Contains(userName));
+                query = query.Where(s => s.UserName.ToLower().Contains(userName));
             if (district.Any())
-                query = query.Where(s =>district.Contains(s.StudentDistrict.ToLower()));
+                query = query.Where(s => district.Contains(s.StudentDistrict.ToLower()));
             if (gradeId.Any())
             {
                 query = query.Where(s => gradeId.Contains(s.Grade));
@@ -86,25 +86,53 @@ namespace Learning.Teacher.Repos
                 query = query.Where(s => s.Gender.ToString().ToLower().Equals(gender.ToLower()));
             if (instituion.Any())
                 query = query.Where(s => instituion.Contains(s.Institution));
-           return query.Join(_dBContext.GradeLevels, x => x.Grade, y => y.Id, (x, y) => new { x, y }).Select(s => new StudentModel
+            return query.Join(_dBContext.GradeLevels, x => x.Grade, y => y.Id, (x, y) => new { x, y }).Select(s => new StudentModel
             {
-                StudentFirstName=s.x.FirstName,
-                StudentLastName=s.x.LastName,
-                StudentDistrict=s.x.StudentDistrict,
-                StudentGender=s.x.Gender.ToString(),
-                StudentUserName=s.x.UserName,
-                Grade=s.y.Grade,
-                Institution=s.x.Institution,
-                LanguageKnown=s.x.LanguagesKnown,
-                MotherTongue=s.x.MotherTongue,
-                StudentId=s.x.Id,
-                UserId=s.x.UserID
+                StudentFirstName = s.x.FirstName,
+                StudentLastName = s.x.LastName,
+                StudentDistrict = s.x.StudentDistrict,
+                StudentGender = s.x.Gender.ToString(),
+                StudentUserName = s.x.UserName,
+                Grade = s.y.Grade,
+                Institution = s.x.Institution,
+                LanguageKnown = s.x.LanguagesKnown,
+                MotherTongue = s.x.MotherTongue,
+                StudentId = s.x.Id,
+                UserId = s.x.UserID
             }).ToList();
         }
 
-        public IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int gradeId, int numberOfQuestions, int? difficultyLevel = 0)
+        public int RandomTestUpsert(int userId, string title, int subjectId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0)
         {
-            var model = _dBContext.Questions.Include(t => t.Test).Include(t => t.Test.Language).Include(t => t.Test.TestSubject).Include(t => t.Options).Where(q=>q.Test.TestSubjectId==subjectId&&q.Test.GradeLevelsId==gradeId).Select(q => new QuestionViewModel
+            if (_dBContext.Tests.Any(s => s.Title == title))
+                return -1;
+            var db = _dBContext.Tests.FirstOrDefault(t => t.Id == id && t.TestType == ((int)TestTypeEnum.Random));
+            if (db == null && id > 0)
+                return 0;
+            db = db ?? new Test();
+            db.StartDate = startDate;
+            db.Created = DateTime.Now;
+            db.EndDate = endDate;
+            db.TestDescription = description;
+            db.TestSubjectId = subjectId;
+            db.LanguageId = languageId;
+            db.Duration = duration;
+            db.CreatedBy = userId;
+            db.RoleId = roleId;
+            db.Title = title;
+            db.GradeLevelsId = gradeId;
+            db.PassingMark = passingMark;
+            db.TestStatusId = 2;
+            _dBContext.Tests.Add(db);
+            _dBContext.SaveChanges();
+            return db.Id;
+        }
+
+        public IEnumerable<QuestionViewModel> GenerateRandomQuestions(int testId, int numberOfQuestions, int? difficultyLevel = 0)
+        {
+            var test = _dBContext.Tests.Find(testId);
+            if (test == null) return Enumerable.Empty<QuestionViewModel>();
+            var model = _dBContext.Questions.Include(t => t.Test).Include(t => t.Test.Language).Include(t => t.Test.TestSubject).Include(t => t.Options).Include(t => t.TestSection).Include(t => t.SubjectSubTopic).Where(q => q.Test.TestSubjectId == test.TestSubjectId && q.Test.GradeLevelsId == test.GradeLevelsId).Select(q => new QuestionViewModel
             {
                 SectionId = q.SectionId,
                 SectionName = q.TestSection.SectionName,
@@ -116,16 +144,42 @@ namespace Learning.Teacher.Repos
                 QusID = q.QusID,
                 QuestionTypeId = q.QuestionTypeId,
                 Mark = q.Mark,
-                Options = (List<OptionsViewModel>)q.Options,
+                Options = q.Options.Select(s => new OptionsViewModel { CorrectAnswer = s.Answer, Id = s.Id, IsCorrect = s.IsCorrect, Position = s.Position, Option = s.Answer }).ToList(),
                 TestId = q.TestId,
                 QusType = q.QuestionType.QustionTypeName,
                 QuestionName = q.QuestionName,
                 TestName = q.Test.Title,
-                Topic = q.TopicId
+                Topic = q.TopicId,
+                Created = q.Created,
+                TestSection = new TestSectionViewModel
+                {
+                    AddedQuestions = 0,
+                    AdditionalInstruction = "",
+                    Created = q.Created,
+                    SectionName = q.TestSection.SectionName,
+                    SubTopic = q.SubTopicId,
+                    TestId = q.TestId,
+                    Topic = q.TopicId,
+                    TotalMarks = q.Mark,
+                    Modified = q.Modified,
+                },
+                Modified = q.Modified
 
-            }).Skip(new Random().Next()).Take(numberOfQuestions).AsEnumerable();
+            });
+            if (numberOfQuestions == 0 || model.Count() == 0)
+                return new List<QuestionViewModel>();
+            if (model.Count() < numberOfQuestions)
+                numberOfQuestions = model.Count();
+            var rand = new Random();
+            var toSkip = rand.Next(0, model.Count());
 
-            return model;
+            var result = model.Skip(toSkip).Take(numberOfQuestions).AsEnumerable();
+            var randomquestions = result.Select(rnd => new RandomQuestion { QuestionId = rnd.QusID, TestId = test.Id });
+            _dBContext.RandomQuestions.AddRange(randomquestions);
+            _dBContext.SaveChanges();
+            return result;
         }
+
+
     }
 }

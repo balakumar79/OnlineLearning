@@ -44,35 +44,38 @@ namespace Learning.Student.Repos
                 GradeID = p.GradeLevelsId,
                 Modified = p.Modified,
                 Title = p.Title,
-                TutorId = p.TutorId,
+                CreatedBy = p.CreatedBy,
                 //Topics = p.Topics
             }).FirstOrDefault();
         }
-        public List<TestViewModel> GetAllTest()
+        public IEnumerable<TestViewModel> GetAllTest(int? studentId = 0)
         {
-            return (from test in _dBContext.Tests
-                    join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
-                    join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
-                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
-                    where test.TestStatusId == 3 && test.IsActive && test.IsPublished
-                    select new TestViewModel
-                    {
-                        Created = test.Created,
-                        SubjectName = sub.SubjectName,
-                        SubjectID = sub.Id,
-                        StatusID = test.TestStatusId,
-                        StatusName = teststatus.Status,
-                        Duration = test.Duration,
-                        StartDate = test.StartDate,
-                        EndDate = test.EndDate,
-                        GradeID = test.GradeLevelsId,
-                        GradeName = grade.Grade,
-                        Language = test.LanguageId,
-                        Id = test.Id,
-                        Modified = test.Modified,
-                        Title = test.Title,
-                        TutorId = test.TutorId,
-                    }).ToList();
+            var result = (from test in _dBContext.Tests.Include(s => s.StudentTests)
+                          join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+                          join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+                          join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+                          where test.TestStatusId == 3
+                          && test.IsActive && test.IsPublished && (test.TestType == ((int)TestTypeEnum.Public) ||
+                           test.StudentTests.Any(ts => ts.StudentId == studentId))
+                          select new TestViewModel
+                          {
+                              Created = test.Created,
+                              SubjectName = sub.SubjectName,
+                              SubjectID = sub.Id,
+                              StatusID = test.TestStatusId,
+                              StatusName = teststatus.Status,
+                              Duration = test.Duration,
+                              StartDate = test.StartDate,
+                              EndDate = test.EndDate,
+                              GradeID = test.GradeLevelsId,
+                              GradeName = grade.Grade,
+                              Language = test.LanguageId,
+                              Id = test.Id,
+                              Modified = test.Modified,
+                              Title = test.Title,
+                              CreatedBy = test.CreatedBy,
+                          }).ToList();
+            return result;
         }
         /// <summary>
         /// Get student test by parentid/userid
@@ -106,7 +109,7 @@ namespace Learning.Student.Repos
                         StatusName = ((StudentTestStatus)studentTest.StatusId).ToString(),
                         EndDate = studentTest.EndDate,
                         //Topics = test.Topics,
-                        TutorId = studentTest.Assigner,
+                        CreatedBy = studentTest.Assigner,
                         GradeID = test.GradeLevelsId,
                         Id = studentTest.Id,
                         Language = test.LanguageId,
@@ -428,62 +431,62 @@ namespace Learning.Student.Repos
         }
         public List<Languages> GetTestSubjectViewModels(List<int> gradeIds = null)
         {
-            //List<Languages> languages = new List<Languages>();
+            List<Languages> languages = new List<Languages>();
 
 
             #region oldlogic
-            //var langs = _dBContext.Languages.Where(l => _dBContext.Tests.Select(lang => lang.LanguageId).Contains(l.Id)).ToList();
-            //langs.ForEach(lang =>
-            //{
-            //    var grads = new List<Grades>();
-            //    var grades = _dBContext.GradeLevels.Where(g => _dBContext.Tests.Where(s => s.LanguageId == lang.Id)
-            //     .Select(s => s.GradeLevelsId).Distinct().Contains(g.Id)).ToList();
-            //    if (gradeIds.Count > 0)
-            //        grades = grades.Where(g => gradeIds.Contains(g.Id)).ToList();
+            var langs = _dBContext.Languages.Where(l => _dBContext.Tests.Select(lang => lang.LanguageId).Contains(l.Id)).ToList();
+            langs.ForEach(lang =>
+            {
+                var grads = new List<Grades>();
+                var grades = _dBContext.GradeLevels.Where(g => _dBContext.Tests.Where(s => s.LanguageId == lang.Id)
+                 .Select(s => s.GradeLevelsId).Distinct().Contains(g.Id)).ToList();
+                if (gradeIds.Count > 0)
+                    grades = grades.Where(g => gradeIds.Contains(g.Id)).ToList();
 
-            //    grades.ForEach(grade =>
-            //    {
+                grades.ForEach(grade =>
+                {
 
-            //        grads.Add(new Grades
-            //        {
-            //            Grade = grade.Grade,
-            //            GradeID = grade.Id,
-            //            TestSubjects = _dBContext.TestSubjects.Where(s =>
-            //        _dBContext.Tests.Where(g => g.GradeLevelsId == grade.Id).Distinct().Select(s => s.TestSubjectId).Contains(s.Id)).Select(sub => new TestSubject
-            //        {
-            //            SubjectName = sub.SubjectName,
-            //            Id = sub.Id
-            //        }).ToList()
+                    grads.Add(new Grades
+                    {
+                        Grade = grade.Grade,
+                        GradeID = grade.Id,
+                        TestSubjects = _dBContext.TestSubjects.Where(s =>
+                    _dBContext.Tests.Where(g => g.GradeLevelsId == grade.Id).Distinct().Select(s => s.TestSubjectId).Contains(s.Id)).Select(sub => new TestSubjectViewModel
+                    {
+                        SubjectName = sub.SubjectName,
+                        Id = sub.Id
+                    }).ToList()
 
-            //        });
+                    });
 
-            //    });
-            //    if (grads != null)
-            //        languages.Add(new Languages { Grades = grads, LangId = lang.Id, Language = lang.Name });
-            //});
+                });
+                if (grads != null)
+                    languages.Add(new Languages { Grades = grads, LangId = lang.Id, Language = lang.Name });
+            });
             #endregion
 
-            var test = _dBContext.Tests.Include(l => l.Language).Include(s => s.TestSubject).Include(g => g.GradeLevels).AsEnumerable()
-            .GroupBy(t => t.LanguageId)
-            .Select(n => new Languages
-            {
-                Grades = n.AsEnumerable().GroupBy(g => g.GradeLevels).Select(grade =>
-                new Grades
-                {
-                    Grade = grade.Key.Grade,
-                    GradeID = grade.Key.Id,
-                    TestSubjects = n.AsEnumerable().GroupBy(s => new { s.GradeLevels, s.TestSubject }).Select(ts => new TestSubjectViewModel
-                    {
-                        Id = ts.Key.GradeLevels.Id,
-                        SubjectName = ts.Key.TestSubject.SubjectName,
-                        //GradeLevels=ts.GradeLevels
-                    }).ToList()
-                }).Distinct().ToList(),
-                LangId = n.Key,
-                Language = n.FirstOrDefault().Language.Name
-            }).Distinct();
+            //var test = _dBContext.Tests.Include(l => l.Language).Include(s => s.TestSubject).Include(g => g.GradeLevels).AsEnumerable()
+            //.GroupBy(t => t.LanguageId)
+            //.Select(n => new Languages
+            //{
+            //    Grades = n.AsEnumerable().GroupBy(g => g.GradeLevels).Select(grade =>
+            //    new Grades
+            //    {
+            //        Grade = grade.Key.Grade,
+            //        GradeID = grade.Key.Id,
+            //        TestSubjects = n.AsEnumerable().GroupBy(s => new { s.GradeLevels, s.TestSubject }).Select(ts => new TestSubjectViewModel
+            //        {
+            //            Id = ts.Key.GradeLevels.Id,
+            //            SubjectName = ts.Key.TestSubject.SubjectName,
+            //            //GradeLevels=ts.GradeLevels
+            //        }).ToList()
+            //    }).Distinct().ToList(),
+            //    LangId = n.Key,
+            //    Language = n.FirstOrDefault().Language.Name
+            //}).Distinct();
 
-            return test.ToList();
+            return languages.ToList();
 
         }
         public List<TestGradeViewModel> TestGradeViewModels(List<int> subject)

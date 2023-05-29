@@ -3,26 +3,20 @@ using Learning.Admin.Repo;
 using Learning.Admin.Service;
 using Learning.Auth;
 using Learning.Entities;
-using Learning.Infrastructure;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Learning.Admin.WebUI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration,IHostEnvironment hostEnvironment)
+        public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
             _hostEnvironment = hostEnvironment;
@@ -33,7 +27,6 @@ namespace Learning.Admin.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
 
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -51,15 +44,17 @@ namespace Learning.Admin.WebUI
             //}));
             //AuthenticationConfig.LearningAuthentication(services);
 
-           
-          
-//            services.AddDataProtection()
-//.SetApplicationName("LearningCommon");
-          
+
+
+            //            services.AddDataProtection()
+            //.SetApplicationName("LearningCommon");
+
             services.AddScoped<IManageExamService, ManageExamService>();
             services.AddScoped<IManageExamRepo, ManageExamRepo>();
             services.AddScoped<IManageSubjectRepo, ManageSubjectRepo>();
             services.AddScoped<IManageSubjectService, ManageSubjectService>();
+            services.AddScoped<IManageStudentService, ManageStudentService>();
+            services.AddScoped<IManageStudentRepo, ManageStudentRepo>();
             services.ConfigureApplicationCookie(op =>
             {
                 op.Cookie.Name = ".AspNet.SharedCookie";
@@ -73,14 +68,15 @@ namespace Learning.Admin.WebUI
                 //op.LoginPath = "/tutor.domockexam.com/account/login";
             });
 
-            Infrastructure.Infrastructure.AddDataBase(services, Configuration,_hostEnvironment);
+            Infrastructure.Infrastructure.AddDataBase(services, Configuration, _hostEnvironment);
+            Infrastructure.Infrastructure.AddServices(services, Configuration);
 
             Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
 
-            services.AddSession(s=>s.IdleTimeout=TimeSpan.FromDays(2));
+            services.AddSession(s => s.IdleTimeout = TimeSpan.FromDays(2));
             services.AddIdentity<AppUser, AppRole>(op =>
             {
-                
+
             })
 .AddEntityFrameworkStores<AppDBContext>().AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
 .AddDefaultTokenProviders();

@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-Learning.Student-50801F7E-3D9D-4619-9546-8BF67672A86B</UserSecretsId>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.16" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.18" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
   </ItemGroup>
 
   <ItemGroup>

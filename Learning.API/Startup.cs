@@ -117,7 +117,6 @@ namespace Learning.API
             //services.AddControllersWithViews();
             //services.AddRazorPages();
             Infrastructure.Infrastructure.AddServices(services, Configuration);
-            services.AddTransient<IResponseFormatter, ResponseFormat>();
         }
         private IHostEnvironment _hostEnvironment;
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

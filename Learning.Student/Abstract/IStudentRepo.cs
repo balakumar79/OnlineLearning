@@ -1,15 +1,13 @@
 ﻿using Learning.Entities;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Learning.Student.Abstract
 {
-   public interface IStudentRepo
+    public interface IStudentRepo
     {
-        List<TestViewModel> GetAllTest();
+        IEnumerable<TestViewModel> GetAllTest(int? studentId = 0);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);
@@ -24,10 +22,10 @@ namespace Learning.Student.Abstract
         StudentTest GetStudentTests(int studenttestid = 0);
         List<CalculatedResult> GetCalculatedResults(int studentid);
         int UpsertStudentTestStats(StudentTestStats stats);
-       public StudentTestStats GetStudentTestStatsByTestid(int testid);
+        public StudentTestStats GetStudentTestStatsByTestid(int testid);
         public List<StudentTest> GetStudentTests(List<int> studenttestid);
-       public List<Languages> GetTestSubjectViewModels(List<int> gradeIds = null);
-       public List<TestGradeViewModel> TestGradeViewModels(List<int> subject);
+        public List<Languages> GetTestSubjectViewModels(List<int> gradeIds = null);
+        public List<TestGradeViewModel> TestGradeViewModels(List<int> subject);
         public Entities.Student GetStudentByStudentId(int studentId);
         public int UpdateTestStatus(List<StudentTestStatusPartialModel> statusPartialModels);
         public AppUser GetParentByStudentId(int studentId);

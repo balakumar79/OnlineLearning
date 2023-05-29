@@ -3,9 +3,7 @@ using Learning.Student.Abstract;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
 using Learning.Utils;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Student.Services
@@ -14,7 +12,7 @@ namespace Learning.Student.Services
     {
         readonly IStudentRepo _studentTestRepo;
         readonly IEmailService _emailService;
-        public StudentService(IStudentRepo studentTestRepo,IEmailService emailService)
+        public StudentService(IStudentRepo studentTestRepo, IEmailService emailService)
         {
             _studentTestRepo = studentTestRepo;
             _emailService = emailService;
@@ -93,7 +91,7 @@ namespace Learning.Student.Services
             return _studentTestRepo.GetTestById(id);
         }
 
-        public List<TestViewModel> GetAllTest()
+        public IEnumerable<TestViewModel> GetAllTest(int? studentId = 0)
         {
             return _studentTestRepo.GetAllTest();
         }
@@ -112,13 +110,13 @@ namespace Learning.Student.Services
         {
             return _studentTestRepo.GetStudentTestByStudentIDs(studentid);
         }
-       public QuestionViewModel GetQuestionDetails(int QuestionId)
+        public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
             return _studentTestRepo.GetQuestionDetails(QuestionId);
         }
-        public async Task<bool> SendEmailAsync(string toEmail,string subject, string body,List<string> ? cc=null,System.IO.Stream ? stream=null,string filename=null)
+        public async Task<bool> SendEmailAsync(string toEmail, string subject, string body, List<string>? cc = null, System.IO.Stream? stream = null, string filename = null)
         {
-           return await _emailService.SendEmailAsync(toEmail, subject, body, cc, stream,filename);
+            return await _emailService.SendEmailAsync(toEmail, subject, body, cc, stream, filename);
         }
 
         public Entities.Student GetStudentByStudentId(int studentId)

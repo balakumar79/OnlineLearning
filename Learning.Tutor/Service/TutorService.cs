@@ -1,17 +1,14 @@
 ﻿using Learning.Entities;
 using Learning.Tutor.Abstract;
-using Learning.Tutor.Repo;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
-using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Learning.Tutor.Service
 {
-   public class TutorService:ITutorService
+    public class TutorService : ITutorService
     {
         private readonly ITutorRepo _tutorRepo;
         public TutorService(ITutorRepo tutorRepo)
@@ -22,13 +19,13 @@ namespace Learning.Tutor.Service
         public TutorViewModel GetTutorProfile(int id) => _tutorRepo.GetTutorProfile(id);
         public Task<int> TestUpsert(TestViewModel model) => _tutorRepo.TestUpsert(model);
         public Task<int> TestUpsert(List<Test> model) => _tutorRepo.TestUpsert(model);
-        
+
         public Task<bool> CreateTestSection(TestSectionViewModel model) => _tutorRepo.CreateTestSection(model);
         public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.UpsertQuestion(model);
-        public List<TestViewModel> GetTestByUserID(int tutorid) => _tutorRepo.GetTestByUserID(tutorid);
+        public IEnumerable<TestViewModel> GetTestByUserID(int tutorid) => _tutorRepo.GetTestByUserID(tutorid);
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
-          return _tutorRepo.GetQuestionDetails(QuestionId);
+            return _tutorRepo.GetQuestionDetails(QuestionId);
         }
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
         {
@@ -41,20 +38,20 @@ namespace Learning.Tutor.Service
         public Task<List<QuestionType>> GetQuestionTypes() => _tutorRepo.GetQuestionTypes();
         public List<TestSection> GetTestSections(int sectionid)
         {
-          return  _tutorRepo.GetTestSections(sectionid);
+            return _tutorRepo.GetTestSections(sectionid);
         }
         public async Task<List<TestSection>> GetTestSectionByTestId(int testid)
         {
             return await _tutorRepo.GetTestSectionByTestId(testid);
         }
-        public Task<bool> IsTestExists(string testname, int? id,int tutorId)
+        public Task<bool> IsTestExists(string testname, int? id, int tutorId)
         {
-           return _tutorRepo.IsTestNameExists(testname,id,tutorId);
+            return _tutorRepo.IsTestNameExists(testname, id, tutorId);
         }
 
         public Task<bool> IsSectionExists(string sectionname, int? id)
         {
-            return _tutorRepo.IsSectionExists(sectionname,id);
+            return _tutorRepo.IsSectionExists(sectionname, id);
         }
 
         public TestViewModel GetTestById(int? id)
@@ -77,7 +74,7 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.DeleteQuestion(questionIds);
         }
-       public int DeleteSection(List<int> sectionid)
+        public int DeleteSection(List<int> sectionid)
         {
             return _tutorRepo.DeleteSection(sectionid);
         }
@@ -98,7 +95,7 @@ namespace Learning.Tutor.Service
 
         public Task<List<QuestionType>> GetTestType()
         {
-           return _tutorRepo.GetTestType();
+            return _tutorRepo.GetTestType();
         }
 
         public List<TestViewModel> GetAllTest()
@@ -109,19 +106,19 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.savetrueorfalse();
         }
-       public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0)
+        public List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0)
         {
             return _tutorRepo.GetComprehensionQuestionModels(testiD);
         }
         public List<SubjectTopic> SubjectTopics(int? id = 0)
         {
-           return _tutorRepo.GetSubjectTopics(id);
+            return _tutorRepo.GetSubjectTopics(id);
         }
-       public List<SubjectTopic> GetTopicsByTestId(int testid)
+        public List<SubjectTopic> GetTopicsByTestId(int testid)
         {
             return _tutorRepo.GetTopicsByTestId(testid);
         }
-       public List<SubjectSubTopic> GetSubTopics(int? topidId = null)
+        public List<SubjectSubTopic> GetSubTopics(int? topidId = null)
         {
             return _tutorRepo.GetSubTopics(topidId);
         }
@@ -137,6 +134,16 @@ namespace Learning.Tutor.Service
         public Task<TutorDashboardViewModel> GetTutorDashboardModel(int userid)
         {
             return _tutorRepo.GetTutorDashboardModel(userid);
+        }
+
+        public IEnumerable<GradeLevelModel> GetGradeLevelsByLanguages(int[] Languages)
+        {
+            return _tutorRepo.GetGradeLevelsByLanguages(Languages);
+        }
+
+        public IEnumerable<SubjectModel> GetSubjectsByGrades(int[] Grades)
+        {
+            return _tutorRepo.GetSubjectsByGrades(Grades);
         }
     }
 }

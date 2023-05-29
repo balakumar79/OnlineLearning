@@ -6,7 +6,6 @@ using Learning.Student.ViewModel;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -50,7 +49,7 @@ namespace Learning.API.Controllers
                 userids = User.Identity.GetChildIds();
             if (User.IsInRole(Utils.Enums.Roles.Major.ToString()) || User.IsInRole(Utils.Enums.Roles.Minor.ToString()))
                 userids = new List<int> { Convert.ToInt32(HttpContext.User.Identity.GetUserID()) };
-            return _studentService.GetStudentTestByStudentIDs(userids).OrderByDescending(p=>p.Modified).ToList();
+            return _studentService.GetStudentTestByStudentIDs(userids).OrderByDescending(p => p.Modified).ToList();
         }
 
 
@@ -90,7 +89,7 @@ namespace Learning.API.Controllers
                         MinimumMarkScored = 0,
                         UpdatedAt = DateTime.Now
                     };
-                _studentService.UpsertStudentTestStats(studentstats);
+                    _studentService.UpsertStudentTestStats(studentstats);
                 }
                 return new JsonResult(new { studentTestId = _studentService.InsertStudentTest(studentTests) });
             }
@@ -108,7 +107,7 @@ namespace Learning.API.Controllers
             {
                 model.StudentId = Convert.ToInt32(User.Identity.GetStudentId());
                 if (model.StudentId == 0)
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "No student account has been found." });
+                    return ResponseFormat.JsonResult("No student account has been found.", false);
                 var studenttest = _studentService.GetStudentTests(model.StudentTestId);
                 var studentstats = new StudentTestStats
                 {
@@ -135,18 +134,25 @@ namespace Learning.API.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous,Authorize]
-        public JsonResult GetTest(int? testid=0,bool isTutorviewOnly=false)
+        [AllowAnonymous, Authorize]
+        public JsonResult GetTest(int? testid = 0, bool isTutorviewOnly = false)
         {
-            if ((User.IsInRole(Utils.Enums.Roles.Tutor.ToString())||User.IsInRole(Utils.Enums.Roles.Teacher.ToString())) && isTutorviewOnly)
+            if ((User.IsInRole(Utils.Enums.Roles.Tutor.ToString()) || User.IsInRole(Utils.Enums.Roles.Teacher.ToString())) && isTutorviewOnly)
             {
-               return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTutorId()) }));
+                if (User.Identity.GetTutorId() > 0)
+                    return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTutorId()) }));
+                if (User.Identity.GetTeacherId() > 0)
+                    return new JsonResult(Ok(new { test = _tutorService.GetTestByUserID(User.Identity.GetTeacherId()) }));
             }
             if (testid == 0)
-                return new JsonResult(Ok(new { test = _studentService.GetAllTest().OrderByDescending(s => s.SubjectID==4).ThenBy(t=>t.Modified).ToList() }));
+                return new JsonResult(Ok(new
+                {
+                    test = _studentService.GetAllTest(Convert.ToInt32(User.Identity.GetStudentId())).OrderByDescending(s => s.SubjectID == 4)
+                    .ThenByDescending(t => t.Created).ThenByDescending(t => t.Modified).ToList()
+                }));
             else
                 return new JsonResult(Ok(new { test = _studentService.GetTestById(testid) }));
-             
+
         }
 
         [HttpGet]
@@ -185,7 +191,7 @@ namespace Learning.API.Controllers
 
         }
 
-        [AllowAnonymous,HttpGet]
+        [AllowAnonymous, HttpGet]
         public JsonResult GetQuestionsByTestIds(List<int> testIds, int? groupby)
         {
             if (testIds.Any())
@@ -232,8 +238,8 @@ namespace Learning.API.Controllers
         {
             var grades = new List<int>();
             if (!string.IsNullOrEmpty(gradeids))
-               grades.AddRange(gradeids.Split(",").ToList().ConvertAll(int.Parse));
-            return new JsonResult(new { subjects = _studentService.GetTestSubjectViewModels(grades).OrderBy(s=>s.Language) });
+                grades.AddRange(gradeids.Split(",").ToList().ConvertAll(int.Parse));
+            return new JsonResult(new { subjects = _studentService.GetTestSubjectViewModels(grades).OrderBy(s => s.Language) });
         }
 
         [AllowAnonymous, HttpGet]
@@ -249,10 +255,10 @@ namespace Learning.API.Controllers
         {
             return new JsonResult(_studentService.UpdateTestStatus(partialModels.ToList()));
         }
-        [AllowAnonymous,HttpGet]
+        [AllowAnonymous, HttpGet]
         public JsonResult GetLoggedInUser()
         {
-            return new JsonResult(new ResponseFormat { Description = new { User.Identity, TokenBasedUser = HttpContext.Items["User"] }, Result = true });
+            return ResponseFormat.JsonResult(new { User.Identity, TokenBasedUser = HttpContext.Items["User"] });
         }
         [AllowAnonymous]
         [HttpPost]

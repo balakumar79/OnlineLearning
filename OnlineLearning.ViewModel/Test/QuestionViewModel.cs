@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Learning.Tutor.ViewModel
 {
@@ -24,15 +23,16 @@ namespace Learning.Tutor.ViewModel
         public int QuestionTypeId { get; set; }
         [Required]
         public int TestId { get; set; }
-        public int ? SectionId { get; set; }
+        public int? SectionId { get; set; }
         public string TestName { get; set; }
         public int Language { get; set; }
         public TestSectionViewModel TestSection { get; set; }
         [Display(Name = "Sec. Name")]
         public string SectionName { get; set; }
-        public int ? Topic { get; set; }
+        public int? Topic { get; set; }
         public int? SubTopic { get; set; }
         public List<OptionsViewModel> Options { get; set; }
+        public string AnswerExplanation { get; set; }
         public int Mark { get; set; }
         [Display(Name = "Active")]
         public int StatusId { get; set; }

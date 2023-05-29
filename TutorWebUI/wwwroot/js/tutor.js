@@ -47,6 +47,30 @@
         document.getElementById('chkComp').addEventListener('click', function (et) {
             console.log(et.target.value)
         })
+
+        tinymce.init({
+            selector: 'div#editor3',
+            height: 250,
+            contextmenu: "paste | copy | link image inserttable | cell row column deletetable ",
+            insert_toolbar: 'quickimage quicktable',
+            //language: "ta_IN",
+            language_url: '/tinymce/langs/ta_IN.js',
+            //directionality: "ltl",
+            menubar: true,
+            images_upload_url: '/tutor/questionimageupload',
+            automatic_uploads: false,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime imagetools media table paste code help wordcount'
+            ],
+            entity_encoding: "raw",
+            toolbar: 'insertfile undo redo superscript subscript',
+
+            //tinymce change event
+            
+        })
+
         tinymce.init({
             selector: 'div#editor2',
             height: 250,
@@ -244,6 +268,7 @@
                 }
             }
         });
+
 
         var options = $('#mcqoptions .options select');
 
@@ -618,7 +643,7 @@ function savequestion(cnt) {
     let subtopicid = $('#selSubTopic').val();
     subtopicid = subtopicid == 0 || subtopicid == '' ? null : subtopicid;
     topicid = topicid == 0 || topicid == '' ? null : topicid;
-    let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), topicid, subtopicid, questiontype, currenttestid, currenctsectionid == 0 || currenctsectionid == '' ? null : currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels
+    let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), topicid, subtopicid, questiontype, currenttestid, currenctsectionid == 0 || currenctsectionid == '' ? null : currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels, tinymce.editors.editor3.getContent()
     );
     console.log(model, QusModel);
     initLoader();
@@ -749,6 +774,9 @@ function question_popup(cnt) {
             $('#mcqoptions .ans select').select2({ data: opts }).val(correctopts).change();
 
             $('.selTest').val(testid.toString()).change();
+            if (res.answerExplanation!=null)
+            tinyMCE.editors.editor3.setContent(res.answerExplanation);
+
             currenttopicId = res.topic;
             currentsubtopicid = res.subTopic;
         });

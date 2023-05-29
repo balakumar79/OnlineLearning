@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Learning.Utils.Enums;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -39,15 +40,20 @@ namespace Learning.Tutor.ViewModel
         public int StatusID { get; set; }
         public string StatusName { get; set; }
         public DateTime Created { get; set; }
+        public int RoleId { get; set; }
         public DateTime Modified { get; set; }
-        public int TutorId { get; set; }
+        public int CreatedBy { get; set; }
         public string TutorUserName { get; set; }
         [Display(Name = "Active")]
         public bool IsActive { get; set; }
         public bool IsPublished { get; set; }
+        public int PassingMark { get; set; }
 
         public decimal MaximumMarkScored { get; set; }
         public decimal MinimumMarkScored { get; set; }
         public decimal AverageScore { get; set; }
+        public int TestTypeId { get; set; }
+        private int _testType;
+        public TestTypeEnum TestType { get => (TestTypeEnum)_testType; set => _testType = TestTypeId; }
     }
 }

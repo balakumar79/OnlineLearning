@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Learning.ViewModel.Account.StudentModel>
+
+@{
+    ViewData["Title"] = "Manage Student";
+}
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Manage Student</h1>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+
+            <table class="tblStudent display responsive nowrap" style="width:48%">
+    <thead>
+        <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserId)
+                        </th>
+            <th>
+                FirstName
+            </th>
+            <th>
+                LastName
+            </th>
+           
+           
+           
+            <th>
+                @Html.DisplayNameFor(model => model.Institution)
+            </th>
+                       
+            <th>
+                District
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.Roles)
+            </th>
+                        <th>
+                            UserName
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LanguageKnown)
+                        </th>
+                        <td>Email</td>
+                        <th>CreatedOn</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserId)
+                            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentFirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentLastName)
+            </td>
+           
+          
+           
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Institution)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentDistrict)
+            </td>
+           
+            <td>
+                <span class="@(item.RoleRequested==7?"badge badge-primary":"badge badge-secondary")">
+                @item.Roles.ToString()
+                </span>
+            </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.StudentUserName)
+            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LanguageKnown)
+                            </td>
+                            <td>
+                                <span class="@(item.RoleRequested==7?"badge badge-primary":"badge badge-secondary")">
+                                    @item.AccountUserModel.Email
+                                </span>
+                            </td>
+                            <td>
+                                @item.CreatedOn.Value.ToShortDateString()
+                            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</div>
+</div>
+
+</main>
+@section Scripts{
+    <script>
+        document.addEventListener('readystatechange',doc=>{
+
+            if(doc.target.readyState=='complete'){
+        $('.tblStudent').DataTable();
+            }
+        });
+    </script>
+}

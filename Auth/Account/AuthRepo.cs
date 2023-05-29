@@ -1,15 +1,12 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
-using Learning.Tutor.ViewModel;
 using Learning.Utils.Config;
 using Learning.ViewModel.Account;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static Learning.ViewModel.Account.AuthorizationModel;
 
@@ -23,7 +20,7 @@ namespace Auth.Account
 
         private readonly AppDBContext dBContext;
 
-        public AuthRepo(UserManager<AppUser> userManager,ISecurePassword securePassword, AppDBContext appDBContext,SecretKey secretKey)
+        public AuthRepo(UserManager<AppUser> userManager, ISecurePassword securePassword, AppDBContext appDBContext, SecretKey secretKey)
         {
 
             this.dBContext = appDBContext;
@@ -33,6 +30,7 @@ namespace Auth.Account
         }
         public async Task<IdentityResult> AddUser(AppUser appUser, string password, AppRole role)
         {
+            appUser.CreatedAt = DateTime.Now;
             var res = await userManager.CreateAsync(appUser, password);
             if (res.Succeeded)
             {
@@ -40,13 +38,38 @@ namespace Auth.Account
             }
             return res;
         }
-       
-        public async Task<Student> AddStudent(Student student)
+
+        public async Task<StudentModel> AddStudent(Student student)
         {
             student.CreatedOn = DateTime.Now;
             dBContext.Students.Add(student);
-           await dBContext.SaveChangesAsync();
-            return student;
+            await dBContext.SaveChangesAsync();
+            return new StudentModel
+            {
+                Id = student.Id,
+                GradeLevels = student.Grade,
+                StudentDistrict = student.StudentDistrict,
+                StudentFirstName = student.FirstName,
+                StudentGenderId = student.GenderId,
+                StudentLastName = student.LastName,
+                StudentUserName = student.UserName,
+                Institution = student.Institution,
+                LanguageKnown = student.LanguagesKnown,
+                RoleRequested = student.RoleId,
+                UserId = student.AppUser.Id,
+                MotherTongue = student.MotherTongue,
+                AccountUserModel =
+            new AccountUserModel
+            {
+                District = student.AppUser.District,
+                FirstName = student.AppUser.FirstName,
+                LastName = student.AppUser.LastName,
+                GenderId = student.AppUser.Gender,
+                UserID = student.AppUser.Id,
+                Email = student.AppUser.Email,
+                UserName = student.AppUser.UserName,
+            }
+            };
         }
         public Task<int> AddTeacher(Teacher teacher)
         {
@@ -89,7 +112,7 @@ namespace Auth.Account
             return dBContext.SaveChanges();
 
         }
-      
+
         public async Task<int> AddTutor(Tutor entity)
         {
             dBContext.Tutors.Add(entity);
@@ -112,7 +135,7 @@ namespace Auth.Account
                 return await dBContext.Users.AnyAsync(k => k.UserName == username && k.Id != id);
 
         }
-        public bool IsStudentUserNameExists(string username, int ? id=0)
+        public bool IsStudentUserNameExists(string username, int? id = 0)
         {
             var entity = dBContext.Students.Where(p => p.UserName == username);
             if (id > 0)
@@ -122,13 +145,13 @@ namespace Auth.Account
         }
         public async Task<Student> GetStudentAsync(string username, string password) => await dBContext.Students.FirstOrDefaultAsync(s => s.UserName == username && s.Password == password);
 
-       public async Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId)
+        public async Task<List<Student>> GetAssociatedStudentsForParent(int parentUserId)
         {
             return await dBContext.Students.Where(p => p.UserID == parentUserId).ToListAsync();
         }
         public List<Student> GetAssociatedStudentsForTeacher(int teacherId)
         {
-            return dBContext.Students.Where(s => dBContext.StudentInvitations.Where(st=>st.Response==1 & st.StudentId==s.Id).Select(s => s.StudentId).Contains(s.Id)).ToList();
+            return dBContext.Students.Where(s => dBContext.StudentInvitations.Where(st => st.Response == 1 & st.StudentId == s.Id).Select(s => s.StudentId).Contains(s.Id)).ToList();
         }
         public async Task<List<ScreenFormeter>> GetScreenAccessByUserName(string username)
         {

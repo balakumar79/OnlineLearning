@@ -2,16 +2,21 @@
 
 namespace Learning.API
 {
-    public class ResponseFormat : IResponseFormatter
+    public static class ResponseFormat
     {
 
 
-        public bool? Result { get; set; }
-        public string Message { get; set; }
-        public object? Description { get; set; }
-        public JsonResult JsonResult<T>(T response, string message, bool? result, object? description)
+        //public static bool? Result { get; set; }
+        //public static string Message { get; set; }
+        //public static object? Description { get; set; }
+
+        public static JsonResult JsonResult<T>(T response, string message = "", bool? result = true, object? description = null)
         {
-            return new JsonResult(new { message, result, description, response = response });
+            return new JsonResult(new { message, result, description, response });
+        }
+        public static JsonResult JsonResult(string message, bool? result = true, object? description = null)
+        {
+            return new JsonResult(new { message, result, description });
         }
     }
 }

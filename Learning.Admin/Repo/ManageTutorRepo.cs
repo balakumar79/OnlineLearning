@@ -1,17 +1,17 @@
 ﻿using Learning.Admin.Abstract;
 using Learning.Entities;
 using Learning.Tutor.ViewModel;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Learning.Utils.Enums;
 using Learning.ViewModel.Admin;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Learning.Admin.Repo
 {
-   public class ManageTutorRepo:IManageTutorRepo
+    public class ManageTutorRepo : IManageTutorRepo
     {
         private readonly AppDBContext _dBContext;
         public ManageTutorRepo(AppDBContext dBContext)
@@ -21,23 +21,23 @@ namespace Learning.Admin.Repo
 
         public async Task<List<TutorViewModel>> GetAllTutors()
         {
-           
+
             return await (from tutor in _dBContext.Tutors
-                    join lang in _dBContext.Languages on tutor.PreferredLanguage equals lang.Id
-                    join usr in _dBContext.Users on tutor.UserId equals usr.Id
-                    select new TutorViewModel
-                    {
-                        CreatedAt = tutor.CreatedAt,
-                        Educations = tutor.Educations,
-                        LanguagePreference=lang.Name,
-                        Organization=tutor.Organization,
-                        UserName=usr.UserName,
-                        TutorID=tutor.TutorId,
-                        LastLoggedIn=tutor.LastLoggedIn,
-                        TutorType=tutor.TutorType.ToString(),
-                        FirstName=usr.FirstName,
-                        Email=usr.Email
-                    }).ToListAsync();
+
+                          join usr in _dBContext.Users on tutor.UserId equals usr.Id
+                          select new TutorViewModel
+                          {
+                              CreatedAt = tutor.CreatedAt,
+                              Educations = tutor.Educations,
+                              //LanguagePreference = lang.Name,
+                              Organization = tutor.Organization,
+                              UserName = usr.UserName,
+                              TutorID = tutor.TutorId,
+                              LastLoggedIn = tutor.LastLoggedIn,
+                              TutorType = tutor.TutorType.ToString(),
+                              FirstName = usr.FirstName,
+                              Email = usr.Email
+                          }).ToListAsync() ?? new List<TutorViewModel>();
         }
 
         public async Task<int> CreateTutor(TutorViewModel model)
@@ -47,17 +47,17 @@ namespace Learning.Admin.Repo
                 CreatedAt = DateTime.Now,
                 Organization = model.Organization,
                 PreferredLanguage = Convert.ToInt32(model.LanguagePreference),
-                ModifiedAt=DateTime.Now,
-                Educations=model.Educations,
-                TutorType=Convert.ToInt32(model.TutorType),
-                UserId=model.UserID
+                ModifiedAt = DateTime.Now,
+                Educations = model.Educations,
+                TutorType = Convert.ToInt32(model.TutorType),
+                UserId = model.UserID
             };
 
-            
+
             _dBContext.Tutors.Add(tutor);
-           await _dBContext.SaveChangesAsync();
-            
-                var langList = new List<TutorLanguageOfInstruction>();
+            await _dBContext.SaveChangesAsync();
+
+            var langList = new List<TutorLanguageOfInstruction>();
             if (model.LanguageOfInstruction != null)
             {
                 foreach (var item in model.LanguageOfInstruction)
@@ -85,7 +85,7 @@ namespace Learning.Admin.Repo
                 _dBContext.TutorGradesTakens.AddRange(gradeList);
                 await _dBContext.SaveChangesAsync();
             }
-                return tutor.TutorId;
+            return tutor.TutorId;
         }
 
         public List<ScreenAccessViewModel> GetScreenAccess(Utils.Enums.Roles? roles)
@@ -93,15 +93,15 @@ namespace Learning.Admin.Repo
             return _dBContext.ScreenAccesses.Select(s => new ScreenAccessViewModel
             {
                 ScreenName = s.ScreenPermission,
-                Roles = (ViewModel.Enums.Roles)s.RoleID
+                Roles = (Roles)s.RoleID
             }).ToList();
         }
-                                                                                           public bool DeleteUser(int id)
+        public bool DeleteUser(int id)
         {
             _dBContext.Users.Remove(_dBContext.Users.FirstOrDefault(u => u.Id == id));
             return true;
         }
-        public List<AppUser> GetAppUsers(int ? id = 0)
+        public List<AppUser> GetAppUsers(int? id = 0)
         {
             if (id > 0)
                 return _dBContext.Users.Where(u => u.Id == id).ToList();

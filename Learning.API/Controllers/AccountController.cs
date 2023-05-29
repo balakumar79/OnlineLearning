@@ -63,7 +63,9 @@ namespace Learning.API.Controllers
 
                     IList<string> roles = new List<string>();
                     if (user != null)
+                    {
                         roles = await _userManager.GetRolesAsync(user);
+                    }
                     if (student != null && !roles.Any())
                         roles.Add(((Roles)student.RoleId).ToString());
                     if (user != null && student == null)
@@ -77,7 +79,8 @@ namespace Learning.API.Controllers
                         //login unsuccessfull
                         if (!signInResult.Succeeded)
                             return new JsonResult(new { result = false, message = "Incorrect password." });
-
+                        user.LastAccessedOn = DateTime.Now;
+                        await _userManager.UpdateAsync(user);
                     }
                     //check if login user is valid appuser
                     if (roles.Any(p => p == Roles.Parent.ToString() || p == Roles.Admin.ToString() || p == Roles.Tutor.ToString()))
@@ -202,14 +205,14 @@ namespace Learning.API.Controllers
             {
 
                 if (authService.IsStudentUserNameExists(registerViewModel.StudentModel?.StudentUserName))
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "Student username already exists." });
+                    return ResponseFormat.JsonResult("Student username already exists.", false);
                 AppUser user = null;
                 var availableRolesId = Enum.GetValues(typeof(Roles)).Cast<Roles>().ToList();
                 if (!availableRolesId.Contains((Roles)registerViewModel.Role))
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid user role id." });
+                    return ResponseFormat.JsonResult("Invalid user role id.", false);
                 if (registerViewModel.StudentModel != null)
                     if (!availableRolesId.Contains((Roles)(registerViewModel.StudentModel?.RoleRequested ?? 0)))
-                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid student role id." });
+                        return ResponseFormat.JsonResult("Invalid student role id.", false);
                 if (ModelState.IsValid)
                 {
                     var roleRequested = (Roles)registerViewModel.Role;
@@ -228,10 +231,10 @@ namespace Learning.API.Controllers
                     {
                         userresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = roleRequested.ToString() });
                         if (!userresult.Succeeded)
-                            return new JsonResult(new ResponseFormat { Result = userresult.Succeeded, Description = userresult, Message = string.Join(" | ", userresult.Errors.Select(s => s.Description)) });
+                            return ResponseFormat.JsonResult(result: userresult.Succeeded, description: userresult, message: string.Join(" | ", userresult.Errors.Select(s => s.Description)));
                     }
                     else
-                        return new JsonResult(new ResponseFormat { Result = false, Message = "Invalid role Id !!!.  First user cannot be other than Parent." });
+                        return ResponseFormat.JsonResult("Invalid role Id !!!.  First user cannot be other than Parent.", false);
 
                     if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel?.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Student)
                     {
@@ -245,18 +248,19 @@ namespace Learning.API.Controllers
                         {
                             UserId = user.Id,
                         };
-                        return new JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher), Message = "Your teacher account has been created successfully.  Please confirm your email to activate your account." });
+                        return ResponseFormat.JsonResult(await authService.AddTeacher(teacher), "Your teacher account has been created successfully.  Please confirm your email to activate your account.");
+                        //return JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher), Message = "Your teacher account has been created successfully.  Please confirm your email to activate your account." });
                     }
                     else
                     {
                         if (user != null)
                             await _userManager.DeleteAsync(user);
-                        return new JsonResult(new ResponseFormat { Result = false, Description = "No user is registered.  Please check if the role id is correct" });
+                        return ResponseFormat.JsonResult("No user is registered.  Please check if the role id is correct", false);
                     }
                 }
                 else
                 {
-                    return new JsonResult(new ResponseFormat { Result = false, Message = "Some required field/s are empty.", Description = ModelState.Select(p => p.Value).Where(l => l.Errors.Count > 0) });
+                    return ResponseFormat.JsonResult("Some required field/s are empty.", false, ModelState.Select(p => p.Value).Where(l => l.Errors.Count > 0));
                 }
             }
             catch (Exception ex)
@@ -266,7 +270,7 @@ namespace Learning.API.Controllers
             }
         }
         [HttpPost]
-        public async Task<ResponseFormat> RegisterStudent(StudentModel registerViewModel)
+        public async Task<JsonResult> RegisterStudent(StudentModel registerViewModel)
         {
             if (!authService.IsStudentUserNameExists(registerViewModel.StudentUserName))
             {
@@ -299,12 +303,12 @@ namespace Learning.API.Controllers
                     authService.UpserStudentSecretAnswer(registerViewModel.StudentAccountRecoveryAnswerModel);
                 }
                 if (res == null)
-                    return new ResponseFormat { Result = false, Message = "Sorry !!! Student registration failed." };
+                    return ResponseFormat.JsonResult("Sorry !!! Student registration failed.", false);
                 else
-                    return new ResponseFormat { Result = true, Message = "Student account has been created successfully.  ", Description = res };
+                    return ResponseFormat.JsonResult(res, "Student account has been created successfully.  ", description: res);
             }
             else
-                return new ResponseFormat { Result = false, Message = "Student username already taken." };
+                return ResponseFormat.JsonResult("Student username already taken.", false);
         }
 
 
@@ -321,7 +325,7 @@ namespace Learning.API.Controllers
         public async Task<object> ForgotPassword(string Email)
         {
             if (string.IsNullOrEmpty(Email))
-                return new JsonResult(new ResponseFormat { Message = "Email cannot be blank !!!", Result = false });
+                return ResponseFormat.JsonResult("Email cannot be blank !!!", false);
             var result = await authService.ForgotPassword(Email);
             return new JsonResult(new { result = result });
 

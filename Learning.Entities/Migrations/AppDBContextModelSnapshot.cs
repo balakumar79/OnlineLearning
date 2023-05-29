@@ -15,6 +15,7 @@ namespace Learning.Entities.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("bala")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -62,6 +63,9 @@ namespace Learning.Entities.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
 
@@ -78,11 +82,11 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
-                    b.Property<int>("GenderEnum")
-                        .HasColumnType("int");
-
                     b.Property<bool>("HasUserAccess")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastAccessedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -113,12 +117,6 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TutorId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -138,10 +136,6 @@ namespace Learning.Entities.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TutorId");
 
                     b.ToTable("User");
                 });
@@ -431,6 +425,9 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AnswerExplantion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CorrectOption")
                         .HasColumnType("nvarchar(max)");
 
@@ -497,6 +494,28 @@ namespace Learning.Entities.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("QuestionTypes");
+                });
+
+            modelBuilder.Entity("Learning.Entities.RandomQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("RandomQuestions");
                 });
 
             modelBuilder.Entity("Learning.Entities.ScreenAccess", b =>
@@ -566,6 +585,9 @@ namespace Learning.Entities.Migrations
                     b.Property<string>("StudentDistrict")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("StudentTestId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -575,6 +597,11 @@ namespace Learning.Entities.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LanguageNavigationId");
+
+                    b.HasIndex("StudentTestId");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("Student");
                 });
@@ -856,15 +883,12 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("Id1")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("TeacherId");
 
-                    b.HasIndex("Id1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Teachers");
                 });
@@ -878,6 +902,9 @@ namespace Learning.Entities.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -903,6 +930,12 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("PassingMark")
                         .HasColumnType("int");
 
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShuffleTypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -915,11 +948,11 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("TestSubjectId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TestType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TutorId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -930,8 +963,6 @@ namespace Learning.Entities.Migrations
                     b.HasIndex("TestStatusId");
 
                     b.HasIndex("TestSubjectId");
-
-                    b.HasIndex("TutorId");
 
                     b.ToTable("Tests");
                 });
@@ -1073,6 +1104,8 @@ namespace Learning.Entities.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TutorId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tutors");
                 });
@@ -1261,19 +1294,19 @@ namespace Learning.Entities.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Learning.Entities.AppUser", b =>
+            modelBuilder.Entity("StudentTestTest", b =>
                 {
-                    b.HasOne("Learning.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId");
+                    b.Property<int>("StudentTestsId")
+                        .HasColumnType("int");
 
-                    b.HasOne("Learning.Entities.Tutor", "Tutor")
-                        .WithMany()
-                        .HasForeignKey("TutorId");
+                    b.Property<int>("TestsId")
+                        .HasColumnType("int");
 
-                    b.Navigation("Student");
+                    b.HasKey("StudentTestsId", "TestsId");
 
-                    b.Navigation("Tutor");
+                    b.HasIndex("TestsId");
+
+                    b.ToTable("StudentTestTest");
                 });
 
             modelBuilder.Entity("Learning.Entities.CalculatedResult", b =>
@@ -1383,11 +1416,42 @@ namespace Learning.Entities.Migrations
                     b.Navigation("TestStatus");
                 });
 
+            modelBuilder.Entity("Learning.Entities.RandomQuestion", b =>
+                {
+                    b.HasOne("Learning.Entities.Question", "Questions")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.Test", "Test")
+                        .WithMany("RandomQuestions")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Questions");
+
+                    b.Navigation("Test");
+                });
+
             modelBuilder.Entity("Learning.Entities.Student", b =>
                 {
                     b.HasOne("Learning.Entities.Language", "LanguageNavigation")
                         .WithMany()
                         .HasForeignKey("LanguageNavigationId");
+
+                    b.HasOne("Learning.Entities.StudentTest", null)
+                        .WithMany("Students")
+                        .HasForeignKey("StudentTestId");
+
+                    b.HasOne("Learning.Entities.AppUser", "AppUser")
+                        .WithOne("Student")
+                        .HasForeignKey("Learning.Entities.Student", "UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("LanguageNavigation");
                 });
@@ -1481,11 +1545,13 @@ namespace Learning.Entities.Migrations
 
             modelBuilder.Entity("Learning.Entities.Teacher", b =>
                 {
-                    b.HasOne("Learning.Entities.AppUser", "Id")
+                    b.HasOne("Learning.Entities.AppUser", "AppUser")
                         .WithMany()
-                        .HasForeignKey("Id1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Id");
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Learning.Entities.Test", b =>
@@ -1514,12 +1580,6 @@ namespace Learning.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Learning.Entities.Tutor", "Tutor")
-                        .WithMany()
-                        .HasForeignKey("TutorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("GradeLevels");
 
                     b.Navigation("Language");
@@ -1527,8 +1587,17 @@ namespace Learning.Entities.Migrations
                     b.Navigation("TestStatus");
 
                     b.Navigation("TestSubject");
+                });
 
-                    b.Navigation("Tutor");
+            modelBuilder.Entity("Learning.Entities.Tutor", b =>
+                {
+                    b.HasOne("Learning.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Learning.Entities.UserScreenAccess", b =>
@@ -1591,6 +1660,26 @@ namespace Learning.Entities.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudentTestTest", b =>
+                {
+                    b.HasOne("Learning.Entities.StudentTest", null)
+                        .WithMany()
+                        .HasForeignKey("StudentTestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learning.Entities.Test", null)
+                        .WithMany()
+                        .HasForeignKey("TestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Learning.Entities.AppUser", b =>
+                {
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Learning.Entities.Language", b =>
                 {
                     b.Navigation("SubjectLanguageVariants");
@@ -1601,6 +1690,11 @@ namespace Learning.Entities.Migrations
                     b.Navigation("Options");
                 });
 
+            modelBuilder.Entity("Learning.Entities.StudentTest", b =>
+                {
+                    b.Navigation("Students");
+                });
+
             modelBuilder.Entity("Learning.Entities.SubjectTopic", b =>
                 {
                     b.Navigation("SubjectSubTopics");
@@ -1609,6 +1703,8 @@ namespace Learning.Entities.Migrations
             modelBuilder.Entity("Learning.Entities.Test", b =>
                 {
                     b.Navigation("Questions");
+
+                    b.Navigation("RandomQuestions");
                 });
 
             modelBuilder.Entity("Learning.Entities.TestSubject", b =>

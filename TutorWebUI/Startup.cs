@@ -60,7 +60,7 @@ namespace TutorWebUI
                 op.Cookie.IsEssential = true;
                 op.Cookie.MaxAge = TimeSpan.FromDays(4);
                 op.SlidingExpiration = true;
-                op.Cookie.Domain = "api.domockexam.com";
+                //op.Cookie.Domain = "tutor.domockexam.com";
                 op.Cookie.SameSite = SameSiteMode.Lax;
             });
             services.AddSession
