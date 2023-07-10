@@ -83,9 +83,9 @@ namespace Learning.Admin.WebUI.Controllers
             return Json(_tutorService.GetQuestionsByTestId(testid));
         }
 
-        public async Task<JsonResult> GetSubject()
+        public JsonResult GetSubject()
         {
-            return Json(await _tutorService.GetTestSubject());
+            return Json(_tutorService.GetTestSubject());
         }
         [AllowAnonymous]
         public JsonResult GetGradeLevels() => Json(_tutorService.GetGradeLevels());

@@ -3,6 +3,7 @@ using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Tutor.Abstract
@@ -24,9 +25,10 @@ namespace Learning.Tutor.Abstract
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int QuestionId);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> QuestionIds);
-        List<GradeLevels> GetGradeLevels();
+        IQueryable<GradeLevels> GetGradeLevels();
+        IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId);
         List<Language> GetLanguages();
-        Task<List<TestSubject>> GetTestSubject();
+        IQueryable<TestSubject> GetTestSubject();
         Task<List<TestSection>> GetTestSectionByTestId(int testid);
         Task<int> DeleteTest(int id);
         int DeleteSection(List<int> sectionid);

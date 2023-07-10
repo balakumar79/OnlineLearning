@@ -4,6 +4,7 @@ using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Tutor.Service
@@ -78,9 +79,14 @@ namespace Learning.Tutor.Service
         {
             return _tutorRepo.DeleteSection(sectionid);
         }
-        public List<GradeLevels> GetGradeLevels()
+        public IQueryable<GradeLevels> GetGradeLevels()
         {
             return _tutorRepo.GetGradeLevels();
+        }
+
+       public IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
+        {
+            return _tutorRepo.GetGradeLevelTestAssociation((int)languageId, testId);
         }
 
         public List<Language> GetLanguages()
@@ -88,7 +94,7 @@ namespace Learning.Tutor.Service
             return _tutorRepo.GetLanguages();
         }
 
-        public Task<List<TestSubject>> GetTestSubject()
+        public IQueryable<TestSubject> GetTestSubject()
         {
             return _tutorRepo.GetTestSubject();
         }

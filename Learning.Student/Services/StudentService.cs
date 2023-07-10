@@ -91,9 +91,9 @@ namespace Learning.Student.Services
             return _studentTestRepo.GetTestById(id);
         }
 
-        public IEnumerable<TestViewModel> GetAllTest(int? studentId = 0)
+        public async Task<List<TestViewModel>> GetAllTest(int? studentId = 0)
         {
-            return _studentTestRepo.GetAllTest();
+            return await _studentTestRepo.GetAllTest();
         }
 
         public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId)

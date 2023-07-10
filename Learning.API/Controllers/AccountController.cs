@@ -142,7 +142,7 @@ namespace Learning.API.Controllers
                         if (roles.Contains(Roles.Major.ToString()))
                             if (user == null)
                             {
-                                _logger.InsertLogger("Warning", "No first user account found for the user" + user?.UserName + ".  Student: " + student?.UserName, "User can't login.", "/Account/Login");
+                                _logger.InsertLogger(ErrorEnum.Warning, "No first user account found for the user" + user?.UserName + ".  Student: " + student?.UserName, "User can't login.", "/Account/Login");
                                 return new JsonResult(new { result = false, message = "This student account needs a first user account.  Please recreate your account in Account/Register link." });
 
                             }
@@ -188,7 +188,7 @@ namespace Learning.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.InsertLogger(message: ex.Message, description: ex.ToString(), type: "Error", link: "/Account/Login");
+                    _logger.InsertLogger(message: ex.Message, description: ex.ToString(), type: ErrorEnum.Error, link: "/Account/Login");
                     return new JsonResult(new { result = false, error = ex.InnerException == null ? ex.Message : ex.InnerException.Message });
                 }
             }

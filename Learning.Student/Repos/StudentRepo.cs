@@ -1,12 +1,18 @@
-﻿using Learning.Entities;
+﻿using Dapper;
+using Learning.Entities;
 using Learning.Student.Abstract;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
+using Learning.Utils.Config;
 using Learning.Utils.Enums;
+using Learning.ViewModel.Tutor;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Learning.Student.Repos
 {
@@ -15,12 +21,14 @@ namespace Learning.Student.Repos
     {
         #region variables
         readonly AppDBContext _dBContext;
+        readonly ConnectionString _connectionString;
         #endregion
 
         #region ctor
-        public StudentRepo(AppDBContext dBContext)
+        public StudentRepo(AppDBContext dBContext, ConnectionString connectionString)
         {
             _dBContext = dBContext;
+            _connectionString = connectionString;
         }
         #endregion
 
@@ -48,34 +56,43 @@ namespace Learning.Student.Repos
                 //Topics = p.Topics
             }).FirstOrDefault();
         }
-        public IEnumerable<TestViewModel> GetAllTest(int? studentId = 0)
+        public async Task<List<TestViewModel>> GetAllTest(int? studentId = 0)
         {
-            var result = (from test in _dBContext.Tests.Include(s => s.StudentTests)
-                          join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
-                          join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
-                          join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
-                          where test.TestStatusId == 3
-                          && test.IsActive && test.IsPublished && (test.TestType == ((int)TestTypeEnum.Public) ||
-                           test.StudentTests.Any(ts => ts.StudentId == studentId))
-                          select new TestViewModel
-                          {
-                              Created = test.Created,
-                              SubjectName = sub.SubjectName,
-                              SubjectID = sub.Id,
-                              StatusID = test.TestStatusId,
-                              StatusName = teststatus.Status,
-                              Duration = test.Duration,
-                              StartDate = test.StartDate,
-                              EndDate = test.EndDate,
-                              GradeID = test.GradeLevelsId,
-                              GradeName = grade.Grade,
-                              Language = test.LanguageId,
-                              Id = test.Id,
-                              Modified = test.Modified,
-                              Title = test.Title,
-                              CreatedBy = test.CreatedBy,
-                          }).ToList();
-            return result;
+            
+            using (IDbConnection db = new SqlConnection(_connectionString.ConnectionStr))
+            {
+                db.Open();
+                var reader = await db.QueryMultipleAsync("sp_GetAllTests", new { studentId }, commandType: CommandType.StoredProcedure);
+                var result =await reader.ReadAsync<TestViewModel>();
+                
+                return result.ToList();
+            }
+            //var result = (from test in _dBContext.Tests.Include(s => s.StudentTests)
+            //              join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+            //              join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+            //              join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+            //              where test.TestStatusId == 3
+            //              && test.IsActive && test.IsPublished && (test.TestType == ((int)TestTypeEnum.Public) ||
+            //               test.StudentTests.Any(ts => ts.StudentId == studentId))
+            //              select new TestViewModel
+            //              {
+            //                  Created = test.Created,
+            //                  SubjectName = sub.SubjectName,
+            //                  SubjectID = sub.Id,
+            //                  StatusID = test.TestStatusId,
+            //                  StatusName = teststatus.Status,
+            //                  Duration = test.Duration,
+            //                  StartDate = test.StartDate,
+            //                  EndDate = test.EndDate,
+            //                  GradeID = test.GradeLevelsId,
+            //                  GradeName = grade.Grade,
+            //                  Language = test.LanguageId,
+            //                  Id = test.Id,
+            //                  Modified = test.Modified,
+            //                  Title = test.Title,
+            //                  CreatedBy = test.CreatedBy,
+            //              }).ToList();
+            //return result;
         }
         /// <summary>
         /// Get student test by parentid/userid

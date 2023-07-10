@@ -39,20 +39,20 @@ namespace Learning.API.Controllers
             .ToArray();
         }
         [HttpGet]
-        [Route("Home/Index")]
+        [Route("/Home/Index")]
         public IActionResult Index()
         {
             return Redirect("/swagger/index.html");
         }
         [HttpGet]
-        [Route("test/GetGradeLevelsByLanguages")]
+        [Route("/test/GetGradeLevelsByLanguages")]
         public IActionResult GetGradesByLanguages([FromQuery] int[] Languages)
         {
             return ResponseFormat.JsonResult(_tutorService.GetGradeLevelsByLanguages(Languages));
         }
 
         [HttpGet]
-        [Route("test/GetSubjectsByGrades")]
+        [Route("/test/GetSubjectsByGrades")]
         public IActionResult GetSubjectsByGrades([FromQuery] int[] Grades)
         {
             return ResponseFormat.JsonResult(_tutorService.GetSubjectsByGrades(Grades));

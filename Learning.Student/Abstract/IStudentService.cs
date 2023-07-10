@@ -9,7 +9,7 @@ namespace Learning.Student.Abstract
     public interface IStudentService
     {
         public TestViewModel GetTestById(int? id);
-        IEnumerable<TestViewModel> GetAllTest(int? studentId = 0);
+        Task<List<TestViewModel>> GetAllTest(int? studentId = 0);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<StudentTestViewModel> GetStudentTestByStudentIDs(List<int> studentid);

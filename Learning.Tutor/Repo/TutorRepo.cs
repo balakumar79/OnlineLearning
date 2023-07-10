@@ -604,15 +604,24 @@ namespace Learning.Tutor.Repo
             }
         }
         public List<Language> GetLanguages() => _dBContext.Languages.OrderBy(p => p.Name).ToList();
-        public List<GradeLevels> GetGradeLevels() => _dBContext.GradeLevels.ToList();
-        public async Task<List<TestSubject>> GetTestSubject()
+        public IQueryable<GradeLevels> GetGradeLevels() => _dBContext.GradeLevels;
+        public IQueryable <GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
         {
-            var subject = await _dBContext.TestSubjects.OrderBy(p => p.SubjectName).ToListAsync();
-            if (subject.Any(sub => sub.SubjectName.ToLower() == "other"))
-            {
-                var item = subject.Remove(subject.FirstOrDefault(p => p.SubjectName.ToLower() == "other"));
-                subject.Add(new TestSubject { Id = subject.Count + 1, SubjectName = "Other" });
-            }
+            var tests= _dBContext.Tests.AsQueryable();
+            if (languageId > 0)
+                tests = tests.Where(lang => lang.LanguageId == languageId);
+            if (testId > 0)
+                tests = tests.Where(test => test.Id == testId);
+            return tests.Select(l => l.GradeLevels);
+        }
+        public IQueryable<TestSubject> GetTestSubject()
+        {
+            var subject =  _dBContext.TestSubjects.Include(s=>s.SubjectLanguageVariants).Include(s=>s.Tests ).OrderBy(p => p.SubjectName);
+            //if (subject.Any(sub => sub.SubjectName.ToLower() == "other"))
+            //{
+            //    var item = subject.Remove(subject.FirstOrDefault(p => p.SubjectName.ToLower() == "other"));
+            //    subject.Add(new TestSubject { Id = subject.Count + 1, SubjectName = "Other" });
+            //}
             return subject;
 
         }

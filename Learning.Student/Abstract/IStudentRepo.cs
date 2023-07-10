@@ -2,12 +2,13 @@
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Learning.Student.Abstract
 {
     public interface IStudentRepo
     {
-        IEnumerable<TestViewModel> GetAllTest(int? studentId = 0);
+        Task<List<TestViewModel>> GetAllTest(int? studentId = 0);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);

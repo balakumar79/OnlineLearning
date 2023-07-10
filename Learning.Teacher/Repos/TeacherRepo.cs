@@ -122,6 +122,8 @@ namespace Learning.Teacher.Repos
             db.Title = title;
             db.GradeLevelsId = gradeId;
             db.PassingMark = passingMark;
+            db.TestType = ((int)TestTypeEnum.Random);
+            db.IsActive= true;
             db.TestStatusId = 2;
             _dBContext.Tests.Add(db);
             _dBContext.SaveChanges();

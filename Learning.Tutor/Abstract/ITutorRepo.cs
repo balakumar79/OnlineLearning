@@ -3,6 +3,7 @@ using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learning.Tutor.Abstract
@@ -32,8 +33,9 @@ namespace Learning.Tutor.Abstract
         int SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         List<Language> GetLanguages();
-        List<GradeLevels> GetGradeLevels();
-        Task<List<TestSubject>> GetTestSubject();
+        IQueryable<GradeLevels> GetGradeLevels();
+        IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId);
+        IQueryable<TestSubject> GetTestSubject();
         Task<List<QuestionType>> GetTestType();
         List<TestViewModel> GetAllTest();
         int savetrueorfalse();

@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.Utils.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,11 +28,11 @@ namespace Learning.LogMe.Repo
             _dBContext.Loggers.Add(logger);
             _dBContext.SaveChanges();
         }
-        public void InsertLogger(string type,string message,string description,string ? link=null)
+        public void InsertLogger(ErrorEnum type,string message,string description,string ? link=null)
         {
-            var logger = new Entities.Logger
+            var logger = new Logger
             {
-                Type = type,
+                Type = type.ToString(),
                 Message = message,
                 Description = description,
                 Link = link

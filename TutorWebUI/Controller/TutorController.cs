@@ -245,9 +245,9 @@ namespace TutorWebUI.Controllers
         [AllowAnonymous]
         public async Task<JsonResult> GetTestSectionByTestId(int testid) => Json(await _tutorService.GetTestSectionByTestId(testid));
         [AllowAnonymous]
-        public async Task<JsonResult> GetSubject()
+        public JsonResult GetSubject()
         {
-            return Json(await _tutorService.GetTestSubject());
+            return Json( _tutorService.GetTestSubject());
         }
         [AllowAnonymous]
         public JsonResult GetGradeLevels() => Json(_tutorService.GetGradeLevels());

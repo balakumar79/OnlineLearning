@@ -10,6 +10,16 @@
       "ancmHostingModel": "InProcess",
       "applicationUrl": "https://localhost:44300/weatherforecast"
     },
+    "Test API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "Home/Index",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      },
+      "ancmHostingModel": "InProcess",
+      "applicationUrl": "https://test-api.domockexam.com"
+    },
     "Learning.API": {
       "commandName": "Project",
       "launchBrowser": true,
