@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace Learning.Utils
+namespace Learning.Entities
 {
    public static class Extensions
     {

@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Learning.Admin.Abstract;
 using Learning.Entities;
-using Learning.Utils.Config;
+using Learning.Entities.Config;
 using Learning.ViewModel.Tutor;
 using Microsoft.Data.SqlClient;
 using System;

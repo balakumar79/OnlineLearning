@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Learning.Admin.WebUI.Controllers
 {
-    [Authorize(Roles = Utils.Config.RolesConstant.Admin)]
+    [Authorize(Roles = Entities.Config.RolesConstant.Admin)]
     public class ManageExamsController : Controller
     {
         #region variables

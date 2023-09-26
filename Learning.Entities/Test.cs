@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Enums;
+﻿using Learning.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -39,7 +39,10 @@ namespace Learning.Entities
         public int TestType { get; set; }
         public ICollection<Question> Questions { get; set; }
         public ICollection<StudentTest> StudentTests { get; set; } = new HashSet<StudentTest>();
+        public virtual RandomTest RandomTest { get; set; }
         public virtual ICollection<RandomQuestion> RandomQuestions { get; set; }
+
+        public virtual StudentTestStats StudentTestStats { get; set; }
 
     }
 }

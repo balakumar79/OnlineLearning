@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Config;
+﻿using Learning.Entities.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Learning.Utils
+namespace Learning.Entities
 {
    public class EmailService:IEmailService
     {

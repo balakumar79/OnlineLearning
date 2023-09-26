@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Config;
+﻿using Learning.Entities.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

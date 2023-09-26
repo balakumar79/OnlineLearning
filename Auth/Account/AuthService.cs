@@ -1,8 +1,8 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
 using Learning.Tutor.Abstract;
-using Learning.Utils;
-using Learning.Utils.Config;
+using Learning.Entities;
+using Learning.Entities.Config;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

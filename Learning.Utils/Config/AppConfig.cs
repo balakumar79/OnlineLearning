@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Learning.Utils.Config
+namespace Learning.Entities.Config
 {
    public class AppConfig
     {

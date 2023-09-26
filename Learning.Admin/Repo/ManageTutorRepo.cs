@@ -1,7 +1,8 @@
 ﻿using Learning.Admin.Abstract;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.Tutor.ViewModel;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using Learning.ViewModel.Admin;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -88,7 +89,7 @@ namespace Learning.Admin.Repo
             return tutor.TutorId;
         }
 
-        public List<ScreenAccessViewModel> GetScreenAccess(Utils.Enums.Roles? roles)
+        public List<ScreenAccessViewModel> GetScreenAccess(Roles? roles)
         {
             return _dBContext.ScreenAccesses.Select(s => new ScreenAccessViewModel
             {

@@ -1,5 +1,5 @@
 
-using Learning.Utils.Config;
+using Learning.Entities.Config;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Learning.Utils
+namespace Learning.Entities
 {
     public class CommonData : BackgroundService
     {

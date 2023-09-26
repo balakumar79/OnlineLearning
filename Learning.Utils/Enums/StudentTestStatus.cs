@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Learning.Utils.Enums
+namespace Learning.Entities.Enums
 {
    public enum StudentTestStatus
     {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Learning.Utils
+namespace Learning.Entities
 {
     public interface IEmailService
     {

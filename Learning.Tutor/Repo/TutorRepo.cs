@@ -1,9 +1,10 @@
 ﻿using Dapper;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Utils.Config;
-using Learning.Utils.Enums;
+using Learning.Entities.Config;
+using Learning.Entities.Enums;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
 using Microsoft.Data.SqlClient;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Learning.Tutor.Repo
 {
@@ -41,39 +43,58 @@ namespace Learning.Tutor.Repo
         }
         public IEnumerable<TestViewModel> GetTestByUserID(int tutorid)
         {
-            return (from test in _dBContext.Tests
-                    join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
-                    join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
-                    join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
-                    where test.CreatedBy == tutorid && test.RoleId == ((int)Roles.Tutor) && test.IsActive
+            var tests = _dBContext.Tests
+                .Include(t => t.Language)
+                .Include(t => t.Questions).ThenInclude(t => t.QuestionType)
+                .Include(t => t.TestStatus)
+                .Include(t => t.RandomQuestions)
+                .Include(t => t.RandomTest)
+                .Include(t => t.GradeLevels)
+                .Include(t => t.TestSubject)
+                .Include(t => t.StudentTestStats)
+
+            .Where(t => t.IsActive && t.CreatedBy == tutorid && t.RoleId == ((int)Roles.Tutor) ||
+            t.CreatedBy == tutorid && t.RoleId == ((int)Roles.Teacher));
+
+            return (from test in tests
+
                     select new TestViewModel
                     {
                         Created = test.Created,
-                        SubjectName = sub.SubjectName,
+                        SubjectName = test.TestSubject.SubjectName,
                         StatusID = test.TestStatusId,
-                        StatusName = teststatus.Status,
+                        StatusName = test.TestStatus.Status,
                         Duration = test.Duration,
                         StartDate = test.StartDate,
                         EndDate = test.EndDate,
                         GradeID = test.GradeLevelsId,
-                        GradeName = grade.Grade,
+                        GradeName = test.GradeLevels.Grade,
                         Id = test.Id,
                         Modified = test.Modified,
                         Title = test.Title,
                         IsActive = test.IsActive,
                         IsPublished = test.IsPublished,
                         CreatedBy = test.CreatedBy,
-                        TestType = (TestTypeEnum)test.TestType,
                         SubjectID = test.TestSubjectId,
                         RoleId = test.RoleId,
                         Language = test.LanguageId,
                         Description = test.TestDescription,
                         PassingMark = test.PassingMark,
+                        TestTypeId = test.TestType,
+                        AverageScore = test.StudentTestStats.AverageMarkScored,
+                        MaximumMarkScored = test.StudentTestStats.MaximumMarkScored,
+                        MinimumMarkScored = test.StudentTestStats.MinimumMarkScored,
+                        TopicId = test.RandomTest == null ? 0 : test.RandomTest.TopicId,
+                        SubTopicId = test.RandomTest == null ? 0 : test.RandomTest.SubTopicId
+
                     }).ToList();
         }
         public TestViewModel GetTestById(int? id)
         {
-            var t = _dBContext.Tests.Include(t => t.TestSubject).Include(t => t.TestSubject.SubjectLanguageVariants);
+            var t = _dBContext.Tests
+                .Include(t => t.TestSubject)
+                .Include(t => t.TestSubject.SubjectLanguageVariants)
+                .Include(t => t.RandomTest);
             return t.Where(p => p.Id == id).Select(p => new TestViewModel
             {
                 Id = p.Id,
@@ -82,7 +103,8 @@ namespace Learning.Tutor.Repo
                 EndDate = p.EndDate,
                 StatusID = p.TestStatusId,
                 SubjectID = p.TestSubjectId,
-
+                TopicId = p.RandomTest == null ? 0 : p.RandomTest.TopicId,
+                SubTopicId = p.RandomTest == null ? 0 : p.RandomTest.SubTopicId,
                 Duration = p.Duration,
                 Description = p.TestDescription,
                 GradeID = p.GradeLevelsId,
@@ -246,6 +268,7 @@ namespace Learning.Tutor.Repo
                          where qus.QusID == QuestionId
                          select new { qus, qustype, sec }
                        );
+
             var options = _dBContext.Options.Where(p => p.QuestionId == QuestionId);
             if (!qusDb.Any())
                 return null;
@@ -700,11 +723,11 @@ namespace Learning.Tutor.Repo
             {
                 Grade = model.GradeLevels.Grade,
                 Id = model.GradeLevels.Id
-            });
+            }).Distinct()   ;
         }
         public IEnumerable<SubjectModel> GetSubjectsByGrades(int[] Grades)
         {
-            return _dBContext.Tests.Include(s => s.TestSubject).Where(s => Grades.Contains(s.GradeLevelsId) && s.IsActive && s.TestSubject.Active).Select(model => new SubjectModel { Id = model.TestSubject.Id, Subject = model.TestSubject.SubjectName });
+            return _dBContext.Tests.Include(s => s.TestSubject).Where(s => Grades.Contains(s.GradeLevelsId) && s.IsActive && s.TestSubject.Active).Select(model => new SubjectModel { Id = model.TestSubject.Id, Subject = model.TestSubject.SubjectName }).Distinct();
         }
     }
 }

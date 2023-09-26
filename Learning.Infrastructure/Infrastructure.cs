@@ -14,8 +14,10 @@ using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.Repo;
 using Learning.Tutor.Service;
-using Learning.Utils;
-using Learning.Utils.Config;
+using Learning.UnitOfWork.Interface;
+using Learning.UnitOfWork.Repos;
+using Learning.Entities;
+using Learning.Entities.Config;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -68,6 +70,9 @@ namespace Learning.Infrastructure
             conStr.ConnectionStr = conn;
             //configuration.Bind(conStr);
             services.AddSingleton(conStr);
+
+            services.AddTransient<IUnitOfWork, UnitOfWork.UnitOfWork>();
+            services.AddTransient<IQuestionRepository, QuestionRepository>();
 
 
             services.AddScoped<ISecurePassword, SecurePassword>();

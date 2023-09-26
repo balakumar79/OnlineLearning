@@ -1,6 +1,6 @@
 ﻿using Learning.Auth;
 using Learning.Student.Abstract;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ namespace Learning.API.Controllers
         {
 
             var userids = new List<int>();
-            if (User.IsInRole(Utils.Enums.Roles.Minor.ToString()) || User.IsInRole(Utils.Enums.Roles.Major.ToString()))
+            if (User.IsInRole(Entities.Enums.Roles.Minor.ToString()) || User.IsInRole(Entities.Enums.Roles.Major.ToString()))
                 userids.Add(Convert.ToInt32(User.Identity.GetStudentId()));
             else
                 userids.AddRange(User.Identity.GetChildIds());

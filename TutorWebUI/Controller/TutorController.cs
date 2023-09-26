@@ -1,8 +1,9 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using Learning.ViewModel.Account;
 using Learning.ViewModel.Tutor;
 using Microsoft.AspNetCore.Authorization;

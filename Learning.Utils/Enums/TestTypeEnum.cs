@@ -1,4 +1,4 @@
-﻿namespace Learning.Utils.Enums
+﻿namespace Learning.Entities.Enums
 {
     public enum TestTypeEnum
     {

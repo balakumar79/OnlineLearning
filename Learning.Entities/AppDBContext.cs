@@ -47,6 +47,7 @@ namespace Learning.Entities
         public virtual DbSet<Options> Options { get; set; }
         public virtual DbSet<LanguageVariantQuestion> LanguageVariantQuestions { get; set; }
         public virtual DbSet<SubjectLanguageVariant> SubjectLanguageVariants { get; set; }
+        public virtual DbSet<RandomTest> RandomTests { get; set; }
         public virtual DbSet<RandomQuestion> RandomQuestions { get; set; }
 
 

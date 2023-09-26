@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Learning.Entities.Enums;
+using Microsoft.AspNetCore.Identity;
 using System;
 
 namespace Learning.Entities.Extension
@@ -7,7 +8,7 @@ namespace Learning.Entities.Extension
     {
         public static void SeedRoles(RoleManager<AppRole> roleManager)
         {
-            foreach (var role in Enum.GetValues(typeof(Utils.Enums.Roles)))
+            foreach (var role in Enum.GetValues(typeof(Roles)))
             {
                 if (!roleManager.RoleExistsAsync(role.ToString()).Result)
                 {

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
     <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
     <ProjectReference Include="..\Learning.Tutor\Learning.Tutor.csproj" />
+    <ProjectReference Include="..\Learning.UnitOfWork\Learning.UnitOfWork.csproj" />
     <ProjectReference Include="..\Logger\Learning.LogMe.csproj" />
   </ItemGroup>
 </Project>

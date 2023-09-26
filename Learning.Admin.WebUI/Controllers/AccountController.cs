@@ -47,7 +47,7 @@ namespace Learning.Admin.WebUI.Controllers
                     var roles = await _userManager.GetRolesAsync(user);
                     var sessionObj = new SessionObject { User = user, RoleID = roles.ToList(), Student = null, Tutor = null };
                     await AuthenticationConfig.DoLogin(HttpContext, null, sessionObj,model.RememberMe);
-                    if (roles.Contains(Utils.Enums.Roles.Admin.ToString()))
+                    if (roles.Contains(Entities.Enums.Roles.Admin.ToString()))
                         return Redirect("~/Dashboard");
                     else
                         return Forbid();

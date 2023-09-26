@@ -54,13 +54,13 @@ namespace TutorWebUI.Controllers
                     await HttpContext.RefreshLoginAsync();
                     if (returnUrl==null)
                     {
-                        if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Minor.ToString()))
+                        if (sessionObj.RoleID.Contains(Learning.Entities.Enums.Roles.Minor.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
-                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Parent.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Entities.Enums.Roles.Parent.ToString()))
                             return RedirectToAction(controllerName: "Parent", actionName: "Dashboard");
-                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Tutor.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Entities.Enums.Roles.Tutor.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
-                        else if (sessionObj.RoleID.Contains(Learning.Utils.Enums.Roles.Admin.ToString()))
+                        else if (sessionObj.RoleID.Contains(Learning.Entities.Enums.Roles.Admin.ToString()))
                             return RedirectToAction(controllerName: "Tutor", actionName: "Dashboard");
                         else
                             return Redirect("~/Home");
@@ -100,7 +100,7 @@ namespace TutorWebUI.Controllers
                     UserName = registerViewModel.UserName,
                     
                 };
-                var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = Learning.Utils.Enums.Roles.Tutor.ToString() });
+                var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = Learning.Entities.Enums.Roles.Tutor.ToString() });
                 if (!useresult.Succeeded)
                 {
                     foreach (var err in useresult.Errors)

@@ -1,9 +1,9 @@
 ﻿@model Learning.ViewModel.Account.AccountUserModel
-    @using Learning.Utils.Enums 
+    @using Learning.Entities.Enums 
 @{
     ViewData["Title"] = "Register";
     Layout = "_Layout_Login";
-    var genders = Learning.Utils.Extensions.EnumToDictionary(typeof(Genders));
+    var genders = Learning.Entities.Extensions.EnumToDictionary(typeof(Gender));
 }
 
 <section class="testimonial py-5" id="testimonial">

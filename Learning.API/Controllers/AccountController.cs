@@ -1,10 +1,11 @@
 ﻿using Auth.Account;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.LogMe;
 using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,7 @@ namespace Learning.API.Controllers
         readonly UserManager<AppUser> _userManager;
         private SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
-        readonly Utils.Config.SecretKey _secretkey;
+        readonly Entities.Config.SecretKey _secretkey;
         readonly ISecurePassword _securePassword;
         readonly ITeacherService _teacherService;
         readonly ILoggerRepo _logger;
@@ -36,7 +37,7 @@ namespace Learning.API.Controllers
 
         #region ctor
         public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager,
-           ISecurePassword securePassword, Utils.Config.SecretKey appSet, ITeacherService teacherService, ILoggerRepo logger)
+           ISecurePassword securePassword, Entities.Config.SecretKey appSet, ITeacherService teacherService, ILoggerRepo logger)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;

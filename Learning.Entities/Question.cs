@@ -38,6 +38,5 @@ namespace Learning.Entities
         public ICollection<Options> Options { get; set; }
 
 
-
     }
 }

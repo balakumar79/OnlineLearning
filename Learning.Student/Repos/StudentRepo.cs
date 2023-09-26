@@ -1,18 +1,18 @@
-﻿using Dapper;
-using Learning.Entities;
+﻿using Learning.Entities;
 using Learning.Student.Abstract;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
-using Learning.Utils.Config;
-using Learning.Utils.Enums;
-using Learning.ViewModel.Tutor;
-using Microsoft.Data.SqlClient;
+using Learning.Entities.Config;
+using Learning.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Learning.Entities.Extension;
+using Learning.ViewModel;
+using Learning.Entities.Domain;
 
 namespace Learning.Student.Repos
 {
@@ -37,7 +37,13 @@ namespace Learning.Student.Repos
 
         public TestViewModel GetTestById(int? id)
         {
-            return _dBContext.Tests.Include(t => t.TestSubject).Where(p => p.Id == id && p.TestStatusId == 3 && p.IsActive).Select(p => new TestViewModel
+            return _dBContext.Tests
+                .Include(t => t.TestSubject)
+                .Include(t=>t.StudentTestStats)
+                .Include(t=>t.GradeLevels)
+                .Include(t=>t.TestStatus)
+                
+                .Where(p => p.Id == id && p.TestStatusId == 3 && p.IsActive).Select(p => new TestViewModel
             {
                 Id = p.Id,
                 Created = p.Created,
@@ -53,46 +59,64 @@ namespace Learning.Student.Repos
                 Modified = p.Modified,
                 Title = p.Title,
                 CreatedBy = p.CreatedBy,
+                MaximumMarkScored=p.StudentTestStats.MaximumMarkScored,
+                MinimumMarkScored=p.StudentTestStats.MinimumMarkScored,
+                AverageScore=p.StudentTestStats.AverageMarkScored,
+                IsActive= p.IsActive,
+                IsPublished= p.IsPublished,
+                SubjectName=p.TestSubject.SubjectName,
+                GradeName =p.GradeLevels.Grade,
+                StatusName   =p.TestStatus.Status,
+                PassingMark=p.PassingMark,
+                RoleId=p.RoleId,
+                TestTypeId=p.TestType,
+                
                 //Topics = p.Topics
             }).FirstOrDefault();
         }
-        public async Task<List<TestViewModel>> GetAllTest(int? studentId = 0)
+        public async Task<List<TestViewModel>> GetAllTest(PaginationQuery pagination, int? studentId = 0, int subjectId = 0, int gradeId = 0)
         {
-            
-            using (IDbConnection db = new SqlConnection(_connectionString.ConnectionStr))
-            {
-                db.Open();
-                var reader = await db.QueryMultipleAsync("sp_GetAllTests", new { studentId }, commandType: CommandType.StoredProcedure);
-                var result =await reader.ReadAsync<TestViewModel>();
-                
-                return result.ToList();
-            }
-            //var result = (from test in _dBContext.Tests.Include(s => s.StudentTests)
-            //              join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
-            //              join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
-            //              join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
-            //              where test.TestStatusId == 3
-            //              && test.IsActive && test.IsPublished && (test.TestType == ((int)TestTypeEnum.Public) ||
-            //               test.StudentTests.Any(ts => ts.StudentId == studentId))
-            //              select new TestViewModel
-            //              {
-            //                  Created = test.Created,
-            //                  SubjectName = sub.SubjectName,
-            //                  SubjectID = sub.Id,
-            //                  StatusID = test.TestStatusId,
-            //                  StatusName = teststatus.Status,
-            //                  Duration = test.Duration,
-            //                  StartDate = test.StartDate,
-            //                  EndDate = test.EndDate,
-            //                  GradeID = test.GradeLevelsId,
-            //                  GradeName = grade.Grade,
-            //                  Language = test.LanguageId,
-            //                  Id = test.Id,
-            //                  Modified = test.Modified,
-            //                  Title = test.Title,
-            //                  CreatedBy = test.CreatedBy,
-            //              }).ToList();
-            //return result;
+
+            //using (IDbConnection db = new SqlConnection(_connectionString.ConnectionStr))
+            //{
+            //    db.Open();
+            //    var reader = await db.QueryMultipleAsync("sp_GetAllTests", new { studentId, subjectId, gradeId, pageSize, pageNumber },
+            //        commandType: CommandType.StoredProcedure);
+            //    var result =await reader.ReadAsync<TestViewModel>();
+
+            //    return result.ToList();
+            //}
+            var result = (from test in _dBContext.Tests.Include(s => s.StudentTests)
+                          join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
+                          join teststatus in _dBContext.TestStatuses on test.TestStatusId equals teststatus.Id
+                          join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
+                          where test.TestStatusId == 3
+                          && test.IsActive
+                          && test.IsPublished
+                          && (test.TestType == ((int)TestTypeEnum.Public) || test.StudentTests.Any(ts => ts.StudentId == studentId))
+                          && (grade.Id == ((gradeId > 0) ? gradeId : grade.Id))
+                          && (test.TestSubjectId == ((subjectId > 0) ? subjectId : test.TestSubjectId))
+                          orderby test.Id descending, test.Created descending, test.Modified descending
+                          select new TestViewModel
+                          {
+                              Created = test.Created,
+                              SubjectName = sub.SubjectName,
+                              SubjectID = sub.Id,
+                              StatusID = test.TestStatusId,
+                              StatusName = teststatus.Status,
+                              Duration = test.Duration,
+                              StartDate = test.StartDate,
+                              EndDate = test.EndDate,
+                              GradeID = test.GradeLevelsId,
+                              GradeName = grade.Grade,
+                              Language = test.LanguageId,
+                              Id = test.Id,
+                              Modified = test.Modified,
+                              Title = test.Title,
+                              CreatedBy = test.CreatedBy,
+                          }).Paginate(pagination);
+
+            return result.ToList();
         }
         /// <summary>
         /// Get student test by parentid/userid
@@ -106,7 +130,7 @@ namespace Learning.Student.Repos
                     join subject in _dBContext.TestSubjects on test.TestSubjectId equals subject.Id
                     join grade in _dBContext.GradeLevels on test.GradeLevelsId equals grade.Id
                     join student in _dBContext.Students on studentTest.StudentId equals student.Id
-                    join g_studentstats in _dBContext.StudentTestStats on test.Id equals g_studentstats.Testid into grpstats
+                    join g_studentstats in _dBContext.StudentTestStats on test.Id equals g_studentstats.TestId into grpstats
                     from studentstats in grpstats.DefaultIfEmpty()
                     where studentid.Contains(studentTest.StudentId)
 
@@ -141,11 +165,28 @@ namespace Learning.Student.Repos
         }
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
         {
-            var model = (from qus in _dBContext.Questions.Where(p => p.TestId == TestId)
-                         join status in _dBContext.TestStatuses on qus.TestStatusId equals status.Id
-                         join test in _dBContext.Tests.Include(t => t.Language) on qus.TestId equals test.Id
-                         join qustype in _dBContext.QuestionTypes on qus.QuestionTypeId equals qustype.Id
-                         where (qus.TestStatusId == 3 || qus.TestStatusId == 2) && test.TestStatusId == 3 && !qus.Deleted
+            var model = new List<QuestionViewModel>();
+            var test = _dBContext.Tests.Include(t => t.Language).Include(t=>t.Questions).ThenInclude(t=>t.QuestionType).Include(t=>t.TestStatus) 
+                .Include(t=>t.RandomQuestions).FirstOrDefault(t=>t.Id==TestId&&t.TestStatusId==3);
+
+            if(test == null)
+                return model;
+            if(test.TestType==((int)TestTypeEnum.Public)&&test.Questions.Count==0)
+                return model;
+            if(test.TestType==((int)TestTypeEnum.Random)&&!test.RandomQuestions.Any())
+                return model;
+
+            
+
+            var t = _dBContext.RandomQuestions.Where(r => r.TestId == TestId).Include(s => s.Question).Select(s=>s.Question);
+
+            var e = test.Questions.AsQueryable();
+
+
+
+            model = (from qus in test.TestType==((int)TestTypeEnum.Random)?t:  test.Questions.AsQueryable()
+                       
+                         where (qus.TestStatusId == 3 || qus.TestStatusId == 2) 
                          select new QuestionViewModel
                          {
                              TestSection = _dBContext.TestSections.Where(s => s.Id == qus.SectionId).Select(sec => new TestSectionViewModel
@@ -180,8 +221,8 @@ namespace Learning.Student.Repos
                              TestId = test.Id,
                              Topic = qus.TopicId,
                              SubTopic = qus.SubTopicId,
-                             QusType = qustype.QustionTypeName,
-                             StatusName = status.Status,
+                             QusType = qus.QuestionType==null?"":qus.QuestionType.QustionTypeName,
+                             StatusName = test.TestStatus.Status,
                              CorrectOption = qus.CorrectOption,
                              QuestionTypeId = qus.QuestionTypeId,
                              Options = _dBContext.Options.Where(p => p.QuestionId == qus.QusID).Select(p => new OptionsViewModel
@@ -304,7 +345,7 @@ namespace Learning.Student.Repos
         }
         public int UpsertStudentTestStats(StudentTestStats stats)
         {
-            var db = _dBContext.StudentTestStats.FirstOrDefault(s => s.Testid == stats.Testid);
+            var db = _dBContext.StudentTestStats.FirstOrDefault(s => s.TestId == stats.TestId);
             if (db == null)
             {
                 stats.CreatedAt = DateTime.Now;
@@ -324,7 +365,7 @@ namespace Learning.Student.Repos
             _dBContext.SaveChanges();
             return stats.Id;
         }
-        public StudentTestStats GetStudentTestStatsByTestid(int testid) => _dBContext.StudentTestStats.FirstOrDefault(p => p.Testid == testid);
+        public StudentTestStats GetStudentTestStatsByTestid(int testid) => _dBContext.StudentTestStats.FirstOrDefault(p => p.TestId == testid);
 
         public List<StudentTestViewModel> GetAllStudentTest()
         {

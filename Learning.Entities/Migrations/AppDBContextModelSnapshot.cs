@@ -518,6 +518,22 @@ namespace Learning.Entities.Migrations
                     b.ToTable("RandomQuestions");
                 });
 
+            modelBuilder.Entity("Learning.Entities.RandomTest", b =>
+                {
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TestId");
+
+                    b.ToTable("RandomTests");
+                });
+
             modelBuilder.Entity("Learning.Entities.ScreenAccess", b =>
                 {
                     b.Property<int>("Id")
@@ -795,7 +811,7 @@ namespace Learning.Entities.Migrations
                     b.Property<int>("NumberOfAttempts")
                         .HasColumnType("int");
 
-                    b.Property<int>("Testid")
+                    b.Property<int>("TestId")
                         .HasColumnType("int");
 
                     b.Property<int>("TotalRegistration")
@@ -806,7 +822,8 @@ namespace Learning.Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Testid");
+                    b.HasIndex("TestId")
+                        .IsUnique();
 
                     b.ToTable("StudentTestStats");
                 });
@@ -1418,7 +1435,7 @@ namespace Learning.Entities.Migrations
 
             modelBuilder.Entity("Learning.Entities.RandomQuestion", b =>
                 {
-                    b.HasOne("Learning.Entities.Question", "Questions")
+                    b.HasOne("Learning.Entities.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1430,7 +1447,18 @@ namespace Learning.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Questions");
+                    b.Navigation("Question");
+
+                    b.Navigation("Test");
+                });
+
+            modelBuilder.Entity("Learning.Entities.RandomTest", b =>
+                {
+                    b.HasOne("Learning.Entities.Test", "Test")
+                        .WithOne("RandomTest")
+                        .HasForeignKey("Learning.Entities.RandomTest", "TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Test");
                 });
@@ -1494,8 +1522,8 @@ namespace Learning.Entities.Migrations
             modelBuilder.Entity("Learning.Entities.StudentTestStats", b =>
                 {
                     b.HasOne("Learning.Entities.Test", "Test")
-                        .WithMany()
-                        .HasForeignKey("Testid")
+                        .WithOne("StudentTestStats")
+                        .HasForeignKey("Learning.Entities.StudentTestStats", "TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1705,6 +1733,10 @@ namespace Learning.Entities.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("RandomQuestions");
+
+                    b.Navigation("RandomTest");
+
+                    b.Navigation("StudentTestStats");
                 });
 
             modelBuilder.Entity("Learning.Entities.TestSubject", b =>

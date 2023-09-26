@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Enums;
+﻿using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -29,6 +29,10 @@ namespace Learning.Tutor.ViewModel
 
         public string Topics { get; set; }
         public string SubTopics { get; set; }
+
+        public int? TopicId { get; set; }
+        public int? SubTopicId { get; set; }
+
         [Required]
         public int Duration { get; set; }
         public DateTime StartDate { get; set; }
@@ -49,11 +53,11 @@ namespace Learning.Tutor.ViewModel
         public bool IsPublished { get; set; }
         public int PassingMark { get; set; }
 
-        public decimal MaximumMarkScored { get; set; }
-        public decimal MinimumMarkScored { get; set; }
-        public decimal AverageScore { get; set; }
+        public decimal? MaximumMarkScored { get; set; }
+        public decimal? MinimumMarkScored { get; set; }
+        public decimal? AverageScore { get; set; }
         public int TestTypeId { get; set; }
         private int _testType;
-        public TestTypeEnum TestType { get => (TestTypeEnum)_testType; set => _testType = TestTypeId; }
+        public string TestType { get => ((TestTypeEnum)_testType).ToString(); set => _testType = TestTypeId; }
     }
 }

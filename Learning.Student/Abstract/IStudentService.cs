@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Learning.Student.Abstract
     public interface IStudentService
     {
         public TestViewModel GetTestById(int? id);
-        Task<List<TestViewModel>> GetAllTest(int? studentId = 0);
+        Task<List<TestViewModel>> GetAllTest(PaginationQuery pagination, int? studentId = 0, int subjectId = 0, int gradeId = 0);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<StudentTestViewModel> GetStudentTestByStudentIDs(List<int> studentid);

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
     <ProjectReference Include="..\Learning.Student\Learning.Student.csproj" />
     <ProjectReference Include="..\Learning.Teacher\Learning.TeacherServ.csproj" />
+    <ProjectReference Include="..\Learning.UnitOfWork\Learning.UnitOfWork.csproj" />
     <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
     <ProjectReference Include="..\Logger\Learning.LogMe.csproj" />
     <ProjectReference Include="..\OnlineLearning.ViewModel\Learning.ViewModel.csproj" />

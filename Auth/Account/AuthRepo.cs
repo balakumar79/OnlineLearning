@@ -1,6 +1,6 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
-using Learning.Utils.Config;
+using Learning.Entities.Config;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

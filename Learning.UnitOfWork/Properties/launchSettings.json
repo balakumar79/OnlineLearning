@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Learning.UnitOfWork": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

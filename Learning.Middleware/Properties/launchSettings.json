@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Learning.Middleware": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:58261;http://localhost:58262"
+    }
+  }
+}

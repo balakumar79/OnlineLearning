@@ -1,4 +1,5 @@
-﻿using Learning.Utils.Enums;
+﻿
+using Learning.Entities.Enums;
 
 namespace Learning.ViewModel.Admin
 {

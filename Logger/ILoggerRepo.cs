@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Enums;
+﻿using Learning.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;

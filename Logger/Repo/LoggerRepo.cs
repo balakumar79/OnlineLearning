@@ -1,5 +1,5 @@
 ﻿using Learning.Entities;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +16,7 @@ namespace Learning.LogMe.Repo
         public void InsertLogger(Exception ex)
         {
 
-            var logger = new Entities.Logger
+            var logger = new Logger
             {
                 Link = ex.StackTrace,
                 Type = ex.GetType().Name,

@@ -2,11 +2,12 @@
 using Learning.Student.Abstract;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.ViewModel;
-using Learning.Utils.Enums;
+using Learning.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Learning.Teacher.Repos
 {
@@ -102,14 +103,14 @@ namespace Learning.Teacher.Repos
             }).ToList();
         }
 
-        public int RandomTestUpsert(int userId, string title, int subjectId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0)
+        public async Task<int> RandomTestUpsert(int userId, string title, int subjectId, int? topicId, int? subTopicId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0)
         {
             if (_dBContext.Tests.Any(s => s.Title == title))
                 return -1;
             var db = _dBContext.Tests.FirstOrDefault(t => t.Id == id && t.TestType == ((int)TestTypeEnum.Random));
             if (db == null && id > 0)
                 return 0;
-            db = db ?? new Test();
+            db ??= new Test();
             db.StartDate = startDate;
             db.Created = DateTime.Now;
             db.EndDate = endDate;
@@ -123,10 +124,41 @@ namespace Learning.Teacher.Repos
             db.GradeLevelsId = gradeId;
             db.PassingMark = passingMark;
             db.TestType = ((int)TestTypeEnum.Random);
-            db.IsActive= true;
-            db.TestStatusId = 2;
+            db.IsActive = true;
+            db.IsPublished = true;
+            db.TestStatusId = 3;
+            if (db.Id > 0)
+                _dBContext.Tests.Update(db);
+            else
             _dBContext.Tests.Add(db);
-            _dBContext.SaveChanges();
+           await _dBContext.SaveChangesAsync();
+            try
+            {
+                var rExam = _dBContext.RandomTests.Find(db.Id);
+                if (rExam == null)
+                {
+                    rExam = new RandomTest();
+                    rExam.TestId = db.Id;
+                    rExam.SubTopicId = subTopicId;
+                    rExam.TopicId = topicId;
+                    _dBContext.RandomTests.Add(rExam);
+                }
+                else
+                {
+                    rExam.TestId = db.Id;
+                    rExam.SubTopicId = (int)subTopicId;
+                    rExam.TopicId = (int)topicId;
+                    _dBContext.RandomTests.Update(rExam);
+                }
+                await _dBContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _dBContext.Loggers.Add(new Logger { Message= ex.InnerException==null?ex.Message:ex.InnerException.Message,CreatedAt=DateTime.Now,Type="Error",Description=ex.ToString(),Link="SaveTestUpsert" });
+                _dBContext.Tests.Remove(db);
+               await _dBContext.SaveChangesAsync();
+
+            }
             return db.Id;
         }
 

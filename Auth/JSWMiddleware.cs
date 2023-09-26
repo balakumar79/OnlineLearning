@@ -1,6 +1,6 @@
 ﻿using Auth.Account;
 using Learning.Entities;
-using Learning.Utils.Config;
+using Learning.Entities.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

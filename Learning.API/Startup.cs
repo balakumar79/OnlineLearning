@@ -1,5 +1,6 @@
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -150,7 +151,7 @@ namespace Learning.API
         }
         public void SeedRoles(RoleManager<AppRole> roleManager)
         {
-            foreach (var role in Enum.GetValues(typeof(Utils.Enums.Roles)))
+            foreach (var role in Enum.GetValues(typeof(Roles)))
             {
                 if (!roleManager.RoleExistsAsync(role.ToString()).Result)
                 {

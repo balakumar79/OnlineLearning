@@ -39,7 +39,7 @@ namespace TutorWebUI
             services.AddAuthorization(option =>
             {
 
-                foreach (var item in Enum.GetValues(typeof(Learning.Utils.Enums.Roles)))
+                foreach (var item in Enum.GetValues(typeof(Learning.Entities.Enums.Roles)))
                 {
 
                     option.AddPolicy(item.ToString(), authbuilder =>

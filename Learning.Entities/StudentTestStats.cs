@@ -7,7 +7,7 @@ namespace Learning.Entities
    public class StudentTestStats
     {
         public int Id { get; set; }
-        public int Testid { get; set; }
+        public int TestId { get; set; }
         public Test Test { get; set; }
         public decimal MaximumMarkScored { get; set; }
         public decimal MinimumMarkScored { get; set; }

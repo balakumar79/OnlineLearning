@@ -1,14 +1,15 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.LogMe;
 using Learning.Student.Abstract;
 using Learning.Teacher.Services;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Utils;
-using Learning.Utils.Config;
-using Learning.Utils.Enums;
+using Learning.Entities;
+using Learning.Entities.Config;
+using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -64,13 +65,13 @@ namespace Learning.API.Controllers
                 if (student == null)
                     return ResponseFormat.JsonResult("No student found.", false);
                 var appUser = await _userManager.FindByIdAsync(student.UserID.ToString());
-                if (appUser == null && student.RoleId != (int)Utils.Enums.Roles.Major)
+                if (appUser == null && student.RoleId != (int)Roles.Major)
                     return ResponseFormat.JsonResult("No parent account found !!!", false);
                 var existinginvite = _teacherService.GetStudentInvitations(new List<int> { studentId }, 2).Where(s => s.TeacherId == TeacherId);
                 if (existinginvite.Any())
                     return ResponseFormat.JsonResult("Invite already sent !!!", false);
 
-                var body = await _emailService.GetEmailTemplateContent(Utils.Config.EmailTemplate.SendStudentInvitationLinkByTeacher);
+                var body = await _emailService.GetEmailTemplateContent(EmailTemplate.SendStudentInvitationLinkByTeacher);
                 var invite = _teacherService.StudentInvitationUpsert(new StudentInvitation
                 {
                     Parentid = appUser.Id,
@@ -123,9 +124,15 @@ namespace Learning.API.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveRandomTest(TestViewModel model)
+        public async Task<JsonResult> SaveRandomTest(TestViewModel model)
         {
             var userid = 0;
+            if (model.TopicId == 0)
+                return ResponseFormat.JsonResult(false, "TopicId is Required !!!");
+            if (model.SubTopicId == 0)
+                return ResponseFormat.JsonResult(false, "SubTopicId is Required !!!");
+            if (model.RoleId == 0)
+                return ResponseFormat.JsonResult(false, "RoleId is Required !!!");
             if (User.IsInRole(Roles.Teacher.ToString()))
             {
                 if (User.Identity.GetTeacherId() > 0)
@@ -135,8 +142,9 @@ namespace Learning.API.Controllers
                 userid = Convert.ToInt32(User.Identity.GetUserID());
             else if (User.IsInRole(Roles.Tutor.ToString()) && userid == 0)
                 userid = User.Identity.GetTutorId();
-            var result = _teacherService.RandomTestUpsert(userid, model.Title, model.SubjectID, model.RoleId, model.GradeID, model.Language, model.StartDate, model.EndDate, model.Duration, model.PassingMark,
+            var result = await _teacherService.RandomTestUpsert(userid, model.Title, model.SubjectID, model.TopicId, model.SubTopicId, model.RoleId, model.GradeID, model.Language, model.StartDate, model.EndDate, model.Duration, model.PassingMark,
                 model.Description, model.Id);
+
             return ResponseFormat.JsonResult(
 
                 result: result > 0,

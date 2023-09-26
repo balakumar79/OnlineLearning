@@ -1,4 +1,4 @@
-﻿using Learning.Utils.Enums;
+﻿using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace Learning.ViewModel.Account
         [Required]
         public int StudentGenderId { get; set; }
         private int _studentGenderId;
-        public Genders StudentGender { get => (Genders)_studentGenderId; set => _studentGenderId = StudentGenderId; }
+        public Gender StudentGender { get => (Gender)_studentGenderId; set => _studentGenderId = StudentGenderId; }
         [Required]
         public string StudentPassword { get; set; }
         [Required]

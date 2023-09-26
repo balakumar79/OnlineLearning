@@ -7,8 +7,8 @@ using Learning.Entities;
 using Learning.Student.Abstract;
 using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
-using Learning.Utils;
-using Learning.Utils.Enums;
+using Learning.Entities;
+using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
