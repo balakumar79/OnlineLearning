@@ -1,6 +1,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace Learning.Entities
 {
@@ -11,7 +12,7 @@ namespace Learning.Entities
         public int Gender { get; set; }
         public string District { get; set; }
 
-        public virtual Student Student { get; set; }
+        public virtual List<Student> Students { get; set; }
         public bool HasUserAccess { get; set; }
         public string UserProfileImage { get; set; }
         public DateTime LastAccessedOn { get; set; }

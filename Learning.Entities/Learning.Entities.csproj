@@ -73,6 +73,8 @@
     <Compile Remove="Migrations\20230702133053_fk_gradelevels_tests.Designer.cs" />
     <Compile Remove="Migrations\20230702133400_fk_gradelevels_tests.cs" />
     <Compile Remove="Migrations\20230702133400_fk_gradelevels_tests.Designer.cs" />
+    <Compile Remove="Migrations\20231008081942_random-tests.cs" />
+    <Compile Remove="Migrations\20231008081942_random-tests.Designer.cs" />
     <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.cs" />
     <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.Designer.cs" />
   </ItemGroup>
@@ -81,6 +83,7 @@
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="3.1.16" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.31" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.30">
       <PrivateAssets>all</PrivateAssets>

@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+﻿@using Learning.ViewModel.Extension
+@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+@inject Learning.Admin.Abstract.IManageExamService manageExamService
 
 @{
     ViewData["Title"] = "Exams";
@@ -7,18 +9,101 @@
     <div class="container-fluid tutor-orange-bg">
         <h1>Manage Exams</h1>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
-        <div id="pnlExam"></div>
+            <form>
+                @*@Html.DataTableFor(Model, s => s.Title, d => d.GradeName)*@
+            </form>
+            <table id="pnlExam" class="display responsive nowrap" style="width:100%">
+
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Title</td>
+                        <td>Subject</td>
+                        <td>Grade</td>
+                        <td>Tutor</td>
+                        <td>Created</td>
+                        <td></td>
+                    </tr>
+                </thead>
+
+            </table>
         </div>
-        </div>
-    </main>
+    </div>
+</main>
 
 <script>
     $(document).ready(doc => {
+        var selectListItems = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(manageExamService.GetAllStatuses()));
+
         initLoader();
-        getdata('/ManageExams/Partial_Exams', null, 'html').done(function (res) {
-            $('#pnlExam').append(res);
-            $('#examtable').DataTable();
-            removeLoader();
-        });
+       var dt= $('.datatable').DataTable();
+
+        var columns = [
+            { data: 'Id' },
+            {
+                data: 'Title',
+                render: function (data) {
+                    return truncateText(data, 22);
+                }
+            },
+            {
+                data: 'SubjectName',
+                render: function (data) {
+                    return truncateText(data, 22)
+                }
+            },
+            { data: "GradeName" },
+            { data: "TutorUserName" },
+            {
+                data: "Created",
+                render: function (data, type, row) {
+                    return moment(data).format('DD-MM-YYYY')
+                }
+            },
+            {
+                data: null,
+                render: function (data, type, row) {
+                    console.log(data, row)
+                    var dropdownHtml = createDropdown('testid', row.Id, data.StatusID, selectListItems, "changeteststatus");
+                    var viewLinkHtml = createViewLink(`/manageexams/CreateTest?id=${data.Id}&ReturnUrl=/manageexams`);
+                    var deleteButton = createDeleteButton(data.testid, 'deleteTest')
+                    return dropdownHtml + ' ' + viewLinkHtml +' ' + deleteButton // Separate them with a space
+                }
+            },
+        ];
+
+        initializeDataTable('pnlExam', '/ManageExams/GetTestData', 'get', columns);
+
+        removeLoader();
     });
+
+    function deleteTest() {
+        $('#modalConfirm').modal('show');
+        $('#modalConfirm #btnDelete').on('click', del => {
+            initLoader();
+            insertdata('/ManageExams/DeleteTest', { id: del.id }).done(res => {
+                removeLoader();
+                if (res) {
+                    notify('Test has been deleted successfully !!!', 'success');
+                    if (dt != null) {
+                        if ($(dt).length > 0)
+                            $(dt).DataTable().ajax.reload();
+                    }
+                } else {
+                    notify('No test deleted.', 'warning');
+                }
+            })
+            });
+    }
+    function changeteststatus(cnt) {
+        var testid = $(cnt).data('id');
+        console.log(testid, $(cnt).value, cnt)
+        insertdata('/ManageExams/UpdateTestStatus', { testid: testid, statusid: cnt.value }).done(function (res) {
+            if (res > 0) {
+                notify('Status updated successfully.', 'success');
+            } else {
+                notify('There is no update to be processed.', 'warning');
+            }
+        });
+    }
 </script>

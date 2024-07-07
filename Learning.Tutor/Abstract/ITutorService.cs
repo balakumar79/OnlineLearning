@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
@@ -16,6 +17,7 @@ namespace Learning.Tutor.Abstract
         Task<int> TestUpsert(List<Test> entity);
         Task<bool> CreateTestSection(TestSectionViewModel model);
         Task<bool> CreateQuestion(QuestionViewModel model);
+        PaginationResult<TestViewModel> GetTestByUserID(int tutorid, PaginationQuery query);
         IEnumerable<TestViewModel> GetTestByUserID(int tutorid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();
@@ -36,7 +38,7 @@ namespace Learning.Tutor.Abstract
         int SetOnlineStatus(int sectionid, bool status);
         bool DeleteQuestion(List<int> questionIds);
         Task<List<QuestionType>> GetTestType();
-        public List<TestViewModel> GetAllTest();
+        public PaginationResult<TestViewModel> GetAllTest(PaginationQuery query);
 
         int savetrueorfalse();
         List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0);

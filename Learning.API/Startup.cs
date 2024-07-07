@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace Learning.API
@@ -114,9 +117,24 @@ namespace Learning.API
             {
                 op.IdleTimeout = TimeSpan.FromDays(2);
             });
-            services.AddMvc();
+            services.AddMvc()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+        .AddDataAnnotationsLocalization();
             //services.AddControllersWithViews();
             //services.AddRazorPages();
+            services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
+            services.Configure<RequestLocalizationOptions>(option =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ta-IN"),
+                };
+                option.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+                option.SupportedCultures= supportedCultures;
+                option.SupportedUICultures= supportedCultures;
+            });
+
             Infrastructure.Infrastructure.AddServices(services, Configuration);
         }
         private IHostEnvironment _hostEnvironment;
@@ -141,9 +159,12 @@ namespace Learning.API
             app.UseAuthorization();
             app.UseSession();
             var cookoption = new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax, CheckConsentNeeded = context => true };
+            app.UseRequestLocalization();
             app.UseSwagger();
+            
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1"));
             //app.UseMvc();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -10,7 +10,7 @@
         <h1>Questions - @Model.FirstOrDefault()?.TestName</h1>
 
 
-        <a class="text-right h6 text-white" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
+        <a class="text-right h6 text-white" asp-controller="Exam" asp-action="Exams"><i class="fa fa-arrow-circle-left"></i> Back | </a>
         <a class="text-white h6" asp-action="Create" data-target="#myModal2" data-toggle="modal">Create New</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
             <table class="table bg-white" id="tblQus">
@@ -100,7 +100,7 @@
                     </td>
 
                     <td>
-                        <a href="#" onclick="deleteConfirmation('/tutor/DeleteQuestions?QuestionIds=@item.QusID&TestId=@item.TestId')">
+                        <a href="#" onclick="deleteConfirmation('/question/DeleteQuestions?QuestionIds=@item.QusID&TestId=@item.TestId')">
                             <i class="fa fa-times-circle text-danger"></i>
                         </a>
                     </td>

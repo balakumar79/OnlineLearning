@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Learning.ViewModel.Account.TeacherModel>
+
+@{
+    ViewData["Title"] = "Manage Teacher";
+}
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Manage Teacher</h1>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+
+            <table class="tblStudent display responsive nowrap" style="width:48%">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserId)
+                        </th>
+                        <th>
+                            FirstName
+                        </th>
+                        <th>
+                            LastName
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserModel.UserName)
+                        </th>
+
+                        <th>
+                            District
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserModel.PhoneNumber)
+                        </th>
+                       
+                        <td>Email</td>
+                        <th>CreatedOn</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.FirstName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.LastName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.District)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.PhoneNumber)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserModel.Email)
+                            </td>
+                            <td>
+                                @item.UserModel.CreatedAt.Value.ToString("dd-MM-yyyy")
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+@section Scripts{
+    <script>
+        document.addEventListener('readystatechange', doc => {
+
+            if (doc.target.readyState == 'complete') {
+                $('.tblStudent').DataTable();
+            }
+        });
+    </script>
+}

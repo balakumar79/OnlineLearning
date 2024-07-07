@@ -1,0 +1,79 @@
+﻿
+@{
+    ViewData["Title"] = "Exams";
+    Layout = "~/Views/Shared/_Layout_Tutor.cshtml";
+}
+
+<main class="page-content">
+    <div class="container-fluid tutor-orange-bg">
+        <h1>Exams</h1>
+        <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
+           @* <div class="row justify-content-center" id="tblExam">*@
+                <table id="tblExams" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                        <td>Id</td>
+                        <td>Title</td>
+                        <td>Subject</td>
+                        <td>Grade</td>
+                        <td>Created</td>
+                        <td></td>
+                    </tr>
+                    </thead>
+              </table> 
+            @*</div>*@
+            </div>
+        </div>
+</main>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            initLoader();
+            //getdata('Partial_Exams', null, 'html').done(res => {
+            //    $('#tblExams').empty().append(res);
+            //    initDataTable('#examtable')
+            //    removeLoader();
+            //    $('#modalConfirm #btnDelete').data('');
+            //});
+            var columns = [
+                { data: 'Id' },
+                {
+                    data: 'Title',
+                    render: function (data,type,row) {
+                        return createHyperlink(`/Question/ViewQuestionsById?TestId=${row.Id}`, truncateText(data, 22));
+                    }
+                },
+                {
+                    data: 'SubjectName',
+                    render: function (data) {
+                        return truncateText(data, 22)
+                    }
+                },
+                { data: "GradeName" },
+                {
+                    data: "Created",
+                    render: function (data, type, row) {
+                        return moment(data).format('DD-MM-YYYY')
+                    }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        var checkboxHtml = createCheckbox('testid', row.Id, data.IsPublished, "setexamactive");
+                        var viewLinkHtml = createEditLink(`CreateTest?id=${data.Id}&ReturnUrl=CreateTest`);
+                        return checkboxHtml + ' | ' + viewLinkHtml; // Separate them with a space
+                    }
+                },
+            ];
+            initializeDataTable('tblExams', 'GetTestData','get',columns);
+            removeLoader();
+        });
+        function setexamactive(cnt) {
+            insertdata('/Exam/SetExamIsPublished', { examid: cnt.id, isChecked: $(cnt).is(':checked') }).done(res => {
+                if (res > 0) {
+                    notify('Test status updated successfully !!!', 'success')
+                }
+            })
+        }
+    </script>
+}

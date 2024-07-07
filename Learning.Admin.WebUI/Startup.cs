@@ -1,8 +1,11 @@
+using AutoMapper;
 using Learning.Admin.Abstract;
 using Learning.Admin.Repo;
 using Learning.Admin.Service;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Middleware;
+using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Text.Json;
 
 namespace Learning.Admin.WebUI
 {
@@ -55,6 +59,18 @@ namespace Learning.Admin.WebUI
             services.AddScoped<IManageSubjectService, ManageSubjectService>();
             services.AddScoped<IManageStudentService, ManageStudentService>();
             services.AddScoped<IManageStudentRepo, ManageStudentRepo>();
+            services.AddScoped<IManageTeacherRepo, ManageTeacherRepo>();
+            services.AddScoped<IManageTeacherService, ManageTeacherService>();
+            services.AddScoped<IManageParentService, ManageParentService>();
+            services.AddScoped<IManageParentRepo, ManageParentRepo>();
+            var profile = new MapperConfiguration(mp =>
+            {
+                mp.AddProfile(new AutoMapperProfile());
+            });
+
+            IMapper mapper = profile.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.ConfigureApplicationCookie(op =>
             {
                 op.Cookie.Name = ".AspNet.SharedCookie";
@@ -70,18 +86,22 @@ namespace Learning.Admin.WebUI
 
             Infrastructure.Infrastructure.AddDataBase(services, Configuration, _hostEnvironment);
             Infrastructure.Infrastructure.AddServices(services, Configuration);
-
             Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
-
             services.AddSession(s => s.IdleTimeout = TimeSpan.FromDays(2));
             services.AddIdentity<AppUser, AppRole>(op =>
             {
 
             })
-.AddEntityFrameworkStores<AppDBContext>().AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
-.AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDBContext>()
+            .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+            .AddDefaultTokenProviders();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(opt =>
+                {
+                    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+                })
+                .AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddScoped<UserManager<AppUser>>();
 
@@ -102,11 +122,11 @@ namespace Learning.Admin.WebUI
                 app.UseHsts();
 
             }
+            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSession();
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

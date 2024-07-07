@@ -44,13 +44,13 @@
                     @Html.DisplayFor(modelItem => item.Id)
                 </td>
                 <td>
-                    <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@(item.Title.Length>15?item.Title.Substring(0,14)+"...":item.Title)</a>
+                    <a title="@item.Title" href="/Question/ViewQuestionsById?TestId=@item.Id">@(item.Title.Length>15?item.Title.Substring(0,14)+"...":item.Title)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.GradeName)
                 </td>
                 <td>
-                    <label>@(item.SubjectName.Length>15 ? item.SubjectName.Substring(0,14)+"...":item.SubjectName)</label>
+                    <label title="@item.SubjectName">@(item.SubjectName.Length>15 ? item.SubjectName.Substring(0,14)+"...":item.SubjectName)</label>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Duration)
@@ -69,8 +69,8 @@
                 </td>
 
                 <td>
-                    <a href="CreateTest?id=@item.Id" class=" btn btn-link">
-                        <i class="fa fa-eye text-info"> </i>
+                    <a href="/tutor/CreateTest?id=@item.Id" class=" btn btn-link">
+                        <i class="fa fa-pencil text-info"> </i>
                     </a> |
                     <button type="button" class="btn btn-link delTest" onclick="deleteTest('@item.Id','#examtable')"> <i class="fa fa-times-circle text-danger"></i></button>
                 </td>

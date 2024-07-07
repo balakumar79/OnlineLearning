@@ -21,7 +21,7 @@ namespace TutorWebUI.Controllers
         readonly UserManager<AppUser> _userManager;
         private SignInManager<AppUser> _signInManager;
         readonly ITutorService _tutorService;
-        public AccountController(IAuthService auth,UserManager<AppUser> userManager,ITutorService tutorService,SignInManager<AppUser> signInManager)
+        public AccountController(IAuthService auth, UserManager<AppUser> userManager, ITutorService tutorService, SignInManager<AppUser> signInManager)
         {
             this._tutorService = tutorService;
             this._userManager = userManager;
@@ -34,7 +34,7 @@ namespace TutorWebUI.Controllers
         }
         public IActionResult Login(string ReturnUrl)
         {
-            
+
             TempData["rurl"] = ReturnUrl;
             return View();
         }
@@ -42,17 +42,19 @@ namespace TutorWebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            
+
             if (ModelState.IsValid)
             {
-                var user =await authService.GetUser(model);
-                if (user!=null)
+                var user = await authService.GetUser(model);
+                if (user != null)
                 {
-                 
-                   var sessionObj= HttpContext.Session.GetObjectFromJson<SessionObject>("sessionObj");
+
+                    var sessionObj = HttpContext.Session.GetObjectFromJson<SessionObject>("sessionObj");
                     await AuthenticationConfig.DoLogin(HttpContext, sessionObj.ScreenAccess, sessionObj, model.RememberMe);
                     await HttpContext.RefreshLoginAsync();
-                    if (returnUrl==null)
+                    user.LastAccessedOn = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
+                    if (returnUrl == null)
                     {
                         if (sessionObj.RoleID.Contains(Learning.Entities.Enums.Roles.Minor.ToString()))
                             return RedirectToAction(controllerName: "Student", actionName: "Dashboard");
@@ -98,7 +100,7 @@ namespace TutorWebUI.Controllers
                     PhoneNumber = registerViewModel.PhoneNumber,
                     Gender = registerViewModel.GenderId,
                     UserName = registerViewModel.UserName,
-                    
+
                 };
                 var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = Learning.Entities.Enums.Roles.Tutor.ToString() });
                 if (!useresult.Succeeded)
@@ -113,7 +115,7 @@ namespace TutorWebUI.Controllers
                     {
                         CreatedAt = DateTime.Now,
                         UserId = user.Id,
-                        UserName=user.UserName,
+                        UserName = user.UserName,
                         ModifiedAt = DateTime.Now,
                         HearAbout = registerViewModel.HearAbout
                     };
@@ -158,13 +160,13 @@ namespace TutorWebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string Email)
         {
-           var user= await _userManager.FindByEmailAsync(Email);
-            if(user!=null)
-           await authService.ForgotPassword(Email);
+            var user = await _userManager.FindByEmailAsync(Email);
+            if (user != null)
+                await authService.ForgotPassword(Email);
             return View("ForgotPasswordConfirmation");
         }
         [HttpGet]
-        public IActionResult ResetPassword(string Token,string Email)
+        public IActionResult ResetPassword(string Token, string Email)
         {
             if (!string.IsNullOrWhiteSpace(Token?.Trim()) && !string.IsNullOrWhiteSpace(Email?.Trim()))
             {
@@ -180,8 +182,8 @@ namespace TutorWebUI.Controllers
         public async Task<IActionResult> ResetPassword(ForgotPasswordViewModel model)
         {
             var resut = await authService.ResetPassword(model);
-            if(resut.Succeeded)
-            return View("ResetPasswordConfirmation");
+            if (resut.Succeeded)
+                return View("ResetPasswordConfirmation");
             else
             {
                 foreach (var item in resut.Errors)
@@ -191,9 +193,9 @@ namespace TutorWebUI.Controllers
                 return View();
             }
         }
-             
 
-       [AcceptVerbs("Get","Post")]
+
+        [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
@@ -217,7 +219,7 @@ namespace TutorWebUI.Controllers
                 return Json($"Email {Email} is already in use");
             }
         }
-        
+
         public async Task<IActionResult> IsUserNameExists(string username, int id)
         {
             var result = await authService.IsUserNameExists(username, id);
@@ -244,7 +246,7 @@ namespace TutorWebUI.Controllers
         {
             return View();
         }
-        
+
 
     }
 }

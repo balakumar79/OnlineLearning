@@ -5,7 +5,6 @@ using Learning.Entities.Enums;
 using Learning.LogMe;
 using Learning.Teacher.Services;
 using Learning.Tutor.Abstract;
-using Learning.Entities.Enums;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -92,13 +91,14 @@ namespace Learning.API.Controllers
                         //await HttpContext.RefreshLoginAsync();
                         var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, screens);
 
+                        await _userManager.UpdateAsync(user);
                         return Ok(new
                         {
                             user = new
                             {
-                                Id = user.Id,
+                                user.Id,
                                 Username = user.UserName,
-                                Email = user.Email,
+                                user.Email,
                                 useraccess = user.HasUserAccess,
                                 result.Value,
                                 roles = sessionObj.RoleID
@@ -120,9 +120,9 @@ namespace Learning.API.Controllers
                         {
                             user = new
                             {
-                                Id = user.Id,
+                                user.Id,
                                 Username = user.UserName,
-                                Email = user.Email,
+                                user.Email,
                                 useraccess = user.HasUserAccess,
                                 result.Value,
                                 roles = sessionObj.RoleID
@@ -161,7 +161,7 @@ namespace Learning.API.Controllers
                         {
                             RoleID = roles.ToList(),
                             ScreenAccess = userscreens,
-                            User = new AppUser { Id = student.Id, FirstName = student.FirstName, LastName = student.LastName, UserName = student.UserName, Student = student },
+                            User = new AppUser { Id = student.Id, FirstName = student.FirstName, LastName = student.LastName, UserName = student.UserName, Students = user.Students },
                             Student = student
                         };
                         var result = AuthenticationConfig.DoLogin(sessionObj, _secretkey.SecretKeyValue, userscreens);
@@ -240,7 +240,7 @@ namespace Learning.API.Controllers
                     if (registerViewModel.StudentModel != null && (registerViewModel.StudentModel?.RoleRequested == (int)Roles.Major || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Minor) || registerViewModel.StudentModel?.RoleRequested == (int)Roles.Student)
                     {
                         registerViewModel.StudentModel.UserId = user == null ? 0 : user.Id;
-                        return new JsonResult(await RegisterStudent(registerViewModel.StudentModel));
+                        return await RegisterStudent(registerViewModel.StudentModel);
 
                     }
                     else if (registerViewModel.Role == (int)Roles.Teacher)
@@ -249,7 +249,7 @@ namespace Learning.API.Controllers
                         {
                             UserId = user.Id,
                         };
-                        return ResponseFormat.JsonResult(await authService.AddTeacher(teacher), "Your teacher account has been created successfully.  Please confirm your email to activate your account.");
+                        return ResponseFormat.JsonResult(await authService.AddTeacher(teacher), "Please check your email for account validaiton...", description: teacher);
                         //return JsonResult(new ResponseFormat { Result = true, Description = await authService.AddTeacher(teacher), Message = "Your teacher account has been created successfully.  Please confirm your email to activate your account." });
                     }
                     else
@@ -306,7 +306,12 @@ namespace Learning.API.Controllers
                 if (res == null)
                     return ResponseFormat.JsonResult("Sorry !!! Student registration failed.", false);
                 else
-                    return ResponseFormat.JsonResult(res, "Student account has been created successfully.  ", description: res);
+                {
+                    if (res.IsRegisteredAsMajor)
+                        return ResponseFormat.JsonResult(res, "Please check your email for account validaiton...");
+
+                    return ResponseFormat.JsonResult(res, "Student account has been created successfully.  ");
+                }
             }
             else
                 return ResponseFormat.JsonResult("Student username already taken.", false);

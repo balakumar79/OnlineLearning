@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
@@ -23,6 +24,7 @@ namespace Learning.Tutor.Service
 
         public Task<bool> CreateTestSection(TestSectionViewModel model) => _tutorRepo.CreateTestSection(model);
         public Task<bool> CreateQuestion(QuestionViewModel model) => _tutorRepo.UpsertQuestion(model);
+        public PaginationResult<TestViewModel> GetTestByUserID(int tutorid, PaginationQuery query) => _tutorRepo.GetTestByUserID(tutorid, query);
         public IEnumerable<TestViewModel> GetTestByUserID(int tutorid) => _tutorRepo.GetTestByUserID(tutorid);
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
@@ -84,7 +86,7 @@ namespace Learning.Tutor.Service
             return _tutorRepo.GetGradeLevels();
         }
 
-       public IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
+        public IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
         {
             return _tutorRepo.GetGradeLevelTestAssociation((int)languageId, testId);
         }
@@ -104,9 +106,9 @@ namespace Learning.Tutor.Service
             return _tutorRepo.GetTestType();
         }
 
-        public List<TestViewModel> GetAllTest()
+        public PaginationResult<TestViewModel> GetAllTest(PaginationQuery query)
         {
-            return _tutorRepo.GetAllTest();
+            return _tutorRepo.GetAllTest(query);
         }
         public int savetrueorfalse()
         {

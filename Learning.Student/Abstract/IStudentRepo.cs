@@ -9,7 +9,7 @@ namespace Learning.Student.Abstract
 {
     public interface IStudentRepo
     {
-        Task<List<TestViewModel>> GetAllTest(PaginationQuery pagination, int? studentId = 0, int subjectId = 0, int gradeId = 0);
+        Task<PaginationResult<TestViewModel>> GetAllTest(GetTestRequestModel requestModel);
         TestViewModel GetTestById(int? id);
         List<QuestionViewModel> GetQuestionsByTestId(int TestId);
         List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId);

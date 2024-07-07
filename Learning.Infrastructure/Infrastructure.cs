@@ -1,9 +1,12 @@
 ﻿using Auth.Account;
+using AutoMapper;
 using Learning.Admin.Abstract;
 using Learning.Admin.Repo;
 using Learning.Admin.Service;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities;
+using Learning.Entities.Config;
 using Learning.LogMe;
 using Learning.LogMe.Repo;
 using Learning.Student.Abstract;
@@ -16,8 +19,7 @@ using Learning.Tutor.Repo;
 using Learning.Tutor.Service;
 using Learning.UnitOfWork.Interface;
 using Learning.UnitOfWork.Repos;
-using Learning.Entities;
-using Learning.Entities.Config;
+using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -95,7 +97,6 @@ namespace Learning.Infrastructure
             services.AddTransient<IManageTutorService, ManageTutorService>();
 
             services.AddTransient<ILoggerRepo, LoggerRepo>();
-
 
         }
     }

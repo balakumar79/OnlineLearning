@@ -1,12 +1,12 @@
 ﻿using Learning.Entities;
+using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Student.Abstract;
 using Learning.Student.ViewModel;
 using Learning.Tutor.ViewModel;
-using Learning.Entities;
+using Learning.ViewModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Learning.ViewModel;
-using Learning.Entities.Domain;
 
 namespace Learning.Student.Services
 {
@@ -93,9 +93,9 @@ namespace Learning.Student.Services
             return _studentTestRepo.GetTestById(id);
         }
 
-        public async Task<List<TestViewModel>> GetAllTest(PaginationQuery pagination, int? studentId = 0, int subjectId = 0, int gradeId = 0)
+        public async Task<PaginationResult<TestViewModel>> GetAllTest(GetTestRequestModel requestModel)
         {
-            return await _studentTestRepo.GetAllTest(pagination,studentId,subjectId,gradeId);
+            return await _studentTestRepo.GetAllTest(requestModel);
         }
 
         public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId)

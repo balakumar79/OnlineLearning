@@ -1,4 +1,5 @@
 ﻿using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Tutor.ViewModel;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
@@ -16,6 +17,7 @@ namespace Learning.Tutor.Abstract
         Task<int> TestUpsert(IList<Test> entity);
         Task<bool> CreateTestSection(TestSectionViewModel model);
         Task<bool> UpsertQuestion(QuestionViewModel model);
+        PaginationResult<TestViewModel> GetTestByUserID(int tutorid, PaginationQuery query);
         IEnumerable<TestViewModel> GetTestByUserID(int tutorid);
         QuestionViewModel GetQuestionDetails(int QuestionId);
         Task<List<QuestionType>> GetQuestionTypes();
@@ -37,7 +39,7 @@ namespace Learning.Tutor.Abstract
         IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId);
         IQueryable<TestSubject> GetTestSubject();
         Task<List<QuestionType>> GetTestType();
-        List<TestViewModel> GetAllTest();
+        PaginationResult<TestViewModel> GetAllTest(PaginationQuery query);
         int savetrueorfalse();
         List<ComprehensionModel> GetComprehensionQuestionModels(int? testiD = 0);
 

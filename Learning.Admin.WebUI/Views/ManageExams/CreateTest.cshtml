@@ -12,7 +12,7 @@
         <a class="text-white h6" href="/tutor/createtest">Create a Test</a>
         <div class="col-md-12 col-sm-12 col-xs-12 white-bg">
 
-            <form asp-action="CreateTest">
+            <form asp-action="CreateTest" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
@@ -82,7 +82,7 @@
 
                             <button type="submit" class="btn-submit">
                                 <i class="fa fa-save"></i>
-                                @(Model==null? "Save" :"Update")
+                                @(Model.Id==0? "Save" :"Update")
                             </button>
 
                         </div>

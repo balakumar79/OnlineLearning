@@ -616,8 +616,7 @@ namespace Learning.Entities.Migrations
 
                     b.HasIndex("StudentTestId");
 
-                    b.HasIndex("UserID")
-                        .IsUnique();
+                    b.HasIndex("UserID");
 
                     b.ToTable("Student");
                 });
@@ -1474,8 +1473,8 @@ namespace Learning.Entities.Migrations
                         .HasForeignKey("StudentTestId");
 
                     b.HasOne("Learning.Entities.AppUser", "AppUser")
-                        .WithOne("Student")
-                        .HasForeignKey("Learning.Entities.Student", "UserID")
+                        .WithMany("Students")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1705,7 +1704,7 @@ namespace Learning.Entities.Migrations
 
             modelBuilder.Entity("Learning.Entities.AppUser", b =>
                 {
-                    b.Navigation("Student");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Learning.Entities.Language", b =>

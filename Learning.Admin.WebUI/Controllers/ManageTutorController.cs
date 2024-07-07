@@ -20,7 +20,7 @@ namespace Learning.Admin.WebUI.Controllers
         private readonly IManageTutorService _manageTutor;
         public ManageTutorController(ILogger<ManageTutorController> logger, IManageTutorService manageTutor)
         {
-            this._manageTutor = manageTutor;
+            _manageTutor = manageTutor;
             _logger = logger;
         }
 
@@ -46,7 +46,7 @@ namespace Learning.Admin.WebUI.Controllers
 
                     ModelState.AddModelError(item.Code, item.Description);
                 }
-                    return View(model);
+                return View(model);
             }
         }
         public IActionResult Tutors()
@@ -55,7 +55,7 @@ namespace Learning.Admin.WebUI.Controllers
         }
         public async Task<IActionResult> Partial_Tutor()
         {
-          return PartialView(await _manageTutor.GetAllTutors());
+            return PartialView(await _manageTutor.GetAllTutors());
         }
 
         public IActionResult Privacy()
@@ -68,6 +68,6 @@ namespace Learning.Admin.WebUI.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        
+
     }
 }

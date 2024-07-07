@@ -55,6 +55,7 @@ function getdata(url, data, datatype = 'json') {
         }
     })
 }
+
 function bindLanguage(cnt, languageselected = null) {
 	getdata('/manageexams/GetLanguage').done(res => {
 		$(cnt).empty().append($('<option/>').text('--Select Language--').val(''));
@@ -88,6 +89,7 @@ function bindSubject(cnt, subjectid) {
 		return $(cnt);
 	})
 }
+
 function bindTest(cnt,testid) {
 	getdata('/manageexams/GetTest').done(res => {
 		$(cnt).empty();
@@ -102,6 +104,7 @@ function bindTest(cnt,testid) {
 		return $(cnt);
 	});
 }
+
 function bindTestSection(cnt, testid) {
 	if (testid !== undefined) {
 		alert('section changed');
@@ -119,6 +122,7 @@ function bindTestSection(cnt, testid) {
 		})
 	}
 }
+
 function bindQuestionType(cnt) {
 	getdata('/manageexams/GetQuestionType').done(res => {
 		$(cnt).empty();
@@ -134,14 +138,86 @@ function initDataTable(tbl) {
 	var tb = $(tbl).DataTable();
 	console.log(tb)
 }
+
 function initLoader() {
 	$('.loading').css('display', 'block');
 	$('.loader').css('display', 'block');
 }
+
 function removeLoader() {
 	$('.loading').css('display', 'none');
 	$('.loader').css('display', 'none');
 
 }
+
+function initializeDataTable(id, url, method, columns) {
+	$('#' + id).DataTable({
+		"serverSide": true,
+		traditional:true,
+		ajax: {
+			url: url,
+			type: method,
+			traditional:true,
+			contentType: 'application/json;charset=utf-8',
+			data: function (d) {
+				console.log(d, {
+					PageNumber: d.start,
+					PageSize: d.length,
+					Draw: d.draw,
+					SearchString: d.search.value,
+					Order: {column:1,dir:'asc'}
+				})
+				return {
+					PageNumber: d.start / d.length+1,
+					PageSize: d.length,
+					Draw: d.draw,
+					SearchString: d.search.value,
+					columns: JSON.stringify(d.columns),
+					order: JSON.stringify(d.order)
+				};
+			},
+			dataSrc: function (data) {
+				console.log(data)
+				return data.data;
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText, textStatus, errorThrown);
+			}
+		},
+		"columns": columns
+	});
+}
+
+function createDropdown(name, id, selectedValue, items, onchangeFunction) {
+	var selectHtml = '<select name="' + name + '" id="' + name + '-' + id + '" data-id="' + id + '" onchange="' + onchangeFunction + '(this)">';
+	items.forEach(function (item) {
+		selectHtml += '<option value="' + item.Id + '"' + (item.Id == selectedValue ? 'selected' : '') + '>' + item.Status + '</option>';
+	});
+	selectHtml += '</select>';
+	return selectHtml;
+}
+
+function createViewLink(action) {
+	return '<a href="' + action + '"><i class="fa fa-eye text-info"> </i></a>';
+}
+
+function createDeleteButton(id, onclickFunction) {
+	return '<button type="button" class="btn btn-sm btn-primary" onclick="' + onclickFunction + '(' + id + ')">' +
+		'<i class="fa fa-times-circle text-danger"></i></button>';
+}
+
+function truncateText(data, maxLength) {
+	return '<label title="' + data + '">' + (data.length > maxLength ? data.substring(0, maxLength) + '...' : data) + '</label>';
+}
+
+function createCheckbox(name, id, isChecked, isDisabled=false, onChangeFunction) {
+	var checkboxHtml = '<input type="checkbox" name="' + name + '" id="' + id + '"';
+	checkboxHtml += isChecked ? ' checked="checked"' : '';
+	checkboxHtml += isDisabled ? "disabled" : '';
+	checkboxHtml += ' onchange="' + onChangeFunction + '(this)" />';
+	return checkboxHtml;
+}
+
+
 
 

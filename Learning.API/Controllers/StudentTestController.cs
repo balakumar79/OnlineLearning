@@ -1,5 +1,6 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Domain;
 using Learning.Entities.Enums;
 using Learning.LogMe;
 using Learning.Student;
@@ -7,17 +8,16 @@ using Learning.Student.Abstract;
 using Learning.Student.ViewModel;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static Learning.ViewModel.Account.AuthorizationModel;
-using Learning.Entities.Domain;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,7 +38,7 @@ namespace Learning.API.Controllers
         #endregion
 
         #region ctor
-        public StudentTestController(IStudentService studentService, ITutorService tutorService,ILoggerRepo loggerRepo)
+        public StudentTestController(IStudentService studentService, ITutorService tutorService, ILoggerRepo loggerRepo)
         {
             _tutorService = tutorService;
             this._studentService = studentService;
@@ -51,9 +51,9 @@ namespace Learning.API.Controllers
         public IEnumerable<StudentTestViewModel> GetStudentTest()
         {
             List<int> userids = new List<int>();
-            if (User.IsInRole(Entities.Enums.Roles.Parent.ToString()))
+            if (User.IsInRole(Roles.Parent.ToString()))
                 userids = User.Identity.GetChildIds();
-            if (User.IsInRole(Entities.Enums.Roles.Major.ToString()) || User.IsInRole(Entities.Enums.Roles.Minor.ToString()))
+            if (User.IsInRole(Roles.Major.ToString()) || User.IsInRole(Roles.Minor.ToString()))
                 userids = new List<int> { Convert.ToInt32(HttpContext.User.Identity.GetUserID()) };
             return _studentService.GetStudentTestByStudentIDs(userids).OrderByDescending(p => p.Modified).ToList();
         }
@@ -139,33 +139,42 @@ namespace Learning.API.Controllers
             return new JsonResult(new { studentCalculatedResultId = _studentService.InsertCalculatedResults(result) });
         }
 
-        [HttpGet]
+        [HttpPost]
         [AllowAnonymous, Authorize]
-        public async Task<JsonResult> GetTest([FromQuery]PaginationQuery pagination, int? testid = 0, bool isTutorviewOnly = false,int subjectId=0,int gradeId=0)
+        public async Task<ActionResult> GetTest(GetTestRequestModel requestModel, bool isEncrypted = true)
         {
             try
             {
-                if ((User.IsInRole(Roles.Tutor.ToString()) || User.IsInRole(Roles.Teacher.ToString())) && isTutorviewOnly)
+                if (requestModel.TestId > 0)
+                {
+                    return ResponseFormat.JsonResult(_studentService.GetTestById(requestModel.TestId));
+                }
+                PaginationResult<TestViewModel> tests = null;
+
+                if ((User.IsInRole(Roles.Tutor.ToString()) || User.IsInRole(Roles.Teacher.ToString())) && requestModel.IsTutorviewOnly)
                 {
                     if (User.Identity.GetTutorId() > 0)
-                        return ResponseFormat.JsonResult(_tutorService.GetTestByUserID(User.Identity.GetTutorId()));
+                        tests = _tutorService.GetTestByUserID(User.Identity.GetTutorId(), requestModel.PaginationQuery);
+
                     if (User.Identity.GetTeacherId() > 0)
-                        return ResponseFormat.JsonResult(_tutorService.GetTestByUserID(User.Identity.GetTeacherId()));
-                }
-                if (testid == 0)
-                {
-                    var studentId = Convert.ToInt32(User.Identity.GetStudentId());
-                    var tests = (await _studentService.GetAllTest(pagination, studentId,subjectId,gradeId)).ToList();
-                    return ResponseFormat.JsonResult(tests, pagination: pagination);
+                        tests = _tutorService.GetTestByUserID(User.Identity.GetTeacherId(), requestModel.PaginationQuery);
                 }
                 else
-                    return ResponseFormat.JsonResult(_studentService.GetTestById(testid));
+                    tests = await _studentService.GetAllTest(requestModel);
+
+
+                //var studentId = Convert.ToInt32(User.Identity.GetStudentId());
+
+                if (isEncrypted)
+                    return ResponseFormat.EncryptJsonResult(tests, pagination: requestModel.PaginationQuery);
+
+                return ResponseFormat.JsonResult(tests);
             }
             catch (Exception ex)
             {
-                                
-               _loggerRepo.InsertLogger(ex);
-                return ResponseFormat.JsonResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message,false);
+
+                _loggerRepo.InsertLogger(ex);
+                return ResponseFormat.JsonResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message, false);
             }
 
         }
@@ -235,24 +244,30 @@ namespace Learning.API.Controllers
             }
         }
         [HttpGet]
-        public JsonResult GetSubjects(int? subjectId,bool hasTestSubjectAssociation=false,int?languageId=0,int gradeId=0)
+        public JsonResult GetSubjects(int? subjectId, bool hasTestSubjectAssociation = false, int? languageId = 0, int gradeId = 0)
         {
-            var sub =  _tutorService.GetTestSubject();
+            var sub = _tutorService.GetTestSubject();
             if (subjectId > 0)
                 sub = sub.Where(o => o.Id == subjectId);
             if (languageId > 0)
             {
-                sub=sub.Where(sub=> sub.SubjectLanguageVariants.Any(e=>e.LanguageId==languageId));
+                sub = sub.Where(sub => sub.SubjectLanguageVariants.Any(e => e.LanguageId == languageId));
             }
             if (hasTestSubjectAssociation)
             {
-              sub= sub.Where(s=>s.Tests.Any()).Distinct();
+                sub = sub.Where(s => s.Tests.Any()).Distinct();
             }
             if (gradeId > 0)
                 sub = sub.Where(s => s.Tests.Any(g => g.GradeLevelsId == gradeId));
 
-            return  new JsonResult(new { subject = sub.Select(e=>new TestSubject { SubjectName=e.SubjectName,Id=e.Id,
-            }).ToList() });
+            return new JsonResult(new
+            {
+                subject = sub.Select(e => new TestSubject
+                {
+                    SubjectName = e.SubjectName,
+                    Id = e.Id,
+                }).ToList()
+            });
         }
         [HttpGet]
         public async Task<JsonResult> GetTestSectionByTestId(int testid) => new JsonResult(Ok(new { sections = (await _tutorService.GetTestSectionByTestId(testid)) }));
@@ -262,7 +277,7 @@ namespace Learning.API.Controllers
             return new JsonResult(Ok(new { grades = gradeid == null ? _tutorService.GetGradeLevels() : _tutorService.GetGradeLevels().Where(s => s.Id == gradeid) }));
         }
         [HttpGet]
-        public IActionResult GetGradeTestAssociation(int ? languageId, int? testid)
+        public IActionResult GetGradeTestAssociation(int? languageId, int? testid)
         {
             return ResponseFormat.JsonResult(_tutorService.GetGradeLevelTestAssociation(languageId, testid).Distinct());
         }

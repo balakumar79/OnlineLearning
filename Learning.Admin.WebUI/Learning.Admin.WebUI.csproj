@@ -69,6 +69,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Auth\Learning.Auth.csproj" />
     <ProjectReference Include="..\Learning.Infrastructure\Learning.Infrastructure.csproj" />
+    <ProjectReference Include="..\Learning.Middleware\Learning.Middleware.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="wwwroot\css\bootstrap.css">

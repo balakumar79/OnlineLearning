@@ -10,42 +10,33 @@
         $('#dropdown').hide();
 
         formatSection([]);
+
         //bind to section dropdown upon test select change
         $('.selTest').on('change', testF => {
             currenttestid = testF.target.value;
-            //insertdata('/tutor/GetComprehensionQuestion', { testId: testF.target.value }).done(function (res) {
-            //    $('.comper-question .selCompQus').empty().append('<option value="0">--Select Question--</option>');
-            //    console.log(res)
-            //    res.forEach(el => {
-            //        console.log(el)
-            //        $('.comper-question .selCompQus').append(`<option value="${el.qusId}">${el.question}</option>`)
-            //    });
-            //    if (comprehensionQuestion?.compQusId > 0)
-            //        $('.comper-question .selCompQus').val(comprehensionQuestion.compQusId);
-            //});
+           
             if (currenttestid > 0)
                 getdata('/tutor/GetTopicsByTestId', { testid: currenttestid }).done(res => {
-                    console.log(res)
                     let option = document.getElementById('selTopic');
                     option.innerHTML = '';
                     option.appendChild(new Option("Select Topic", '0', true));
                     res.forEach(op => {
-                        option.appendChild(new Option(op.topic, op.id, false));
+                        option.appendChild(new Option(op.Topic, op.id, false));
                     })
                     option.value = currenttopicId;
                     option.onchange.apply();
                 })
             getdata('/tutor/GetTestSectionByTestId?testid=' + $('.selTest').val()).done(res => {
                 formatSection(res);
-                console.log('SelTest: ' + testF.target.value);
+               
                 if (currentquestiontypeid != undefined && currentquestiontypeid != 0)
                     $('.selQuestionType').val(currentquestiontypeid).change();
                 if (currenctsectionid != undefined && currenctsectionid != 0)
                     $('#selSection').val(currenctsectionid).change();
             });
         });
+
         document.getElementById('chkComp').addEventListener('click', function (et) {
-            console.log(et.target.value)
         })
 
         tinymce.init({
@@ -106,7 +97,7 @@
                                 //$('#mcqoptions .options').append('</label>').html(el.match("(.*)}")[1]);
                                 $('#mcqoptions .labels').append('<label class="alert alert-info">' +
                                     el.match("(.*)}")[1] + '<sup class="sup-checkbox"><input class="checkbox" '
-                                    + (qusOptions.filter(c => c.option.trim() == el.match("(.*)}")[1].trim())[0]?.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
+                                    + (qusOptions.filter(c => c.Option.trim() == el.match("(.*)}")[1].trim())[0]?.IsCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
                             }
                         })
                         options.empty().select2({ data: ans });
@@ -115,12 +106,14 @@
                 });
             }
         })
+
         //CKEDITOR.instances.editor1.create({
         //    ckfinder: {
         //        uploadUrl: '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
         //    },
         //    toolbar: ['ckfinder', 'imageUpload', '|', 'heading', '|', 'bold', 'italic', '|', 'undo', 'redo']
         //})
+
         tinymce.init({
             selector: 'textarea#editor1',
             height: 200,
@@ -245,7 +238,6 @@
                                 $('#dropdown').empty();
                                 ans.forEach(function (el, i) {
                                     var ddl = $('<select id="selDropdown' + i + '"></select>');
-                                    console.log('drop: ', ddl, el.split(','));
                                     $('#dropdown').append(ddl);
                                     $('#selDropdown' + i).select2({ data: el.split(','), minimumResultsForSearch: -1 }).val(el.split(','))
                                 });
@@ -268,7 +260,6 @@
                 }
             }
         });
-
 
         var options = $('#mcqoptions .options select');
 
@@ -301,10 +292,8 @@
 
             $('#mcqoptions').show('slow');
             $('#mcqoptions .ans').fadeIn('slow');
-
-           
             i = 0;
-            console.log('selectedQuestionTypeID', questiontypeID);
+
             //switch different type of questions
             switch (questiontypeID) {
                 case QuestionType.MCQ: {
@@ -313,11 +302,6 @@
                     tinymce.editors.editor2.show('slow')
                     $('.mcqoption-options,.labels').fadeIn('slow');
                     tinymce.get('editor2').setContent('{ ' + opts.join(' } { ') + ' } ');
-                    //qusOptions.forEach(el => {
-                    //    $('#mcqoptions .labels').append('<label class="alert alert-info">' +
-                    //        el.option + '<sup class="sup-checkbox"><input class="checkbox" '
-                    //        + (el.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
-                    //});
                     break;
                 }
                 case QuestionType["One word answer"]:
@@ -327,10 +311,9 @@
                         $('.mcqoption-options,.labels').fadeIn('slow');
                         qusOptions.forEach(el => {
                             $('#mcqoptions .labels').append('<label class="alert alert-info">' +
-                                el.option + '<sup class="sup-checkbox"><input class="checkbox" ' + (el.isCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
+                                el.option + '<sup class="sup-checkbox"><input class="checkbox" ' + (el.IsCorrect ? 'checked' : null) + ' type="checkbox"/></sup></label>');
                         })
-                        //if (questiontypeID == 5)
-                        //    $('#mcqoptions .ans').hide('slow');
+                       
                         if (questiontypeID == 6) {
                             correctoption.on("select2:select", function (evt) {
                                 tinyMCE.activeEditor.setContent('Ans: <br/><br/>Instruction: ');
@@ -423,7 +406,6 @@
                                     $('#matching .table tbody').append(tr);
                                 } else {
 
-                                    console.log(correctopts)
                                     correctopts.forEach(el => {
                                         tr = $(
                                             `<tr>
@@ -505,32 +487,33 @@ var opts = [];
 var correctopts = [];
 var qusOptions = [];
 var comprehensionQuestion = null;
-
 let currenttestid = 0;
 let currentquestiontypeid = 0;
 let currenctsectionid = 0;
 let currentquestionId = 0;
 let currenttopicId = 0;
 let currentsubtopicid = 0;
+
 function deleteRow(cnt, selector) {
     if ($(selector).find('tr').length > 1) {
         $(cnt).closest('tr').remove();
     }
 }
+
 function addRow(cnt) {
     var $tr = $(cnt).closest('tr');
     var $clone = $tr.clone();
     $clone.find(':text').val('');
     $tr.after($clone);
 }
+
 function savequestion(cnt) {
     var questiontype = $('.selQuestionType').val();
-
     currentquestionId = $('[name=QusID]').val();
     currentquestionId = currentquestionId == '' ? 0 : currentquestionId;
-    var isvalid = formvalidator();
-    if (!isvalid)
-        return undefined;
+    //var isvalid = formvalidator();
+    //if (!isvalid)
+    //    return undefined;
 
     var answers = [];
     var correctoption = [];
@@ -645,9 +628,8 @@ function savequestion(cnt) {
     topicid = topicid == 0 || topicid == '' ? null : topicid;
     let QusModel = new QuestionModel(currentquestionId, tinyMCE.editors.editor1.getContent(), $(cnt).data('save'), topicid, subtopicid, questiontype, currenttestid, currenctsectionid == 0 || currenctsectionid == '' ? null : currenctsectionid, correctoption, $('#txtMarks').val(), answers, ComprehensionModels, tinymce.editors.editor3.getContent()
     );
-    console.log(model, QusModel);
     initLoader();
-    insertdata('/Tutor/SaveQuestion', { model: QusModel }).done(res => {
+    insertdata('/Question/SaveQuestion', { model: QusModel }).done(res => {
         removeLoader();
 
         if (res == 'ok') {
@@ -661,7 +643,6 @@ function savequestion(cnt) {
         }
         else
             notify(res, 'warning', 1000)
-        console.log(res);
     }).fail(status => {
         removeLoader();
     });
@@ -669,34 +650,6 @@ function savequestion(cnt) {
 
 var QuestionType =
     { 'MCQ': 1, 'Gap Filling': 2, 'Match the following': 3, 'True or False': 4, 'One word answer': 5, 'Re-Arrange': 6, 'Dropdown': 7,'ComphresionAnswer':8,'ComphresionQuestion':9 }
-
-
-function formvalidator() {
-    var formcnt = $("#frmCreateExam").find('select,input,textarea').not('.select2-hidden-accessible,.select2-search__field');
-    if ($('.selQuestionType').val() !== '1' || $('.selQuestionType').val() !== '2') {
-        formcnt = formcnt.not('.ans select,.options select')
-    }
-    var isvalid = true;
-    formcnt.toArray().forEach(function (el, i) {
-        $(el).next('.validator-1').remove().end();
-        var h = document.createElement('span');
-        h.textContent = '*';
-        h.className = 'validator-1 text-warning';
-        if ((el.value == undefined || el.value == "" || el.value.length == 0) && $(el).attr('required') === 'required'
-            && el.tagName.toLowerCase() !== 'textarea') {
-            isvalid = false;
-            $(el).after(h).end();
-        }
-        if (el.tagName === 'textarea') {
-            if ($(el).text() === null || $(el).text() === undefined || $(el).text() === "") {
-                isvalid = false;
-                $(el).after(h).end();
-            }
-        }
-    });
-    
-    return isvalid;
-}
 
 function clearformvalues(form, clearDefaultSelection = true) {
 
@@ -724,6 +677,10 @@ function clearformvalues(form, clearDefaultSelection = true) {
     }
     if (tinyMCE.editors.editor2 !== null)
         tinymce.editors.editor2.setContent('');
+
+    if (tinyMCE.editors.editor3 !== null)
+        tinyMCE.editors.editor3.setContent('');
+
     $('div#editor2').html('');
     //$('#mcqoptions .options div').empty()
     if ($('select').length > 0)
@@ -745,45 +702,41 @@ function question_popup(cnt) {
     $('#myModal2').modal('show');
     let testid = 0;
     let questiontypeid = 0;
+
     if (currentquestionId > 0) {
         initLoader();
-        insertdata('/tutor/GetQuestionDetails', { QuestionId: currentquestionId }).done(res => {
-            testid = parseInt(res.testId)
-            questiontypeid = parseInt(res.questionTypeId);
-            qusOptions = res.options;
-            $('#txtMarks').val(res.mark);
+        insertdata('/Question/GetQuestionDetails', { QuestionId: currentquestionId }).done(res => {
+            questiontypeid = parseInt(res.QuestionTypeId);
+            qusOptions = res.Options;
+            $('#txtMarks').val(res.Mark);
            
-
-
             comprehensionQuestion = res.comprehensionModels ??  new ComperhesionQustion();
           
-            tinyMCE.editors.editor1.setContent(res.questionName);
-            opts = []; correctopts = res.correctOption ?? '[]';
+            tinyMCE.editors.editor1.setContent(res.QuestionName);
+            opts = []; correctopts = res.CorrectOption ?? '[]';
 
             correctopts = JSON.parse(correctopts);
-                res.options.forEach(op => {
-                    opts.push(op.option);
+                res.Options.forEach(op => {
+                    opts.push(op.Option);
                 });
-            
 
-            currenttestid = res.testId;
-            currentquestiontypeid = res.questionTypeId;
-            currenctsectionid = res.sectionId;
-            console.log(res, correctopts, questiontypeid, testid);
+            currenttestid = res.TestId;
+            testid = currenttestid;
+            currentquestiontypeid = res.QuestionTypeId;
+            currenctsectionid = res.SectionId;
             $('#mcqoptions .options select').select2({ data: opts }).val(opts).change();
             $('#mcqoptions .ans select').select2({ data: opts }).val(correctopts).change();
-
             $('.selTest').val(testid.toString()).change();
-            if (res.answerExplanation!=null)
-            tinyMCE.editors.editor3.setContent(res.answerExplanation);
+            if (res.AnswerExplanation!=null)
+            tinyMCE.editors.editor3.setContent(res.AnswerExplanation);
 
-            currenttopicId = res.topic;
-            currentsubtopicid = res.subTopic;
+            currenttopicId = res.Topic;
+            currentsubtopicid = res.SubTopic;
         });
         removeLoader();
     }
-
 }
+
 function formatSection(res) {
     $('#selSection').empty();
     dt = [];
@@ -817,13 +770,13 @@ function formatSection(res) {
     res.forEach(el => {
         dt.push({
             html: `<div class="row">
-                        <span class="col-md-5 small">${el.sectionName}</span>
-                        <span class="col-md-4 small">${el.topic ?? 'N/A'}</span>
-                        <em class="col-md-3 small text-white-50">${el.subTopic ?? 'N/A'}</em>
+                        <span class="col-md-5 small">${el.SectionName}</span>
+                        <span class="col-md-4 small">${el.Topic ?? 'N/A'}</span>
+                        <em class="col-md-3 small text-white-50">${el.SubTopic ?? 'N/A'}</em>
                     </div>`,
-            id: el.id,
-            text: el.sectionName,
-            title: el.sectionName
+            id: el.Id,
+            text: el.SectionName,
+            title: el.SectionName
         });
 
 
@@ -853,13 +806,12 @@ function deleteConfirmation(url) {
 }
 
 function getSubTopicByTopicId(cnt) {
-        console.log($(cnt))
     getdata('/Tutor/GetSubTopic', { Id: $('#selTopic').val() }).done(res => {
         let option = document.getElementById('selSubTopic');
         option.innerHTML = '';
         option.appendChild(new Option("Select Topic", '0', true));
         res.forEach(op => {
-            option.appendChild(new Option(op.subTopic, op.id, false));
+            option.appendChild(new Option(op.SubTopic, op.Id, false));
         })
         $('#selSubTopic').val(currentsubtopicid);
     });

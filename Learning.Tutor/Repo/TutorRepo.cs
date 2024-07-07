@@ -1,10 +1,12 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using Learning.Entities;
+using Learning.Entities.Config;
+using Learning.Entities.Domain;
 using Learning.Entities.Enums;
+using Learning.Entities.Extension;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Entities.Config;
-using Learning.Entities.Enums;
 using Learning.ViewModel.Test;
 using Learning.ViewModel.Tutor;
 using Microsoft.Data.SqlClient;
@@ -14,7 +16,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Learning.Tutor.Repo
 {
@@ -41,6 +42,7 @@ namespace Learning.Tutor.Repo
                 return dashboard;
             }
         }
+
         public IEnumerable<TestViewModel> GetTestByUserID(int tutorid)
         {
             var tests = _dBContext.Tests
@@ -55,6 +57,7 @@ namespace Learning.Tutor.Repo
 
             .Where(t => t.IsActive && t.CreatedBy == tutorid && t.RoleId == ((int)Roles.Tutor) ||
             t.CreatedBy == tutorid && t.RoleId == ((int)Roles.Teacher));
+
 
             return (from test in tests
 
@@ -72,6 +75,7 @@ namespace Learning.Tutor.Repo
                         Id = test.Id,
                         Modified = test.Modified,
                         Title = test.Title,
+                        ShuffleTypeId = test.ShuffleTypeId,
                         IsActive = test.IsActive,
                         IsPublished = test.IsPublished,
                         CreatedBy = test.CreatedBy,
@@ -89,13 +93,64 @@ namespace Learning.Tutor.Repo
 
                     }).ToList();
         }
+
+        public PaginationResult<TestViewModel> GetTestByUserID(int createdBy, PaginationQuery query)
+        {
+            var tests = _dBContext.Tests
+                .Include(t => t.Language)
+                .Include(t => t.Questions).ThenInclude(t => t.QuestionType)
+                .Include(t => t.TestStatus)
+                .Include(t => t.RandomQuestions)
+                .Include(t => t.RandomTest)
+                .Include(t => t.GradeLevels)
+                .Include(t => t.TestSubject)
+                .Include(t => t.StudentTestStats)
+
+            .Where(t => t.IsActive && t.CreatedBy == createdBy && t.RoleId == ((int)Roles.Tutor) ||
+            t.CreatedBy == createdBy && t.RoleId == ((int)Roles.Teacher));
+
+            return (from test in tests
+
+                    select new TestViewModel
+                    {
+                        Created = test.Created,
+                        SubjectName = test.TestSubject.SubjectName,
+                        StatusID = test.TestStatusId,
+                        StatusName = test.TestStatus.Status,
+                        Duration = test.Duration,
+                        StartDate = test.StartDate,
+                        EndDate = test.EndDate,
+                        GradeID = test.GradeLevelsId,
+                        GradeName = test.GradeLevels.Grade,
+                        Id = test.Id,
+                        ShuffleTypeId = test.ShuffleTypeId,
+                        Modified = test.Modified,
+                        Title = test.Title,
+                        IsActive = test.IsActive,
+                        IsPublished = test.IsPublished,
+                        CreatedBy = test.CreatedBy,
+                        SubjectID = test.TestSubjectId,
+                        RoleId = test.RoleId,
+                        Language = test.LanguageId,
+                        Description = test.TestDescription,
+                        PassingMark = test.PassingMark,
+                        TestTypeId = test.TestType,
+                        AverageScore = test.StudentTestStats.AverageMarkScored,
+                        MaximumMarkScored = test.StudentTestStats.MaximumMarkScored,
+                        MinimumMarkScored = test.StudentTestStats.MinimumMarkScored,
+                        TopicId = test.RandomTest == null ? 0 : test.RandomTest.TopicId,
+                        SubTopicId = test.RandomTest == null ? 0 : test.RandomTest.SubTopicId
+
+                    }).Paginate(query);
+        }
+
         public TestViewModel GetTestById(int? id)
         {
             var t = _dBContext.Tests
                 .Include(t => t.TestSubject)
                 .Include(t => t.TestSubject.SubjectLanguageVariants)
                 .Include(t => t.RandomTest);
-            return t.Where(p => p.Id == id).Select(p => new TestViewModel
+            var model = t.Where(p => p.Id == id).Select(p => new TestViewModel
             {
                 Id = p.Id,
                 Created = p.Created,
@@ -111,6 +166,7 @@ namespace Learning.Tutor.Repo
                 Modified = p.Modified,
                 Title = p.Title,
                 CreatedBy = p.CreatedBy,
+                ShuffleTypeId = p.ShuffleTypeId,
                 IsActive = p.IsActive,
                 IsPublished = p.IsPublished,
                 Language = p.LanguageId,
@@ -121,9 +177,12 @@ namespace Learning.Tutor.Repo
                 }).ToList() :
                 _dBContext.Languages.Select(lang => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Text = lang.Name, Value = lang.Id.ToString() }).ToList()
 
-            }).FirstOrDefault();
+            }).FirstOrDefault() ?? new TestViewModel();
+            model.ShuffleTypeList = ShuffleTypeEnum.ShuffleAll.EnumToSelectList(model.ShuffleTypeId.ToString());
+            return model;
         }
-        public List<TestViewModel> GetAllTest()
+
+        public PaginationResult<TestViewModel> GetAllTest(PaginationQuery query)
         {
             var result = (from test in _dBContext.Tests
                           join sub in _dBContext.TestSubjects on test.TestSubjectId equals sub.Id
@@ -152,13 +211,20 @@ namespace Learning.Tutor.Repo
                               Id = test.Id,
                               IsPublished = test.IsPublished,
                               IsActive = test.IsActive,
+                              ShuffleTypeId = test.ShuffleTypeId,
                               Modified = test.Modified,
                               Title = test.Title,
                               CreatedBy = test.CreatedBy,
                               TutorUserName = test.RoleId == ((int)Roles.Tutor) ? tutor.UserName : ((int)Roles.Teacher) == test.RoleId ? teacher.AppUser.UserName : ((int)Roles.Major) == test.RoleId ? student.UserName : ((int)Roles.Parent) == test.RoleId ? user.UserName : "NA",
                           });
-            return result.ToList();
+            if (string.IsNullOrEmpty(query.SearchString))
+                return result.Paginate(query);
+
+            return result
+                //.Where(s => s.Id.ToString() == query.SearchString || s.Title.ToLower().Contains(query.SearchString.ToLower()) || s.SubjectName.ToLower().Contains(query.SearchString))
+                .Paginate(query);
         }
+
         public List<QuestionViewModel> GetQuestionsByTestId(int TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => p.TestId == TestId)
@@ -213,6 +279,7 @@ namespace Learning.Tutor.Repo
                          }).ToList();
             return model;
         }
+
         public List<QuestionViewModel> GetQuestionsByTestId(List<int> TestId)
         {
             var model = (from qus in _dBContext.Questions.Where(p => TestId.Contains(p.TestId))
@@ -259,6 +326,7 @@ namespace Learning.Tutor.Repo
                          }).ToList();
             return model;
         }
+
         public QuestionViewModel GetQuestionDetails(int QuestionId)
         {
             var qusDb = (from qus in _dBContext.Questions
@@ -322,6 +390,7 @@ namespace Learning.Tutor.Repo
 
             return model;
         }
+
         public async Task<List<QuestionType>> GetQuestionTypes()
         {
             return await _dBContext.QuestionTypes.ToListAsync();
@@ -358,6 +427,7 @@ namespace Learning.Tutor.Repo
                     }).FirstOrDefault();
 
         }
+
         public async Task<int> TestUpsert(TestViewModel model)
         {
             Test test = _dBContext.Tests.FirstOrDefault(p => p.Id == model.Id);
@@ -380,6 +450,7 @@ namespace Learning.Tutor.Repo
             test.Title = model.Title;
             test.LanguageId = model.Language;
             test.CreatedBy = model.CreatedBy;
+            test.ShuffleTypeId = model.ShuffleTypeId;
             if (model.Id == 0)
                 _dBContext.Tests.Add(test);
             await _dBContext.SaveChangesAsync();
@@ -403,6 +474,7 @@ namespace Learning.Tutor.Repo
             _dBContext.Tests.UpdateRange(entity);
             return await _dBContext.SaveChangesAsync();
         }
+
         public async Task<bool> CreateTestSection(TestSectionViewModel model)
         {
             var section = new TestSection
@@ -423,6 +495,7 @@ namespace Learning.Tutor.Repo
             return true;
 
         }
+
         public async Task<bool> UpsertQuestion(QuestionViewModel model)
         {
             if (model == null)
@@ -482,6 +555,7 @@ namespace Learning.Tutor.Repo
                     QuestionTypeId = model.QuestionTypeId,
                     TestId = model.TestId,
                     CorrectOption = model.CorrectOption,
+                    AnswerExplantion = model.AnswerExplanation,
                     Mark = model.Mark,
                     TopicId = model.Topic,
                     SubTopicId = model.SubTopic
@@ -555,6 +629,7 @@ namespace Learning.Tutor.Repo
         }
 
         public List<TestSection> GetTestSections(int testsectionid) => _dBContext.TestSections.Where(t => t.Id == testsectionid).ToList();
+
         public async Task<bool> UpdateTutor(TutorViewModel model)
         {
             var tutor = _dBContext.Tutors.FirstOrDefault(p => p.TutorId == model.TutorID);
@@ -628,9 +703,9 @@ namespace Learning.Tutor.Repo
         }
         public List<Language> GetLanguages() => _dBContext.Languages.OrderBy(p => p.Name).ToList();
         public IQueryable<GradeLevels> GetGradeLevels() => _dBContext.GradeLevels;
-        public IQueryable <GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
+        public IQueryable<GradeLevels> GetGradeLevelTestAssociation(int? languageId, int? testId)
         {
-            var tests= _dBContext.Tests.AsQueryable();
+            var tests = _dBContext.Tests.AsQueryable();
             if (languageId > 0)
                 tests = tests.Where(lang => lang.LanguageId == languageId);
             if (testId > 0)
@@ -639,7 +714,8 @@ namespace Learning.Tutor.Repo
         }
         public IQueryable<TestSubject> GetTestSubject()
         {
-            var subject =  _dBContext.TestSubjects.Include(s=>s.SubjectLanguageVariants).Include(s=>s.Tests ).OrderBy(p => p.SubjectName);
+            var subject = _dBContext.TestSubjects.Include(s => s.SubjectLanguageVariants).Include(s => s.Tests).OrderBy(p => p.SubjectName)
+                .Select(s => new TestSubject { Id = s.Id, SubjectName = s.SubjectName, Active = s.Active });
             //if (subject.Any(sub => sub.SubjectName.ToLower() == "other"))
             //{
             //    var item = subject.Remove(subject.FirstOrDefault(p => p.SubjectName.ToLower() == "other"));
@@ -723,11 +799,11 @@ namespace Learning.Tutor.Repo
             {
                 Grade = model.GradeLevels.Grade,
                 Id = model.GradeLevels.Id
-            }).Distinct()   ;
+            }).Distinct();
         }
-        public IEnumerable<SubjectModel> GetSubjectsByGrades(int[] Grades)
-        {
-            return _dBContext.Tests.Include(s => s.TestSubject).Where(s => Grades.Contains(s.GradeLevelsId) && s.IsActive && s.TestSubject.Active).Select(model => new SubjectModel { Id = model.TestSubject.Id, Subject = model.TestSubject.SubjectName }).Distinct();
-        }
+        public IEnumerable<SubjectModel> GetSubjectsByGrades(int[] Grades) => _dBContext.Tests.Include(s => s.TestSubject)
+            .Where(s => Grades.Contains(s.GradeLevelsId) && s.IsActive && s.TestSubject.Active)
+            .Select(model => new SubjectModel { Id = model.TestSubject.Id, Subject = model.TestSubject.SubjectName })
+            .Distinct();
     }
 }

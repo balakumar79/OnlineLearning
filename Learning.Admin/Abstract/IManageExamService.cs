@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Learning.Admin.Abstract
 {
-   public interface IManageExamService
+    public interface IManageExamService
     {
         Task<DashboardModel> GetDashboardModel(int userid);
         Task<int> UpdateTestStatus(int testid, int statusid);
         Task<int> UpdateQuestionStatus(int questionid, int statusid);
+        Task<bool> DeleteQuestion(int questionid);
+        Task<bool> DeleteTest(int testid);
         List<TestStatus> GetAllStatuses();
     }
 }

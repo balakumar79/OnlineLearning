@@ -1,8 +1,11 @@
-﻿@model IEnumerable<Learning.Tutor.ViewModel.TestViewModel>
+﻿@using Learning.Entities.Domain;
+
+@model PaginationResult<Learning.Tutor.ViewModel.TestViewModel>
+
 @inject Learning.Admin.Abstract.IManageExamService manageExamService
-  @{ 
-      var statuslist = manageExamService.GetAllStatuses().Select(p => new SelectListItem { Text = p.Status, Value = p.Id.ToString() });
-  }
+@{
+    var statuslist = manageExamService.GetAllStatuses().Select(p => new SelectListItem { Text = p.Status, Value = p.Id.ToString() });
+}
 <table class="display responsive nowrap" style="width:100%" id="examtable">
     <thead>
         <tr>
@@ -31,59 +34,65 @@
             <th>
                 Created
             </th>
-             <td></td>
+            <td></td>
 
 
 
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.data)
         {
-        <tr>
-            <td>
-                <span>@item.Id</span>
-            </td>
-            <td>
-                <a href="/tutor/ViewQuestionsById?TestId=@item.Id">@(item?.Title.Length>18?item?.Title.Substring(0,17)+"...":item?.Title)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GradeName)
-            </td>
-            <td>
-                @(item.SubjectName.Length>18?item.SubjectName.Substring(0,17)+"...":item.SubjectName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Duration)
-            </td>
+            string tutorName = "NA";
+            if (!string.IsNullOrEmpty(item.TutorUserName))
+            {
+                tutorName = (item?.TutorUserName.Length > 18 ? item?.TutorUserName.Substring(0, 17) + "..." : item?.TutorUserName);
+            }
 
-            <td>
-                @(item.TutorUserName.Length>18?item.TutorUserName.Substring(0,17)+"...":item.TutorUserName)
-            </td>
+            <tr>
+                <td>
+                    <span>@item.Id</span>
+                </td>
+                <td>
+                    <a title="@item?.Title" href="CreateTest?Id=@item.Id">@(item?.Title.Length > 18 ? item?.Title.Substring(0, 17) + "..." : item?.Title)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GradeName)
+                </td>
+                <td>
+                   <label title="@item?.SubjectName"> @(item.SubjectName.Length > 18 ? item.SubjectName.Substring(0, 17) + "..." : item.SubjectName)</label>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
 
-            <td>
-                @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
-                @Html.DropDownListFor(m => item.StatusID, statuslist, new { @onchange = "changeteststatus(this)", @data_id = item.Id, @class = "form-control-sm" })
-            </td>
-            <td>
-                @Html.Label(item.Created.ToShortDateString())
-            </td>
-            <td>
-                <a href="/manageexams/CreateTest?id=@item.Id&ReturnUrl=/manageexams">
-                    <i class="fa fa-eye text-info"> </i>
-                </a> |
-                <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
-            </td>
+                <td>
+                   @tutorName
+                </td>
+
+                <td>
+                    @*<select asp-items="@statuslist" onchange="changeteststatus(this)"></select>*@
+                    @Html.DropDownListFor(m => item.StatusID, statuslist, new { @onchange = "changeteststatus(this)", @data_id = item.Id, @class = "form-control-sm" })
+                </td>
+                <td>
+                    @Html.Label(item.Created.ToShortDateString())
+                </td>
+                <td>
+                    <a href="/manageexams/CreateTest?id=@item.Id&ReturnUrl=/manageexams">
+                        <i class="fa fa-eye text-info"> </i>
+                    </a> |
+                    <a href="DeleteTest?id=@item.Id"> <i class="fa fa-times-circle text-danger"></i></a>
+                </td>
 
 
-        </tr>
+            </tr>
         }
     </tbody>
 </table>
 <script>
     function changeteststatus(cnt) {
         var testid = $(cnt).data('id');
-        
+
         insertdata('/ManageExams/UpdateTestStatus', { testid: testid, statusid: cnt.value }).done(function (res) {
             if (res > 0) {
                 notify('Status updated successfully.', 'success');

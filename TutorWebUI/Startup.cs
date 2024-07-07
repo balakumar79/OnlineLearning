@@ -1,6 +1,7 @@
 using Learning.Auth;
 using Learning.Entities;
 using Learning.Middleware;
+using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,24 +35,20 @@ namespace TutorWebUI
 
             }).AddEntityFrameworkStores<AppDBContext>()
             .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
-.AddDefaultTokenProviders();
+            .AddDefaultTokenProviders();
 
             services.AddAuthorization(option =>
             {
-
                 foreach (var item in Enum.GetValues(typeof(Learning.Entities.Enums.Roles)))
                 {
-
                     option.AddPolicy(item.ToString(), authbuilder =>
                     {
                         authbuilder.RequireRole(item.ToString());
                     });
-
                 }
                 option.DefaultPolicy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(IdentityApplicationDefault).RequireAuthenticatedUser().Build();
             });
             AuthenticationConfig.LearningAuthentication(services);
-
             services.ConfigureApplicationCookie(op =>
             {
                 op.Cookie.Name = ".AspNet.SharedCookie";
@@ -71,17 +68,14 @@ namespace TutorWebUI
 
             Learning.Infrastructure.Infrastructure.AddServices(services, Configuration);
             Learning.Infrastructure.Infrastructure.AddKeyContext(services, Configuration);
-
-
-
-
-
-
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
+            services.AddControllersWithViews()
+                .AddJsonOptions(option =>
+                {
+                    option.JsonSerializerOptions.PropertyNamingPolicy = null;
+                })
+                .AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddScoped<UserManager<AppUser>>();
-
 
         }
 
@@ -90,7 +84,6 @@ namespace TutorWebUI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -100,17 +93,16 @@ namespace TutorWebUI
             {
                 app.UseExceptionHandler("/Tutor/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseMiddleware<GlobalExceptionMiddleware>();
                 app.UseHsts();
             }
 
-            app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

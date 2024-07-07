@@ -202,7 +202,7 @@
     @section Scripts{
         <script>
             $(document).ready(function () {
-                getdata('/tutor/Partial_Exams', null, 'html').done(res => {
+                getdata('/Exam/Partial_Exams', null, 'html').done(res => {
                     $('#tblExams').empty().append(res);
                     
                 });

@@ -22,7 +22,7 @@ namespace Learning.API.Controllers
 
         private readonly ILogger<TestController> _logger;
 
-        public TestController(ILogger<TestController> logger, ITutorService tutorService,IUnitOfWork unitOfWork )
+        public TestController(ILogger<TestController> logger, ITutorService tutorService, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _tutorService = tutorService;
@@ -42,12 +42,14 @@ namespace Learning.API.Controllers
             })
             .ToArray();
         }
+
         [HttpGet]
         [Route("/Home/Index")]
         public IActionResult Index()
         {
             return Redirect("/swagger/index.html");
         }
+
         [HttpGet]
         [Route("/test/GetGradeLevelsByLanguages")]
         public IActionResult GetGradesByLanguages([FromQuery] int[] Languages)
@@ -63,29 +65,32 @@ namespace Learning.API.Controllers
         }
 
         [HttpGet]
-        [Authenticate("Permissions.Teacher.Test.View.Topics")]
+        [Authenticate("Permissions.Teacher.Test.View.Topics,Permissions.Major.Test.View.Topics")]
         [Route("/v1/test/GetTopicsBySubjectId")]
         public IActionResult GetTopicsBySubjectId(int subjectId)
         {
             return ResponseFormat.JsonResult(_unitOfWork.QuestionRepository.GetSubjectTopicsBySubjectId(subjectId));
         }
+
         [HttpGet]
-        [Authenticate("Permissions.Teacher.Test.View.Questions")]
+        [Authenticate("Permissions.Teacher.Test.View.Questions,Permissions.Teacher.Test.View.Topics")]
         [Route("/v1/test/GetQuestionsByTopicId")]
         public IActionResult GetQuestionsByTopicId(int topicId)
         {
 
             return ResponseFormat.JsonResult(_unitOfWork.QuestionRepository.GetQuestionsByTopidId(topicId));
         }
+
         [HttpGet]
-        [Authenticate("Permissions.Teacher.Test.View.SubTopics")]
+        [Authenticate("Permissions.Teacher.Test.View.SubTopics,Permissions.Major.Test.View.Topics")]
         [Route("v1/test/getsubjectsubtopicsbytopicid")]
         public IActionResult GetSubjectSubTopicsByTopicId(int topicId)
         {
             return ResponseFormat.JsonResult(_unitOfWork.QuestionRepository.GetSubTopicByTopicId(topicId));
         }
+
         [HttpGet]
-        [Authenticate("Permissions.Teacher.Test.View.Questions")]
+        [Authenticate("Permissions.Teacher.Test.View.Questions,Permissions.Major.Test.View.Topics")]
         [Route("vs/test/getquestionsbysubtopicid")]
         public IActionResult GetQuestionsBySubTopicId(int subTopicId)
         {

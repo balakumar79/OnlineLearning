@@ -1,5 +1,8 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities;
+using Learning.Entities.Config;
+using Learning.Entities.Enums;
 using Learning.Entities.Enums;
 using Learning.LogMe;
 using Learning.Student.Abstract;
@@ -7,9 +10,7 @@ using Learning.Teacher.Services;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
-using Learning.Entities;
-using Learning.Entities.Config;
-using Learning.Entities.Enums;
+using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -127,12 +128,12 @@ namespace Learning.API.Controllers
         public async Task<JsonResult> SaveRandomTest(TestViewModel model)
         {
             var userid = 0;
-            if (model.TopicId == 0)
-                return ResponseFormat.JsonResult(false, "TopicId is Required !!!");
-            if (model.SubTopicId == 0)
-                return ResponseFormat.JsonResult(false, "SubTopicId is Required !!!");
-            if (model.RoleId == 0)
-                return ResponseFormat.JsonResult(false, "RoleId is Required !!!");
+            //if (model.TopicId == 0)
+            //    return ResponseFormat.JsonResult(false, "TopicId is Required !!!");
+            //if (model.SubTopicId == 0)
+            //    return ResponseFormat.JsonResult(false, "SubTopicId is Required !!!");
+            //if (model.RoleId == 0)
+            //    return ResponseFormat.JsonResult(false, "RoleId is Required !!!");
             if (User.IsInRole(Roles.Teacher.ToString()))
             {
                 if (User.Identity.GetTeacherId() > 0)
@@ -145,18 +146,13 @@ namespace Learning.API.Controllers
             var result = await _teacherService.RandomTestUpsert(userid, model.Title, model.SubjectID, model.TopicId, model.SubTopicId, model.RoleId, model.GradeID, model.Language, model.StartDate, model.EndDate, model.Duration, model.PassingMark,
                 model.Description, model.Id);
 
-            return ResponseFormat.JsonResult(
-
-                result: result > 0,
-                message: result == -1 ? "Test name already exists !!!" : null,
-                description: result
-            );
+            return result.AddResponse();
         }
 
         [HttpGet]
         public IActionResult GenerateRandomQuestions(int testid, int randomNumber)
         {
-            return ResponseFormat.JsonResult(_teacherService.GenerateRandomQuestions(testid, randomNumber).ToList());
+            return _teacherService.GenerateRandomQuestions(testid, randomNumber).GetListResponse();
         }
     }
 }

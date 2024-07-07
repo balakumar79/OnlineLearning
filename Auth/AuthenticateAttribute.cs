@@ -8,8 +8,8 @@ using System.Text;
 
 namespace Learning.Auth
 {
-    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Method,AllowMultiple =true)]
-   public class AuthenticateAttribute: AuthorizeAttribute, IAuthorizationFilter
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+    public class AuthenticateAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly string _claim;
         public AuthenticateAttribute(string claim)
@@ -21,9 +21,9 @@ namespace Learning.Auth
         {
             var identity = filterContext.HttpContext.User;
             //var test = identity.FindFirst(permission);
-            if (!identity.Identity.IsAuthenticated || !identity.Claims.Any(p => p.Value == _claim))
+            if (!identity.Identity.IsAuthenticated || !identity.Claims.Any(p => _claim.Split(',').Any(s => s.TrimEnd() == p.Value)))
             {
-                 filterContext.Result = new ForbidResult();
+                filterContext.Result = new ForbidResult();
             }
         }
     }

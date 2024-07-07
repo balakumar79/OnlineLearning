@@ -2,6 +2,7 @@
 using Learning.Teacher.Repos;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -39,14 +40,14 @@ namespace Learning.Teacher.Services
         {
             return _teacherRepo.SearchStudent(fname, lname, userName, gender, gradeId, district, instituion, teacherId);
         }
-        public IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int numberOfQuestions, int? difficultyLevel = 0)
+        public RepoListResponse<QuestionViewModel> GenerateRandomQuestions(int subjectId, int numberOfQuestions, int? difficultyLevel = 0)
         {
             return _teacherRepo.GenerateRandomQuestions(subjectId, numberOfQuestions, difficultyLevel);
         }
 
-        public Task<int> RandomTestUpsert(int userId, string title, int subjectId, int? topicId, int? subTopicId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0)
+        public Task<RepoResponse<int>> RandomTestUpsert(int userId, string title, int subjectId, int? topicId, int? subTopicId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0)
         {
-            return _teacherRepo.RandomTestUpsert(userId, title, subjectId,topicId,subTopicId, roleId, gradeId, languageId, startDate, endDate, duration, passingMark, description, id);
+            return _teacherRepo.RandomTestUpsert(userId, title, subjectId, topicId, subTopicId, roleId, gradeId, languageId, startDate, endDate, duration, passingMark, description, id);
         }
     }
 }

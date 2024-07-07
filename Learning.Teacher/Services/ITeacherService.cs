@@ -1,6 +1,7 @@
 ﻿using Learning.Entities;
 using Learning.TeacherServ.Viewmodel;
 using Learning.Tutor.ViewModel;
+using Learning.ViewModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,9 +20,9 @@ namespace Learning.Teacher.Services
         /// <returns></returns>
         IList<StudentInvitation> GetStudentInvitations(List<int> Id, int valueType);
         List<StudentModel> SearchStudent(string fname, string lname, string userName, string gender, List<int>? gradeId, List<string>? district, List<string>? instituion, int? teacherid = null);
-        IEnumerable<QuestionViewModel> GenerateRandomQuestions(int subjectId, int numberOfQuestions, int? difficultyLevel = 0);
+        RepoListResponse<QuestionViewModel> GenerateRandomQuestions(int subjectId, int numberOfQuestions, int? difficultyLevel = 0);
 
         //save random test
-        public Task<int> RandomTestUpsert(int userId, string title, int subjectId, int? topicId, int? subTopicId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0);
+        public Task<RepoResponse<int>> RandomTestUpsert(int userId, string title, int subjectId, int? topicId, int? subTopicId, int roleId, int gradeId, int languageId, DateTime startDate, DateTime endDate, int duration = 0, int passingMark = 0, string description = null, int? id = 0);
     }
 }

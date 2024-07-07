@@ -1,13 +1,16 @@
 ﻿using Learning.Admin.Abstract;
 using Learning.Auth;
+using Learning.Entities.Domain;
 using Learning.Tutor.Abstract;
 using Learning.Tutor.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Learning.Admin.WebUI.Controllers
 {
@@ -27,18 +30,30 @@ namespace Learning.Admin.WebUI.Controllers
             _manageExamService = manageExamService;
         }
         #endregion
-        // GET: ManageExamsController
-        public ActionResult Index()
+
+        public ActionResult Index(PaginationQuery query)
+        {
+            var result = _tutorService.GetAllTest(query);
+            return View(result.data);
+        }
+
+        public ActionResult GetTestData(PaginationQuery query)
+        {
+            var result = _tutorService.GetAllTest(query);
+            return Json(result);
+        }
+
+        public ActionResult Partial_Exams([FromQuery] PaginationQuery query)
+        {
+            var model = _tutorService.GetAllTest(query);
+            return View(model);
+        }
+        [HttpGet]
+        [Route("test")]
+        public ActionResult Test()
         {
             return View();
         }
-
-        public IActionResult Partial_Exams()
-        {
-            var model = _tutorService.GetAllTest();
-            return PartialView(model);
-        }
-
 
         public IActionResult CreateTest(int? Id)
         {
@@ -71,11 +86,11 @@ namespace Learning.Admin.WebUI.Controllers
         }
         public IActionResult DeleteTest(int testid)
         {
-            return Json(_tutorService.DeleteTest(testid));
+            return Json(_manageExamService.DeleteTest(testid));
         }
-        public IActionResult DeleteQuestion(List<int> questionid)
+        public IActionResult DeleteQuestion(int questionid)
         {
-            return Json(_tutorService.DeleteQuestion(questionid));
+            return Json(_manageExamService.DeleteQuestion(questionid));
         }
 
         public JsonResult GetQuestionsByTestID(int testid)
