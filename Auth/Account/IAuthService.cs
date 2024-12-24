@@ -20,7 +20,7 @@ namespace Auth.Account
         Task<bool> IsUserNameExists(string username, int? id);
         bool IsStudentUserNameExists(string username, int? id = 0);
 
-
+        Task<string> SendEmailUserRegisterdNotificationBody(AppUser user, Tutor tutor);
         Task<string> EmailConfirmation(string token, string email);
         Task<bool> ForgotPassword(string email);
         Task<IdentityResult> ResetPassword(ForgotPasswordViewModel model);

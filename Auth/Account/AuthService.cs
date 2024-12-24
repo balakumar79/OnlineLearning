@@ -1,19 +1,21 @@
 ﻿using Learning.Auth;
 using Learning.Entities;
-using Learning.Tutor.Abstract;
 using Learning.Entities;
 using Learning.Entities.Config;
+using Learning.Tutor.Abstract;
 using Learning.ViewModel.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static Learning.ViewModel.Account.AuthorizationModel;
-using Microsoft.Extensions.Logging;
 
 namespace Auth.Account
 {
@@ -108,11 +110,14 @@ namespace Auth.Account
         {
             try
             {
+
                 var errors = await _authRepo.AddUser(appUser, password, role);
                 if (errors.Succeeded)
                 {
                     string body = await GetEmailConfirmationBody(appUser);
                     await emailService.SendEmailConfirmation(appUser.Email, body);
+                    string tutorCreationEmailConfirmationBody = await SendEmailUserRegisterdNotificationBody(appUser, new Tutor { UserName = appUser.UserName });
+                    await emailService.SendEmailAsync("balakumar79@gmail.com", "test", tutorCreationEmailConfirmationBody);
                 }
                 return errors;
             }
@@ -248,6 +253,32 @@ namespace Auth.Account
                 else
                     link = $"{httpContext.HttpContext.Request.Scheme}://{httpContext.HttpContext.Request.Host}/Account/ConfirmEmail?token={tokenEncoded}&&email={user.Email}";
                 emailBody = emailBody.Replace("{link}", link);
+                return emailBody;
+            }
+            catch (Exception ex) { _logger.LogError(ex, "GetEmailConfirmationBody Service"); throw; }
+        }
+
+        public async Task<string> SendEmailUserRegisterdNotificationBody(AppUser user, Tutor tutor)
+        {
+            try
+            {
+                if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+                {
+                    return null;
+                }
+
+                IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+
+                var ip = host
+                    .AddressList
+                    .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+                var emailBody = await emailService.GetEmailTemplateContent(EmailTemplate.TutorRegisteredConfirmation);
+                emailBody = emailBody.Replace("{username}", user.UserName);
+                emailBody = emailBody.Replace("{tutor}", tutor.UserName);
+                emailBody = emailBody.Replace("{email}", user.Email);
+                emailBody = emailBody.Replace("{IP}", ip?.AddressFamily.ToString());
+                emailBody = emailBody.Replace("{date}", DateTime.Now.Date.ToShortDateString());
+                emailBody = emailBody.Replace("{time}", DateTime.Now.ToShortTimeString());
                 return emailBody;
             }
             catch (Exception ex) { _logger.LogError(ex, "GetEmailConfirmationBody Service"); throw; }

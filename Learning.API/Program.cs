@@ -16,7 +16,7 @@ namespace Learning.API
             {
                 var serviceprovider = scope.ServiceProvider;
                 var rolemanger = serviceprovider.GetRequiredService<RoleManager<AppRole>>();
-                Entities.Extension.SeedRole.SeedRoles(rolemanger);
+                //Entities.Extension.SeedRole.SeedRoles(rolemanger);
             }
             host.Run();
         }

@@ -63,11 +63,10 @@
             {
                 data: null,
                 render: function (data, type, row) {
-                    console.log(data, row)
                     var dropdownHtml = createDropdown('testid', row.Id, data.StatusID, selectListItems, "changeteststatus");
                     var viewLinkHtml = createViewLink(`/manageexams/CreateTest?id=${data.Id}&ReturnUrl=/manageexams`);
-                    var deleteButton = createDeleteButton(data.testid, 'deleteTest')
-                    return dropdownHtml + ' ' + viewLinkHtml +' ' + deleteButton // Separate them with a space
+                    var deleteButton = createDeleteButton(data.id, 'deleteTest')
+                    return '<div class="col col-sm-5 text-center" > '+dropdownHtml+' | ' + viewLinkHtml + ' | ' + deleteButton + ' </div></div >'
                 }
             },
         ];

@@ -31,12 +31,13 @@ namespace Auth.Account
         public async Task<IdentityResult> AddUser(AppUser appUser, string password, AppRole role)
         {
             appUser.CreatedAt = DateTime.Now;
-            var res = await userManager.CreateAsync(appUser, password);
-            if (res.Succeeded)
-            {
-                var roleresult = await userManager.AddToRoleAsync(appUser, role.Name);
-            }
-            return res;
+            //var res = await userManager.CreateAsync(appUser, password);
+            //if (res.Succeeded)
+            //{
+            //    var roleresult = await userManager.AddToRoleAsync(appUser, role.Name);
+            //}
+            //return res;
+            return new IdentityResult();
         }
 
         public async Task<StudentModel> AddStudent(Student student)

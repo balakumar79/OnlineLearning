@@ -11,6 +11,7 @@ namespace Learning.Entities.Config
     {
         public readonly static string ConfirmEmail = "ConfirmEmail.html";
         public readonly static string ResetPassword = "ForgotPassword.html";
+        public readonly static string TutorRegisteredConfirmation = "TutorRegisterdNotification.html";
         public readonly static string SendStudentInvitationLinkByTeacher = "SendStudentInvitationLinkByTeacher.html";
     }
     public static class RolesConstant

@@ -65,8 +65,8 @@ namespace Learning.API
             services.AddAuthentication(op =>
             {
                 op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+                op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(op =>
             {
                 op.SaveToken = true;
@@ -131,8 +131,8 @@ namespace Learning.API
                     new CultureInfo("ta-IN"),
                 };
                 option.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
-                option.SupportedCultures= supportedCultures;
-                option.SupportedUICultures= supportedCultures;
+                option.SupportedCultures = supportedCultures;
+                option.SupportedUICultures = supportedCultures;
             });
 
             Infrastructure.Infrastructure.AddServices(services, Configuration);
@@ -150,8 +150,8 @@ namespace Learning.API
             app.UseAuthentication();
 
             app.UseRouting();
-            app.UseCors(x => x.AllowAnyOrigin()
-            //WithOrigins("http://localhost:3000", "https://domockexam.com", "https://localhost:44315", "https://api.domockexam.com")
+            app.UseCors(x => x.
+            WithOrigins("http://localhost:3000", "https://domockexam.com", "https://www.domockexam.com", "https://localhost:44315", "https://api.domockexam.com")
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             app.UseMiddleware<JSWMiddleware>();
@@ -161,10 +161,10 @@ namespace Learning.API
             var cookoption = new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax, CheckConsentNeeded = context => true };
             app.UseRequestLocalization();
             app.UseSwagger();
-            
+
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1"));
             //app.UseMvc();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");

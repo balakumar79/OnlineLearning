@@ -4,9 +4,11 @@ using Learning.Admin.Repo;
 using Learning.Admin.Service;
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.Middleware;
 using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -31,27 +33,22 @@ namespace Learning.Admin.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            //services.AddAuthorization((Action<Microsoft.AspNetCore.Authorization.AuthorizationOptions>)(option =>
-            //{
-            //    foreach (var item in Enum.GetValues(typeof(Utils.Enums.Roles)))
-            //    {
+            services.AddAuthorization(option =>
+            {
+                foreach (var item in Enum.GetValues(typeof(Roles)))
+                {
 
-            //        option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
-            //    }
-            //}));
-            //AuthenticationConfig.LearningAuthentication(services);
+                    option.AddPolicy(item.ToString(), authbuilder => { authbuilder.RequireRole(item.ToString()); });
+                }
+            });
+            AuthenticationConfig.LearningAuthentication(services);
 
-
-
-            //            services.AddDataProtection()
-            //.SetApplicationName("LearningCommon");
+            services.AddDataProtection().SetApplicationName("LearningCommon");
 
             services.AddScoped<IManageExamService, ManageExamService>();
             services.AddScoped<IManageExamRepo, ManageExamRepo>();

@@ -102,7 +102,7 @@ namespace TutorWebUI.Controllers
                     UserName = registerViewModel.UserName,
 
                 };
-                var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole { Name = Learning.Entities.Enums.Roles.Tutor.ToString() });
+                var useresult = await authService.AddUser(user, registerViewModel.ConfirmPassword, new AppRole());
                 if (!useresult.Succeeded)
                 {
                     foreach (var err in useresult.Errors)

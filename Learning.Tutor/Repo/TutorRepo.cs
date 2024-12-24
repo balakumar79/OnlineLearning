@@ -217,11 +217,14 @@ namespace Learning.Tutor.Repo
                               CreatedBy = test.CreatedBy,
                               TutorUserName = test.RoleId == ((int)Roles.Tutor) ? tutor.UserName : ((int)Roles.Teacher) == test.RoleId ? teacher.AppUser.UserName : ((int)Roles.Major) == test.RoleId ? student.UserName : ((int)Roles.Parent) == test.RoleId ? user.UserName : "NA",
                           });
+
+            query.SearchString = query.SearchString?.ToLower();
+
             if (string.IsNullOrEmpty(query.SearchString))
                 return result.Paginate(query);
 
             return result
-                //.Where(s => s.Id.ToString() == query.SearchString || s.Title.ToLower().Contains(query.SearchString.ToLower()) || s.SubjectName.ToLower().Contains(query.SearchString))
+                .Where(s => s.Id.ToString() == query.SearchString || s.Title.ToLower().Contains(query.SearchString.ToLower()) || s.SubjectName.ToLower().Contains(query.SearchString) || s.TutorUserName.ToLower().Contains(query.SearchString) || s.GradeName.ToLower().Contains(query.SearchString))
                 .Paginate(query);
         }
 

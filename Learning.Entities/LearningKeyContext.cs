@@ -14,7 +14,7 @@ namespace Learning.Entities
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultSchema("bala");
+            builder.HasDefaultSchema("DME");
         }
     }
 }

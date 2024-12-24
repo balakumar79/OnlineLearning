@@ -31,14 +31,11 @@ namespace Learning.Entities
         public virtual DbSet<CalculatedResult> CalculatedResults { get; set; }
         public virtual DbSet<StudentTestStats> StudentTestStats { get; set; }
         public virtual DbSet<StudentInvitation> StudentInvitations { get; set; }
-
         public virtual DbSet<Tutor> Tutors { get; set; }
         public virtual DbSet<Language> Languages { get; set; }
-
         public virtual DbSet<TutorLanguageOfInstruction> TutorLanguageOfInstructions { get; set; }
         public virtual DbSet<TutorGradesTaken> TutorGradesTakens { get; set; }
         public virtual DbSet<TutorEducation> TutorEducations { get; set; }
-
         public virtual DbSet<Test> Tests { get; set; }
         public virtual DbSet<TestSubject> TestSubjects { get; set; }
         public virtual DbSet<TestSection> TestSections { get; set; }
@@ -49,8 +46,6 @@ namespace Learning.Entities
         public virtual DbSet<SubjectLanguageVariant> SubjectLanguageVariants { get; set; }
         public virtual DbSet<RandomTest> RandomTests { get; set; }
         public virtual DbSet<RandomQuestion> RandomQuestions { get; set; }
-
-
         public virtual DbSet<MCQAnswer> MCQAnswers { get; set; }
         //public virtual DbSet<GapFillingAnswer> GapFillingAnswers{ get; set; }
         public virtual DbSet<TrueOrFalse> TrueOrFalses { get; set; }
@@ -58,20 +53,16 @@ namespace Learning.Entities
         public virtual DbSet<TestStatus> TestStatuses { get; set; }
         public virtual DbSet<Comprehension> Comprehensions { get; set; }
         public virtual DbSet<SubjectTopic> SubjectTopics { get; set; }
-
         public virtual DbSet<SubjectSubTopic> SubjectSubTopics { get; set; }
-
         public virtual DbSet<UserScreenAccess> UserScreensAccess { get; set; }
         public virtual DbSet<ScreenAccess> ScreenAccesses { get; set; }
         public virtual DbSet<StudentAccountRecoveryAnswer> StudentAccountRecoveryAnswers { get; set; }
-
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Mail> Mails { get; set; }
-
         public virtual DbSet<Logger> Loggers { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultSchema("bala");
+            builder.HasDefaultSchema("dbo");
             base.OnModelCreating(builder);
             builder.Entity<AppUser>(entity =>
             {

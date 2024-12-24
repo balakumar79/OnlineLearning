@@ -1,5 +1,6 @@
 using Learning.Auth;
 using Learning.Entities;
+using Learning.Entities.Enums;
 using Learning.Middleware;
 using Learning.ViewModel.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +47,10 @@ namespace TutorWebUI
                         authbuilder.RequireRole(item.ToString());
                     });
                 }
-                option.DefaultPolicy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(IdentityApplicationDefault).RequireAuthenticatedUser().Build();
+                option.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(IdentityApplicationDefault)
+                .RequireAuthenticatedUser()
+                .RequireRole(new string[] { Roles.Tutor.ToString(), Roles.Teacher.ToString(), Roles.Admin.ToString() }).Build();
             });
             AuthenticationConfig.LearningAuthentication(services);
             services.ConfigureApplicationCookie(op =>

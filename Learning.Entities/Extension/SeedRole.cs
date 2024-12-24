@@ -13,8 +13,10 @@ namespace Learning.Entities.Extension
                 if (!roleManager.RoleExistsAsync(role.ToString()).Result)
                 {
 
-                    AppRole appRole = new AppRole();
-                    appRole.Name = role.ToString();
+                    AppRole appRole = new AppRole
+                    {
+                        Name = role.ToString()
+                    };
                     _ = roleManager.CreateAsync(appRole).Result;
                 }
             }

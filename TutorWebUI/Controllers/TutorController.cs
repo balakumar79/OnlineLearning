@@ -44,8 +44,6 @@ namespace TutorWebUI.Controllers
 
         #endregion
 
-
-
         #region Tutor
 
         [Authenticate(Permissions.Tutor.DashBoardView)]

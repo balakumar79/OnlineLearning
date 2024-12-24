@@ -75,6 +75,26 @@
     <Compile Remove="Migrations\20230702133400_fk_gradelevels_tests.Designer.cs" />
     <Compile Remove="Migrations\20231008081942_random-tests.cs" />
     <Compile Remove="Migrations\20231008081942_random-tests.Designer.cs" />
+    <Compile Remove="Migrations\20240812024414_checkingnewchanges.cs" />
+    <Compile Remove="Migrations\20240812024414_checkingnewchanges.Designer.cs" />
+    <Compile Remove="Migrations\20240817015620_revertchanges.cs" />
+    <Compile Remove="Migrations\20240817015620_revertchanges.Designer.cs" />
+    <Compile Remove="Migrations\20240817021120_schema naming.cs" />
+    <Compile Remove="Migrations\20240817021120_schema naming.Designer.cs" />
+    <Compile Remove="Migrations\20240817021700_removed_UserScreensAccess.cs" />
+    <Compile Remove="Migrations\20240817021700_removed_UserScreensAccess.Designer.cs" />
+    <Compile Remove="Migrations\20240817022120_removed_schema.cs" />
+    <Compile Remove="Migrations\20240817022120_removed_schema.Designer.cs" />
+    <Compile Remove="Migrations\20240831041516_schemachange.cs" />
+    <Compile Remove="Migrations\20240831041516_schemachange.Designer.cs" />
+    <Compile Remove="Migrations\20240831045851_schemachange_1.cs" />
+    <Compile Remove="Migrations\20240831045851_schemachange_1.Designer.cs" />
+    <Compile Remove="Migrations\20240831050322_schemachange.cs" />
+    <Compile Remove="Migrations\20240831050322_schemachange.Designer.cs" />
+    <Compile Remove="Migrations\20241222060527_testing.cs" />
+    <Compile Remove="Migrations\20241222060527_testing.Designer.cs" />
+    <Compile Remove="Migrations\20241222060738_testing.cs" />
+    <Compile Remove="Migrations\20241222060738_testing.Designer.cs" />
     <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.cs" />
     <Compile Remove="Migrations\LearningKey\20230522132127_renamed-schema-name.Designer.cs" />
   </ItemGroup>
@@ -93,5 +113,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Learning.Utils\Learning.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
 </Project>

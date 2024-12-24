@@ -8,7 +8,7 @@ namespace Learning.Entities.Migrations
         {
             migrationBuilder.AddColumn<int>(
                 name: "ShuffleTypeId",
-                schema: "bala",
+                //schema: "bala",
                 table: "Tests",
                 type: "int",
                 nullable: false,
@@ -16,7 +16,7 @@ namespace Learning.Entities.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "AnswerExplantion",
-                schema: "bala",
+                //schema: "bala",
                 table: "Questions",
                 type: "nvarchar(max)",
                 nullable: true);

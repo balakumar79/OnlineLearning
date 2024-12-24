@@ -189,7 +189,7 @@ function initializeDataTable(id, url, method, columns) {
 }
 
 function createDropdown(name, id, selectedValue, items, onchangeFunction) {
-	var selectHtml = '<select name="' + name + '" id="' + name + '-' + id + '" data-id="' + id + '" onchange="' + onchangeFunction + '(this)">';
+	var selectHtml = '<select class="form-control-sm" name="' + name + '" id="' + name + '-' + id + '" data-id="' + id + '" onchange="' + onchangeFunction + '(this)">';
 	items.forEach(function (item) {
 		selectHtml += '<option value="' + item.Id + '"' + (item.Id == selectedValue ? 'selected' : '') + '>' + item.Status + '</option>';
 	});
@@ -198,12 +198,12 @@ function createDropdown(name, id, selectedValue, items, onchangeFunction) {
 }
 
 function createViewLink(action) {
-	return '<a href="' + action + '"><i class="fa fa-eye text-info"> </i></a>';
+	return '<a class="text-center" href="' + action + '"><i class="fa fa-eye text-info"> </i></a>';
 }
 
 function createDeleteButton(id, onclickFunction) {
-	return '<button type="button" class="btn btn-sm btn-primary" onclick="' + onclickFunction + '(' + id + ')">' +
-		'<i class="fa fa-times-circle text-danger"></i></button>';
+	return '<button type="button" class="btn btn-outline-danger btn-sm" onclick="' + onclickFunction + '(' + id + ')">' +
+		'<span class="fa fa-times-circle text-danger"></span></button>';
 }
 
 function truncateText(data, maxLength) {

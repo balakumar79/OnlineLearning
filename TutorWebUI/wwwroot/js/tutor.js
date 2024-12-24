@@ -48,7 +48,7 @@
             language_url: '/tinymce/langs/ta_IN.js',
             //directionality: "ltl",
             menubar: true,
-            images_upload_url: '/tutor/questionimageupload',
+            //images_upload_url: '/tutor/questionimageupload',
             automatic_uploads: false,
             plugins: [
                 'advlist autolink lists link image charmap print preview anchor',
@@ -71,7 +71,7 @@
             language_url: '/tinymce/langs/ta_IN.js',
             //directionality: "ltl",
             menubar: true,
-            images_upload_url: '/tutor/questionimageupload',
+            //images_upload_url: '/tutor/questionimageupload',
             automatic_uploads: false,
             plugins: [
                 'advlist autolink lists link image charmap print preview anchor',
@@ -123,7 +123,7 @@
             language_url: '/tinymce/langs/ta_IN.js',
             //directionality: "ltl",
             menubar: true,
-            images_upload_url: '/tutor/questionimageupload',
+            //images_upload_url: '/tutor/questionimageupload',
             automatic_uploads: false,
             autoresize_on_init: true,
             plugins: [

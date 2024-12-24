@@ -38,7 +38,7 @@ namespace Learning.Infrastructure
             if (hostEnvironment.IsDevelopment())
             {
                 conn = configuration.GetConnectionString("TestDBContext");
-                services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(conn));
+                services.AddDbContext<AppDBContext>(opt => { opt.UseSqlServer(conn); });
             }
             else
             {
